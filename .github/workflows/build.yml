@@ -46,7 +46,7 @@ jobs:
 
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild
+      uses: microsoft/setup-msbuild@v1
 
     - name: Restore NuGet packages
       run: msbuild -t:Restore -p:Configuration=${{ matrix.configuration }}
@@ -58,7 +58,7 @@ jobs:
       run: msbuild -t:Pack -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -p:GenerateAppxPackageOnBuild=true
 
     - name: Upload MSIX package
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@v2
       with:
         name: msix-package
         path: '**/*.msix'
