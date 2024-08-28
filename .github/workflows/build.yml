@@ -1,0 +1,64 @@
+name: MSBuild
+
+on:
+  push:
+    branches:
+      - dev/pipeline
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        configuration: [Release]
+        platform: [x64]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get Target Frameworks
+      run: |
+        $csprojFiles = Get-ChildItem -Path '**/*.csproj'
+        $frameworks = @()
+        foreach ($file in $csprojFiles) {
+          [xml]$csproj = Get-Content -Path $file.FullName
+          $framework = $csproj.Project.PropertyGroup.TargetFramework
+          $frameworks += $framework
+        }
+        $uniqueFrameworks = $frameworks | Sort-Object -Unique
+        $uniqueFrameworks -join ',' | Out-File -FilePath frameworks.txt
+        echo "Required .NET versions:"
+        cat frameworks.txt
+        echo "frameworks=$(Get-Content frameworks.txt)" >> $GITHUB_ENV
+
+    - name: Setup .NET
+      run: |
+        $frameworks = $env:frameworks -split ','
+        foreach ($framework in $frameworks) {
+          if ($framework -match 'net(\d+\.\d+)') {
+            $version = $matches[1]
+            echo "Installing .NET $version"
+            actions/setup-dotnet@v1 --dotnet-version $version
+          }
+        }
+
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild
+
+    - name: Restore NuGet packages
+      run: msbuild -t:Restore -p:Configuration=${{ matrix.configuration }}
+
+    - name: Build solution
+      run: msbuild -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }}
+
+    - name: Create MSIX package
+      run: msbuild -t:Pack -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -p:GenerateAppxPackageOnBuild=true
+
+    - name: Upload MSIX package
+      uses: actions/upload-artifact
+      with:
+        name: msix-package
+        path: '**/*.msix'
