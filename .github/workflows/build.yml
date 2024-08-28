@@ -21,7 +21,7 @@ jobs:
     - name: Get Target Frameworks
       run: |
         Write-Host "Starting to extract target frameworks..."
-        $csprojFiles = Get-ChildItem -Path '**/*.csproj'
+        $csprojFiles = Get-ChildItem -Path './*.csproj', '**/*.csproj'
         Write-Host "Found .csproj files: $($csprojFiles.Count)"
         $frameworks = @()
         foreach ($file in $csprojFiles) {
