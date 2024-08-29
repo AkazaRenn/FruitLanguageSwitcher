@@ -23,14 +23,14 @@ jobs:
         $csprojFiles = Get-ChildItem -Path './*.csproj', '**/*.csproj'
         $versions = @()
         foreach ($file in $csprojFiles) {
-            [xml]$csproj = Get-Content -Path $file.FullName
-            $framework = $csproj.Project.PropertyGroup.TargetFramework
-            $framework
-            if ($framework -match 'net(\d+\.\d+)') {
-              $version = $matches[1]
-              Write-Host "$($file.FullName): $version"
-              $versions += $version
-            }
+          [xml]$csproj = Get-Content -Path $file.FullName
+          $framework = $csproj.Project.PropertyGroup.TargetFramework
+          $framework
+          if ($framework -match 'net(\d+\.\d+)') {
+            $version = $matches[1]
+            Write-Host "$($file.FullName): $version"
+            $versions += $version
+          }
         }
         $uniqueversions = $versions | Sort-Object -Unique
         $uniqueversions -join ',' | Out-File -FilePath versions.txt
