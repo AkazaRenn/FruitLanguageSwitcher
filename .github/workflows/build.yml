@@ -26,7 +26,7 @@ jobs:
           [xml]$csproj = Get-Content -Path $file.FullName
           $framework = $csproj.Project.PropertyGroup.TargetFramework
           Write-Host "$($file.FullName): $framework"
-          if ($framework -match 'net(\d+\.\d+)') {
+          if ($framework -match '(\d+\.\d+)') {
             Write-Host "$matches"
             $version = $matches[1]
             Write-Host "$($file.FullName): $version"
