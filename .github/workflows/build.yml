@@ -36,7 +36,7 @@ jobs:
       id: define-versions
       run: |
         $versions = @("3.1.x", "5.0.x")
-        $versionsString = $versions -join ","
+        $versionsString = $versions -join "`n"
         echo "::set-output name=dotnet-versions::$versionsString"
       shell: pwsh
 
