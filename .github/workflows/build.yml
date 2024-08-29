@@ -26,10 +26,10 @@ jobs:
           [xml]$csproj = Get-Content -Path $file.FullName
           $framework = $csproj.Project.PropertyGroup.TargetFramework
           Write-Host "$($file.FullName): $framework"
-          $versions += $framework -replace '^\D+', ''
+          $versions += $framework -replace '(^\D+)|(-.*)', ''
         }
-        $versionsString = $($versions | Where-Object { $_ -and $_.Trim() -ne "" }) -join ', '
-        echo "VERSIONS=$($framework -replace '^\D+', '')" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        $versionsString = versions -join ','
+        echo "VERSIONS=$versionsString" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
