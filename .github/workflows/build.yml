@@ -25,8 +25,9 @@ jobs:
         foreach ($file in $csprojFiles) {
           [xml]$csproj = Get-Content -Path $file.FullName
           $framework = $csproj.Project.PropertyGroup.TargetFramework
-          $framework
+          Write-Host "$($file.FullName): $framework"
           if ($framework -match 'net(\d+\.\d+)') {
+            Write-Host "$matches"
             $version = $matches[1]
             Write-Host "$($file.FullName): $version"
             $versions += $version
