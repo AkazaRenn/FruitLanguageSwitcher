@@ -30,26 +30,13 @@ jobs:
           Write-Host $versions
         }
         $versionsString = $versions -join "`n"
-        echo "VERSIONS=$versionsString" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-
-    - name: Define .NET versions
-      id: define-versions
-      run: |
-        $versions = @("3.1.x", "5.0.x")
-        $versionsString = $versions -join "`n"
-        echo "::set-output name=dotnet-versions::$versionsString"
-      shell: pwsh
-
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ steps.define-versions.outputs.dotnet-versions }}
+        echo "DOTNET_VERSIONS=$versionsString" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          ${{ env.VERSIONS }}
+          ${{ env.DOTNET_VERSIONS }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
