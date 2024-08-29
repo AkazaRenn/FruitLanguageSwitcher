@@ -26,23 +26,16 @@ jobs:
           [xml]$csproj = Get-Content -Path $file.FullName
           $framework = $csproj.Project.PropertyGroup.TargetFramework
           Write-Host "$($file.FullName): $framework"
-          if ($framework -match '(\d+\.\d+)') {
-            Write-Host "$matches"
-            $version = $matches[1]
-            Write-Host "$($file.FullName): $version"
-            $versions += $version
-          }
+          $versions += $framework
         }
-        $uniqueversions = $versions | Sort-Object -Unique
-        $uniqueversions -join ',' | Out-File -FilePath versions.txt
-        echo "$(Get-Content versions.txt)" >> $GITHUB_ENV
+        $versionsString = $versions -join ','
+        echo "VERSIONS=$versionsString" >> GITHUB_ENV
+
 
     - name: Setup .NET
-      run: |
-        $versions = $env:versions -split ','
-        foreach ($version in $versions) {
-            actions/setup-dotnet@v1 --dotnet-version $version
-        }
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.VERSION }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
