@@ -18,37 +18,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get Target Frameworks
+    - name: Get .NET versions
       run: |
-        Write-Host "Starting to extract target frameworks..."
         $csprojFiles = Get-ChildItem -Path './*.csproj', '**/*.csproj'
-        Write-Host "Found .csproj files: $($csprojFiles.Count)"
-        $frameworks = @()
+        $versions = @()
         foreach ($file in $csprojFiles) {
-            Write-Host "Processing file: $($file.FullName)"
             [xml]$csproj = Get-Content -Path $file.FullName
             $framework = $csproj.Project.PropertyGroup.TargetFramework
-            Write-Host "Extracted framework: $framework"
-            $frameworks += $framework
+            if ($framework -match 'net(\d+\.\d+)') {
+              $version = $matches[1]
+              Write-Host "$($file.FullName): $version"
+              $versions += $version
+            }
         }
-        $uniqueFrameworks = $frameworks | Sort-Object -Unique
-        Write-Host "Unique frameworks: $($uniqueFrameworks -join ',')"
-        $uniqueFrameworks -join ',' | Out-File -FilePath frameworks.txt
-        Write-Host "Content of frameworks.txt:"
-        Get-Content frameworks.txt
-        echo "frameworks=$(Get-Content frameworks.txt)" >> $GITHUB_ENV
+        $uniqueversions = $versions | Sort-Object -Unique
+        $uniqueversions -join ',' | Out-File -FilePath versions.txt
+        echo "$(Get-Content versions.txt)" >> $GITHUB_ENV
 
     - name: Setup .NET
       run: |
-        $frameworks = $env:frameworks -split ','
-        foreach ($framework in $frameworks) {
-          if ($framework -match 'net(\d+\.\d+)') {
-            $version = $matches[1]
-            echo "Installing .NET $version"
+        $versions = $env:versions -split ','
+        foreach ($version in $versions) {
             actions/setup-dotnet@v1 --dotnet-version $version
-          }
         }
-
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
