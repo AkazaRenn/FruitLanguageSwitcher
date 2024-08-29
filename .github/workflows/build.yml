@@ -27,8 +27,9 @@ jobs:
           $framework = $csproj.Project.PropertyGroup.TargetFramework
           Write-Host "$($file.FullName): $framework"
           $versions += $framework -replace '(^\D+)|(-.*)', ''
+          Write-Host $versions
         }
-        $versionsString = versions -join ','
+        $versionsString = $versions -join ','
         echo "VERSIONS=$versionsString" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Setup .NET
