@@ -45,7 +45,7 @@ jobs:
       run: msbuild -t:Restore -p:Configuration=${{ matrix.configuration }}
 
     - name: Build solution
-      run: msbuild -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }}
+      run: msbuild -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} FruitToolbox.sln
 
     - name: Create MSIX package
       run: msbuild -t:Pack -p:Configuration=${{ matrix.configuration }} -p:Platform=${{ matrix.platform }} -p:GenerateAppxPackageOnBuild=true
