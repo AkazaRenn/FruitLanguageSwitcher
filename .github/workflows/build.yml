@@ -35,7 +35,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.VERSION }}
+        dotnet-version: ${{ env.VERSIONS }}
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
