@@ -77,10 +77,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ManagedAssembly>true</ManagedAssembly>
     <LinkKeyFile>$(SolutionDir)\Key.snk</LinkKeyFile>
+    <IncludePath>$(SolutionDir)\Core</IncludePath>
+    <LibraryPath>$(OutDir);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ManagedAssembly>true</ManagedAssembly>
     <LinkKeyFile>$(SolutionDir)\Key.snk</LinkKeyFile>
+    <IncludePath>$(SolutionDir)\Core</IncludePath>
+    <LibraryPath>$(OutDir);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

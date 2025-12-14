@@ -1,3 +1,7 @@
+#pragma once
+
+#include "LanguageSwitcher.cpp"
+
 using namespace System;
 
 namespace Interop {
@@ -6,7 +10,7 @@ namespace Interop {
     public:
         static String^ GetMessage()
         {
-            return "Hello from Interop Core!";
+            return gcnew String(LanguageSwitcher::Core::Instance().GetMessage());
         }
     };
 }
