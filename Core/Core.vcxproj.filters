@@ -19,5 +19,8 @@
     <ClCompile Include="EventHookSystemForegound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Headers</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,9 +4,10 @@
 #include <unordered_set>
 
 #include "EventHookSystemForegound.cpp"
+#include "Singleton.cpp"
 
 namespace Core {
-    class Main {
+    class Main : public Singleton<Main> {
     public:
         static void Start() {
             Core::EventHookSystemForegound::Start();
@@ -18,18 +19,6 @@ namespace Core {
 
         static bool UnregisterReceiverThread(DWORD threadId) {
 			return Core::EventHookSystemForegound::UnregisterReceiverThread(threadId);
-        }
-
-    private:
-        Main() = default;
-        Main(const Main&) = delete;
-        Main& operator=(const Main&) = delete;
-
-        ~Main() = default;
-
-        static Main& Instance() {
-            static Main instance;
-            return instance;
         }
     };
 }
