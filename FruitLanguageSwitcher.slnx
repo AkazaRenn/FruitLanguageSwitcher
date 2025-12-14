@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="App/App.csproj">
+    <Platform Project="x64" />
+    <Build Solution="*|x64" Project="false" />
+  </Project>
+  <Project Path="Core/Core.vcxproj" Id="1264994a-c112-4a63-bcf5-548f6d1501af" />
+  <Project Path="Interop/Interop.vcxproj" Id="6af4c2fd-95ba-43d9-8646-017e11172867" />
+</Solution>
