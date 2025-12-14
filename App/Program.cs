@@ -7,8 +7,8 @@ namespace App
     {
         static void Main(string[] args)
         {
-            string message = Interop.Core.GetMessage();
-            Console.WriteLine(message);
+            Interop.Core core = Interop.Core.Instance;
+            Console.ReadLine();
         }
     }
 }
