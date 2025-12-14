@@ -1,10 +1,11 @@
 #pragma once
 
 #include <Windows.h>
-#include "LanguageSwitcher.cpp"
+#include "Main.cpp"
 
 using namespace System;
 using namespace System::Threading;
+using namespace Core;
 
 namespace Interop {
     public ref class Core sealed
@@ -27,7 +28,7 @@ namespace Interop {
         }
 
         ~Core() {
-            LanguageSwitcher::Core::UnregisterReceiverThread(threadId);
+            Main::UnregisterReceiverThread(threadId);
             ::PostThreadMessage(threadId, WM_QUIT, 0, 0);
             loopThread->Join();
         }
@@ -35,8 +36,8 @@ namespace Interop {
         void RunLoop()
         {
             threadId = ::GetCurrentThreadId();
-			LanguageSwitcher::Core::RegisterReceiverThread(threadId);
-            LanguageSwitcher::Core::Start();
+			Main::RegisterReceiverThread(threadId);
+            Main::Start();
 
             MSG msg;
             while (::GetMessage(&msg, nullptr, 0, 0))

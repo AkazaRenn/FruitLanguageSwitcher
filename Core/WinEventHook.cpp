@@ -1,0 +1,51 @@
+#pragma once
+
+#include <Windows.h>
+#include <unordered_set>
+
+namespace Core {
+	template<typename T>
+    class WinEventHook {
+    public:
+        static void Start() {
+            if (T::Instance().started) {
+                return;
+            }
+            T::Instance().started = true;
+            T::Instance().hook = SetWinEventHook(T::Event, T::Event, T::hModWinEventProc, T::OnWinEvent, T::idProcess, T::idThread, T::flags);
+        }
+
+        static void RegisterReceiverThread(DWORD threadId) {
+            T::Instance().receiverThreadIds.insert(threadId);
+        }
+
+        static bool UnregisterReceiverThread(DWORD threadId) {
+            return T::Instance().receiverThreadIds.erase(threadId) > 0;
+        }
+
+    private:
+        bool started = false;
+        HWINEVENTHOOK hook = nullptr;
+
+    protected:
+        inline const static HMODULE hModWinEventProc = NULL;
+        const static DWORD idProcess = 0;
+		const static DWORD idThread = 0;
+		const static DWORD flags = WINEVENT_OUTOFCONTEXT;
+
+        std::unordered_set<DWORD> receiverThreadIds = {};
+
+        WinEventHook() = default;
+        WinEventHook(const WinEventHook&) = delete;
+        WinEventHook& operator=(const WinEventHook&) = delete;
+
+        ~WinEventHook() {
+            UnhookWinEvent(hook);
+        }
+
+        static T& Instance() {
+            static T instance;
+            return instance;
+        }
+    };
+}
