@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <unordered_set>
+#include <mutex>
 
 #include "Singleton.cpp"
 
@@ -17,10 +18,12 @@ public:
     }
 
     static void RegisterReceiverThread(DWORD threadId) {
+		std::lock_guard<std::mutex> lock(T::Instance().receiverThreadIdsMutex);
         T::Instance().receiverThreadIds.insert(threadId);
     }
 
     static bool UnregisterReceiverThread(DWORD threadId) {
+        std::lock_guard<std::mutex> lock(T::Instance().receiverThreadIdsMutex);
         return T::Instance().receiverThreadIds.erase(threadId) > 0;
     }
 
@@ -34,5 +37,6 @@ protected:
 	const static DWORD idThread = 0;
 	const static DWORD flags = WINEVENT_OUTOFCONTEXT;
 
-    std::unordered_set<DWORD> receiverThreadIds = {};
+    std::unordered_set<DWORD> receiverThreadIds;
+    std::mutex receiverThreadIdsMutex;
 };

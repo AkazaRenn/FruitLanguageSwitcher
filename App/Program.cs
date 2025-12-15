@@ -7,8 +7,13 @@ namespace App
     {
         static void Main(string[] args)
         {
-            Interop.Core core = Interop.Core.Instance;
+            Interop.Core.Instance.OnEvent += Obj_OnSomethingHappened;
             Console.ReadLine();
         }
+        private static void Obj_OnSomethingHappened()
+        {
+            Console.WriteLine("Event received");
+        }
+
     }
 }
