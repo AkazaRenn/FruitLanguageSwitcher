@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GetMessageThreadManager.cpp"
 #include "WinEventHook.cpp"
 
 namespace Core {
@@ -9,10 +10,7 @@ public:
 
 	static void CALLBACK OnWinEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
 		if (hwnd == GetForegroundWindow()) {
-			std::lock_guard<std::mutex> lock(Instance().receiverThreadIdsMutex);
-			for (auto threadId : Instance().receiverThreadIds) {
-				PostThreadMessage(threadId, WM_USER + 1, 0, 0);
-			}
+			GetMessageThreadManager::Instance().PostMessage(WM_USER + 1);
 		}
 	}
 };

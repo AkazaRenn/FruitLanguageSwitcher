@@ -8,7 +8,7 @@ namespace App {
             Console.ReadLine();
         }
         private static void Obj_OnSomethingHappened() {
-            Console.WriteLine("Event received");
+            Console.WriteLine("App: Event received");
         }
 
     }

@@ -22,5 +22,11 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Headers</Filter>
     </ClCompile>
+    <ClCompile Include="GetMessageThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMessageThreadManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,24 +1,28 @@
 #pragma once
 
 #include <Windows.h>
-#include <unordered_set>
 
 #include "EventHookSystemForegound.cpp"
+#include "GetMessageThread.cpp"
 #include "Singleton.cpp"
 
 namespace Core {
 class Main: public Singleton<Main> {
+private:
+    GetMessageThread thread;
+
 public:
     static void Start() {
-        Core::EventHookSystemForegound::Start();
+        Instance();
+        Core::EventHookSystemForegound::Instance().Start();
     }
 
-    static void RegisterReceiverThread(DWORD threadId) {
-        Core::EventHookSystemForegound::RegisterReceiverThread(threadId);
+    static void RegisterReceiverThread(DWORD message, DWORD threadId) {
+        Core::GetMessageThreadManager::Instance().RegisterReceiverThread(message, threadId);
     }
 
-    static bool UnregisterReceiverThread(DWORD threadId) {
-        return Core::EventHookSystemForegound::UnregisterReceiverThread(threadId);
+    static void UnregisterReceiverThread(DWORD threadId) {
+        Core::GetMessageThreadManager::Instance().UnregisterReceiverThread(threadId);
     }
 };
 }

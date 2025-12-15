@@ -19,6 +19,7 @@ public:
 
 private:
     static initonly Core^ instance = gcnew Core();
+
     Thread^ loopThread = gcnew Thread(gcnew ThreadStart(this, &Core::RunLoop));
     DWORD threadId;
 
@@ -29,13 +30,12 @@ private:
 
     ~Core() {
         ::Core::Main::UnregisterReceiverThread(threadId);
-        ::PostThreadMessage(threadId, WM_QUIT, 0, 0);
         loopThread->Join();
     }
 
     void RunLoop() {
         threadId = ::GetCurrentThreadId();
-        ::Core::Main::RegisterReceiverThread(threadId);
+        ::Core::Main::RegisterReceiverThread(WM_USER + 1, threadId);
         ::Core::Main::Start();
 
         MSG msg;
