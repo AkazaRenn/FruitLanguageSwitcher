@@ -18,7 +18,7 @@ public:
     }
 
     static void RegisterReceiverThread(DWORD threadId) {
-		std::lock_guard<std::mutex> lock(T::Instance().receiverThreadIdsMutex);
+        std::lock_guard<std::mutex> lock(T::Instance().receiverThreadIdsMutex);
         T::Instance().receiverThreadIds.insert(threadId);
     }
 
@@ -34,8 +34,8 @@ private:
 protected:
     inline const static HMODULE hModWinEventProc = NULL;
     const static DWORD idProcess = 0;
-	const static DWORD idThread = 0;
-	const static DWORD flags = WINEVENT_OUTOFCONTEXT;
+    const static DWORD idThread = 0;
+    const static DWORD flags = WINEVENT_OUTOFCONTEXT;
 
     std::unordered_set<DWORD> receiverThreadIds;
     std::mutex receiverThreadIdsMutex;
