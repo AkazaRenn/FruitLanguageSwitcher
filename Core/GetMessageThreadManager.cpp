@@ -11,27 +11,26 @@
 namespace Core {
 class GetMessageThreadManager: public Singleton<GetMessageThreadManager> {
 private:
-    std::unordered_map<Message, std::unordered_set<DWORD>> messageToReceiverThreadIdsMap;
-    std::mutex messageToReceiverThreadIdsMapMutex;
+    std::unordered_map<Message, std::unordered_set<DWORD>> messageToThreadIdsMap;
+    std::mutex messageToThreadIdsMapMutex;
 
 public:
-    void RegisterReceiverThread(Message message, DWORD threadId) {
-        std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
-        messageToReceiverThreadIdsMap[message].insert(threadId);
+    void RegisterThread(Message message, DWORD threadId) {
+        std::lock_guard<std::mutex> lock(messageToThreadIdsMapMutex);
+        messageToThreadIdsMap[message].insert(threadId);
     }
 
-    void UnregisterReceiverThread(DWORD threadId) {
-        std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
-        for (auto& [_, threadIds] : messageToReceiverThreadIdsMap) {
+    void UnregisterThread(DWORD threadId) {
+        std::lock_guard<std::mutex> lock(messageToThreadIdsMapMutex);
+        for (auto& [_, threadIds] : messageToThreadIdsMap) {
             threadIds.erase(threadId);
         }
-        PostThreadMessage(threadId, WM_QUIT, 0, 0);
     }
 
     void PostMessage(Message message) {
-        std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
-        const auto it = messageToReceiverThreadIdsMap.find(message);
-        if (it != messageToReceiverThreadIdsMap.end()) {
+        std::lock_guard<std::mutex> lock(messageToThreadIdsMapMutex);
+        const auto it = messageToThreadIdsMap.find(message);
+        if (it != messageToThreadIdsMap.end()) {
             for (auto threadId : it->second) {
                 PostThreadMessage(threadId, VAL(message), 0, 0);
             }

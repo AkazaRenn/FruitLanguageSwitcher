@@ -11,16 +11,16 @@ public ref class Core sealed {
 private:
     delegate void ProcessMessageDelegate(const MSG& msg);
     ProcessMessageDelegate^ processMessageDelegate = gcnew ProcessMessageDelegate(this, &Core::ProcessMessage);
-    System::IntPtr pProcessMessageDelegate = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(processMessageDelegate);
 
     System::Collections::Generic::List<System::IntPtr>^ allocatedPointers = gcnew System::Collections::Generic::List<System::IntPtr>();
 
-    void ProcessMessage(const MSG& msg) {
-        OnEvent();
+    ::Core::GetMessageThread::ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(System::Delegate^ del) {
+        return static_cast<::Core::GetMessageThread::ProcessMessageFunctionPtr>(
+            System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(del).ToPointer());
     }
 
-    ::Core::GetMessageThread::ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(System::IntPtr ptr) {
-        return static_cast<::Core::GetMessageThread::ProcessMessageFunctionPtr>(ptr.ToPointer());
+    void ProcessMessage(const MSG& msg) {
+        OnEvent();
     }
 
 public:
@@ -29,7 +29,7 @@ public:
 
     Core() {
         allocatedPointers->Add(System::IntPtr(new ::Core::GetMessageThread({
-            {::Core::Message::ForegroundChanged, ToProcessMessageFunctionPtr(pProcessMessageDelegate)},
+            {::Core::Message::ForegroundChanged, ToProcessMessageFunctionPtr(processMessageDelegate)},
         })));
         allocatedPointers->Add(System::IntPtr(new ::Core::Main())); // to be removed
     }
