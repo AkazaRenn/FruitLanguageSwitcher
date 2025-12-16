@@ -30,7 +30,7 @@ public:
 
     void PostMessage(Message message) {
         std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
-        auto it = messageToReceiverThreadIdsMap.find(message);
+        const auto it = messageToReceiverThreadIdsMap.find(message);
         if (it != messageToReceiverThreadIdsMap.end()) {
             for (auto threadId : it->second) {
                 PostThreadMessage(threadId, VAL(message), 0, 0);

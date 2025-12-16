@@ -10,16 +10,10 @@
 namespace Core {
 class Main {
 private:
-    GetMessageThread thread = GetMessageThread(a, {Message::ForegroundChanged});
+    GetMessageThread thread = GetMessageThread({{Message::ForegroundChanged, a}});
 
-    static bool a(const MSG& msg) {
-        switch (msg.message) {
-        case VAL(Message::ForegroundChanged):
-            printf("Main: received message\n");
-            return true;
-        default:
-            return false;
-        }
+    static void a(const MSG& msg) {
+        printf("Main: received message\n");
     }
 
 public:

@@ -9,15 +9,19 @@
 namespace Core {
 class GetMessageThread {
 public:
-    using ProcessMessageFunction = std::function<bool(const MSG&)>;
-    using ProcessMessageFunctionPtr = bool (__stdcall *)(const MSG&);
+    using ProcessMessageFunction = std::function<void(const MSG&)>;
+    using ProcessMessageFunctionPtr = void(__stdcall*)(const MSG&);
+    using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
 
 private:
     static DWORD WINAPI ThreadProc(LPVOID lpParameter) {
         GetMessageThread* pThis = static_cast<GetMessageThread*>(lpParameter);
 
         pThis->threadId = GetCurrentThreadId();
-        for (Message message : pThis->processedMessages) {
+        for (const auto [message, processMessageFunction] : pThis->messageToProcessFunctionMap) {
+            if (!processMessageFunction) {
+                continue;
+            }
             GetMessageThreadManager::Instance().RegisterReceiverThread(message, pThis->threadId);
         }
 
@@ -25,24 +29,30 @@ private:
         while (GetMessage(&msg, nullptr, 0, 0)) {
             if (msg.message == WM_QUIT) {
                 return 0;
-            } else if (!pThis->processMessage(msg)) {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
             }
+
+            const auto it = pThis->messageToProcessFunctionMap.find(static_cast<Message>(msg.message));
+            if (it != pThis->messageToProcessFunctionMap.end()) {
+                const auto& processMessageFunction = it->second;
+                if (processMessageFunction) {
+                    processMessageFunction(msg);
+                    continue;
+                }
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
         return 0;
     }
 
-    // Return true if the message is processed, false otherwise.
-    ProcessMessageFunction processMessage;
-    const std::unordered_set<Message> processedMessages;
-    DWORD threadId = 0;
+    const MessageToProcessFunctionMap messageToProcessFunctionMap;
     HANDLE hThread;
+    DWORD threadId = 0;
 
 public:
-    GetMessageThread(ProcessMessageFunctionPtr _processMessage, const std::unordered_set<Message>& _processedMessages):
-        processMessage(_processMessage),
-        processedMessages(_processedMessages),
+    GetMessageThread(const MessageToProcessFunctionMap _messageToProcessFunctionMap):
+        messageToProcessFunctionMap(_messageToProcessFunctionMap),
         hThread(CreateThread(nullptr, 0, ThreadProc, this, 0, &threadId)) {}
 
     ~GetMessageThread() {
