@@ -5,16 +5,17 @@
 #include <unordered_set>
 #include <Windows.h>
 
+#include "Common.cpp"
 #include "Singleton.cpp"
 
 namespace Core {
 class GetMessageThreadManager: public Singleton<GetMessageThreadManager> {
 private:
-    std::unordered_map<DWORD, std::unordered_set<DWORD>> messageToReceiverThreadIdsMap;
+    std::unordered_map<Message, std::unordered_set<DWORD>> messageToReceiverThreadIdsMap;
     std::mutex messageToReceiverThreadIdsMapMutex;
 
 public:
-    void RegisterReceiverThread(DWORD message, DWORD threadId) {
+    void RegisterReceiverThread(Message message, DWORD threadId) {
         std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
         messageToReceiverThreadIdsMap[message].insert(threadId);
     }
@@ -27,12 +28,12 @@ public:
         PostThreadMessage(threadId, WM_QUIT, 0, 0);
     }
 
-    void PostMessage(DWORD message) {
+    void PostMessage(Message message) {
         std::lock_guard<std::mutex> lock(messageToReceiverThreadIdsMapMutex);
         auto it = messageToReceiverThreadIdsMap.find(message);
         if (it != messageToReceiverThreadIdsMap.end()) {
             for (auto threadId : it->second) {
-                PostThreadMessage(threadId, message, 0, 0);
+                PostThreadMessage(threadId, VAL(message), 0, 0);
             }
         }
     }

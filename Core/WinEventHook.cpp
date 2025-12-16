@@ -18,7 +18,7 @@ protected:
     const static DWORD flags = WINEVENT_OUTOFCONTEXT;
 
     ~WinEventHook() {
-        UnhookWinEvent(hook);
+        Stop();
     }
 
 public:
@@ -27,5 +27,13 @@ public:
             return;
         }
         hook = SetWinEventHook(T::Event, T::Event, T::hModWinEventProc, T::OnWinEvent, T::idProcess, T::idThread, T::flags);
+    }
+
+    void Stop() {
+        if (!hook) {
+            return;
+        }
+        UnhookWinEvent(hook);
+        hook = nullptr;
     }
 };

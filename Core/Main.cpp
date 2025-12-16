@@ -2,27 +2,29 @@
 
 #include <Windows.h>
 
+#include "Common.cpp"
 #include "EventHookSystemForegound.cpp"
 #include "GetMessageThread.cpp"
 #include "Singleton.cpp"
 
 namespace Core {
-class Main: public Singleton<Main> {
+class Main {
 private:
-    GetMessageThread thread;
+    GetMessageThread thread = GetMessageThread(a, {Message::ForegroundChanged});
+
+    static bool a(const MSG& msg) {
+        switch (msg.message) {
+        case VAL(Message::ForegroundChanged):
+            printf("Main: received message\n");
+            return true;
+        default:
+            return false;
+        }
+    }
 
 public:
-    static void Start() {
-        Instance();
+    Main() {
         Core::EventHookSystemForegound::Instance().Start();
-    }
-
-    static void RegisterReceiverThread(DWORD message, DWORD threadId) {
-        Core::GetMessageThreadManager::Instance().RegisterReceiverThread(message, threadId);
-    }
-
-    static void UnregisterReceiverThread(DWORD threadId) {
-        Core::GetMessageThreadManager::Instance().UnregisterReceiverThread(threadId);
     }
 };
 }

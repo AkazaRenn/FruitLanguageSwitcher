@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Common.cpp" />
     <ClCompile Include="EventHookSystemForegound.cpp" />
     <ClCompile Include="GetMessageThread.cpp" />
     <ClCompile Include="GetMessageThreadManager.cpp" />

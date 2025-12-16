@@ -1,58 +1,47 @@
 #pragma once
 
 #include <Windows.h>
-#include "Main.cpp"
 
-using namespace System;
-using namespace System::Threading;
+#include "Common.cpp"
+#include "GetMessageThread.cpp"
+#include "Main.cpp"
 
 namespace Interop {
 public ref class Core sealed {
-public:
-    static property Core^ Instance
-    {
-        Core^ get() { return instance; }
-    }
-
-    delegate void EventHandler();
-    event EventHandler^ OnEvent;
-
 private:
-    static initonly Core^ instance = gcnew Core();
+    delegate bool ProcessMessageDelegate(const MSG& msg);
+    ProcessMessageDelegate^ processMessageDelegate = gcnew ProcessMessageDelegate(this, &Core::processMessage);
+    System::IntPtr pProcessMessageDelegate = System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(processMessageDelegate);
 
-    Thread^ loopThread = gcnew Thread(gcnew ThreadStart(this, &Core::RunLoop));
-    DWORD threadId;
+    System::Collections::Generic::List<System::IntPtr>^ allocatedPointers = gcnew System::Collections::Generic::List<System::IntPtr>();
 
-    Core() {
-        loopThread->IsBackground = true;
-        loopThread->Start();
-    }
-
-    ~Core() {
-        ::Core::Main::UnregisterReceiverThread(threadId);
-        loopThread->Join();
-    }
-
-    void RunLoop() {
-        threadId = ::GetCurrentThreadId();
-        ::Core::Main::RegisterReceiverThread(WM_USER + 1, threadId);
-        ::Core::Main::Start();
-
-        MSG msg;
-        while (::GetMessage(&msg, nullptr, 0, 0)) {
-            switch (msg.message) {
-            case WM_USER + 1:
-                OnEvent();
-                break;
-            case WM_QUIT:
-                return;
-            default:
-                ::TranslateMessage(&msg);
-                ::DispatchMessage(&msg);
-                break;
-            }
+    bool processMessage(const MSG& msg) {
+        switch (msg.message) {
+        case ::Core::VAL(::Core::Message::ForegroundChanged):
+            OnEvent();
+            return true;
+        default:
+            return false;
         }
     }
 
+public:
+    delegate void EventHandler();
+    event EventHandler^ OnEvent;
+
+    Core() {
+        allocatedPointers->Add(System::IntPtr(
+            new ::Core::GetMessageThread(
+                static_cast<::Core::GetMessageThread::ProcessMessageFunctionPtr>(pProcessMessageDelegate.ToPointer()),
+                {::Core::Message::ForegroundChanged})));
+        allocatedPointers->Add(System::IntPtr(new ::Core::Main())); // to be removed
+    }
+
+    ~Core() {
+        for each(System::IntPtr ptr in allocatedPointers) {
+            free(ptr.ToPointer());
+        }
+        allocatedPointers->Clear();
+    }
 };
 }

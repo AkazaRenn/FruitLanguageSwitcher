@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.cpp"
 #include "GetMessageThreadManager.cpp"
 #include "WinEventHook.cpp"
 
@@ -10,7 +11,7 @@ public:
 
 	static void CALLBACK OnWinEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
 		if (hwnd == GetForegroundWindow()) {
-			GetMessageThreadManager::Instance().PostMessage(WM_USER + 1);
+			GetMessageThreadManager::Instance().PostMessage(Message::ForegroundChanged);
 		}
 	}
 };
