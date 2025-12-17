@@ -10,6 +10,7 @@ private:
     GetMessageThread thread = GetMessageThread({
         {Message::ForegroundChanged, a},
         {Message::CapitalkeyDown, b},
+        {Message::WinKeyUp, c},
     });
 
     static void a(const MSG& msg) {
@@ -17,6 +18,9 @@ private:
     }
     static void b(const MSG& msg) {
         printf("Main: received message: CapitalkeyDown\n");
+    }
+    static void c(const MSG& msg) {
+        printf("Main: received message: WinKeyUp\n");
     }
 
 public:

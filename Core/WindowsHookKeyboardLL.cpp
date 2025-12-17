@@ -9,7 +9,7 @@ namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {
 private:
     KeyRemapLWin keyRemapLWin;
-    KeyRemapCapital& keyRemapCapital = KeyRemapCapital::Instance();
+    KeyRemapCapital keyRemapCapital;
 
 public:
     const static int IdHook = WH_KEYBOARD_LL;

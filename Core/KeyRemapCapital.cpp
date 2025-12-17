@@ -7,7 +7,7 @@
 #include "GetMessageThreadManager.cpp"
 
 namespace Core {
-class KeyRemapCapital: public Singleton<KeyRemapCapital> {
+class KeyRemapCapital {
 private:
     static bool GetCapslockState() {
         return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
@@ -19,8 +19,9 @@ private:
         }
     }
 
-    static void CALLBACK OnTimerExpiry(PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) {
-        if (Instance().handled.exchange(true)) {
+    static void CALLBACK OnTimerExpiry(PTP_CALLBACK_INSTANCE instance, PVOID context, PTP_TIMER timer) {
+        auto* pThis = static_cast<KeyRemapCapital*>(context);
+        if ((!pThis) || (pThis->handled.exchange(true))) {
             return;
         }
         SetCapslockState(true);
@@ -30,7 +31,7 @@ private:
 
     bool capitalKeyDown = false;
     std::atomic<bool> handled = false;
-    PTP_TIMER timer = CreateThreadpoolTimer(OnTimerExpiry, nullptr, nullptr);
+    PTP_TIMER timer = CreateThreadpoolTimer(OnTimerExpiry, this, nullptr);
 
     void ResetTimer() {
         handled = false;
