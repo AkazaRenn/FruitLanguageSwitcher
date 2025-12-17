@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GetMessageThreadManager.cpp"
-#include "WinEventHook.cpp"
+import "GetMessageThreadManager.cpp";
+import "WinEventHook.cpp";
 
 namespace Core {
 class EventHookSystemForegound: public WinEventHook<EventHookSystemForegound> {

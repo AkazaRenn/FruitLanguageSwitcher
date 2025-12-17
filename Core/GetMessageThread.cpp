@@ -1,16 +1,13 @@
 #pragma once
 
-#include <functional>
-#include <thread>
-#include <Windows.h>
-
-#include "GetMessageThreadManager.cpp"
+import <functional>;
+import <thread>;
+import "GetMessageThreadManager.cpp";
 
 namespace Core {
 class GetMessageThread {
 public:
     using ProcessMessageFunction = std::function<void(const MSG&)>;
-    using ProcessMessageFunctionPtr = void(__stdcall*)(const MSG&);
     using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
 
 private:

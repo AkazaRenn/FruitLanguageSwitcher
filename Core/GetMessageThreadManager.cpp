@@ -1,12 +1,11 @@
 #pragma once
 
-#include <mutex>
-#include <unordered_map>
-#include <unordered_set>
-#include <Windows.h>
-
-#include "Common.cpp"
-#include "Singleton.cpp"
+import <mutex>;
+import <unordered_map>;
+import <unordered_set>;
+import "Common.cpp";
+import "Message.cpp";
+import "Singleton.cpp";
 
 namespace Core {
 class GetMessageThreadManager: public Singleton<GetMessageThreadManager> {

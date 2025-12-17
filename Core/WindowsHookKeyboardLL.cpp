@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GetMessageThreadManager.cpp"
-#include "WindowsHook.cpp"
-#include "KeyRemapCapital.cpp"
-#include "KeyRemapLWin.cpp"
+import "GetMessageThreadManager.cpp";
+import "WindowsHook.cpp";
+import "KeyRemapCapital.cpp";
+import "KeyRemapLWin.cpp";
 
 namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {

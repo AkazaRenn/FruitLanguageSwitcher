@@ -1,23 +1,11 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
-#include <Windows.h>
+import <memory>;
+import <vector>;
+import <Windows.h>;
 
 namespace Core {
-enum class Message: DWORD {
-    Unused = WM_APP,
-    ForegroundChanged,
-    WinKeyUp,
-    CapitalkeyDown,
-};
-
-static constexpr DWORD VAL(Message msg) {
-    return static_cast<DWORD>(msg);
-}
-
-static UINT SendKeySequence(std::vector<WORD> keys) {
+inline UINT SendKeySequence(std::vector<WORD> keys) {
     size_t numInputs = keys.size() * 2;
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 
@@ -32,7 +20,7 @@ static UINT SendKeySequence(std::vector<WORD> keys) {
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
 }
 
-static UINT SendKeyCombination(std::vector<WORD> keys) {
+inline UINT SendKeyCombination(std::vector<WORD> keys) {
     size_t numInputs = keys.size() * 2;
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 

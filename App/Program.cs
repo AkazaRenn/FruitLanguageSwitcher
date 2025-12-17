@@ -36,6 +36,7 @@ namespace App {
         }
         private static void Obj_OnSomethingHappened() {
             Console.WriteLine("App: Event received");
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
     }

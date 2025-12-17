@@ -1,15 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Base Classes">
-      <UniqueIdentifier>{b283f720-42fa-4336-9e3b-66a33a7356a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Hooks">
       <UniqueIdentifier>{a0377f29-5c26-4c7b-aab8-c8bcb6fcd08a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Others">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Language Switcher">
       <UniqueIdentifier>{fe89bf99-24fb-4345-bfd6-8d0c5e6b745e}</UniqueIdentifier>
@@ -17,16 +13,16 @@
     <Filter Include="Key Remapping">
       <UniqueIdentifier>{6703b06d-31ee-438a-b4a7-7f90921945e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Abstract">
+      <UniqueIdentifier>{b283f720-42fa-4336-9e3b-66a33a7356a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Others</Filter>
-    </ClCompile>
     <ClCompile Include="WinEventHook.cpp">
-      <Filter>Base Classes</Filter>
+      <Filter>Abstract</Filter>
     </ClCompile>
     <ClCompile Include="Singleton.cpp">
-      <Filter>Base Classes</Filter>
+      <Filter>Abstract</Filter>
     </ClCompile>
     <ClCompile Include="GetMessageThread.cpp">
       <Filter>Others</Filter>
@@ -38,7 +34,7 @@
       <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="WindowsHook.cpp">
-      <Filter>Base Classes</Filter>
+      <Filter>Abstract</Filter>
     </ClCompile>
     <ClCompile Include="EventHookSystemForegound.cpp">
       <Filter>Hooks</Filter>
@@ -52,5 +48,12 @@
     <ClCompile Include="KeyRemapCapital.cpp">
       <Filter>Key Remapping</Filter>
     </ClCompile>
+    <ClCompile Include="Message.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Interop.hpp" />
   </ItemGroup>
 </Project>

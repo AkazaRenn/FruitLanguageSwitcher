@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Windows.h>
-
-#include "Singleton.cpp"
+import <Windows.h>;
+import "Singleton.cpp";
 
 template<typename T>
 class WinEventHook: public Singleton<T> {

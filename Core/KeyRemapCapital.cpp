@@ -1,10 +1,7 @@
 #pragma once
 
-#include <atomic>
-
-#include <Windows.h>
-
-#include "GetMessageThreadManager.cpp"
+import <atomic>;
+import "GetMessageThreadManager.cpp";
 
 namespace Core {
 class KeyRemapCapital {

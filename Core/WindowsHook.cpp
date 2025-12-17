@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Windows.h>
-
-#include "Singleton.cpp"
+import <Windows.h>;
+import "Singleton.cpp";
 
 template<typename T>
 class WindowsHook: public Singleton<T> {
@@ -20,7 +19,7 @@ private:
 protected:
     inline const static HINSTANCE hmod = GetModuleHandle(nullptr);
     const static DWORD dwThreadId = 0;
-    
+
     virtual bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) = 0;
 
     ~WindowsHook() {
