@@ -19,7 +19,7 @@ protected:
     const static DWORD idThread = 0;
     const static DWORD flags = WINEVENT_OUTOFCONTEXT;
 
-    virtual void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) = 0;
+    virtual void OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) = 0;
 
     ~WinEventHook() {
         Stop();

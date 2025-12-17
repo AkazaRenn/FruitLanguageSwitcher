@@ -32,7 +32,7 @@ public:
         if (hook) {
             return;
         }
-        hook = SetWindowsHookEx(T::IdHook, HookProc, T::hmod, T::dwThreadId);
+        hook = SetWindowsHookEx(T::IdHook, T::HookProc, T::hmod, T::dwThreadId);
     }
 
     void Stop() {

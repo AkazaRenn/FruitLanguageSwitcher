@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="KeyRemapCapital.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="EventHookSystemForegound.cpp" />
     <ClCompile Include="GetMessageThread.cpp" />
@@ -20,6 +21,7 @@
     <ClCompile Include="WindowsHook.cpp" />
     <ClCompile Include="WindowsHookKeyboardLL.cpp" />
     <ClCompile Include="WinEventHook.cpp" />
+    <ClCompile Include="KeyRemapLWin.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

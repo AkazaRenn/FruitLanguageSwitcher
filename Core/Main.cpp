@@ -7,10 +7,16 @@
 namespace Core {
 class Main {
 private:
-    GetMessageThread thread = GetMessageThread({{Message::ForegroundChanged, a}});
+    GetMessageThread thread = GetMessageThread({
+        {Message::ForegroundChanged, a},
+        {Message::CapitalkeyDown, b},
+    });
 
     static void a(const MSG& msg) {
-        printf("Main: received message\n");
+        printf("Main: received message: ForegroundChanged\n");
+    }
+    static void b(const MSG& msg) {
+        printf("Main: received message: CapitalkeyDown\n");
     }
 
 public:
