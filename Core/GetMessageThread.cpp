@@ -4,7 +4,6 @@
 #include <thread>
 #include <Windows.h>
 
-#include "Common.cpp"
 #include "GetMessageThreadManager.cpp"
 
 namespace Core {

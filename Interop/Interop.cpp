@@ -2,8 +2,6 @@
 
 #include <Windows.h>
 
-#include "Common.cpp"
-#include "GetMessageThread.cpp"
 #include "Main.cpp"
 
 namespace Interop {

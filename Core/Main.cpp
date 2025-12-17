@@ -1,11 +1,8 @@
 #pragma once
 
-#include <Windows.h>
-
-#include "Common.cpp"
 #include "EventHookSystemForegound.cpp"
 #include "GetMessageThread.cpp"
-#include "Singleton.cpp"
+#include "WindowsHookKeyboardLL.cpp"
 
 namespace Core {
 class Main {
@@ -19,6 +16,7 @@ private:
 public:
     Main() {
         Core::EventHookSystemForegound::Instance().Start();
+        Core::WindowsHookKeyboardLL::Instance().Start();
     }
 };
 }

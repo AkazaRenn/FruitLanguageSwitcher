@@ -31,5 +31,11 @@
     <ClCompile Include="Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsHook.cpp">
+      <Filter>Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsHookKeyboardLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

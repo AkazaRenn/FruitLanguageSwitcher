@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.cpp"
 #include "GetMessageThreadManager.cpp"
 #include "WinEventHook.cpp"
 
@@ -9,7 +8,7 @@ class EventHookSystemForegound: public WinEventHook<EventHookSystemForegound> {
 public:
 	const static DWORD Event = EVENT_SYSTEM_FOREGROUND;
 
-	static void CALLBACK OnWinEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
+	void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
 		if (hwnd == GetForegroundWindow()) {
 			GetMessageThreadManager::Instance().PostMessage(Message::ForegroundChanged);
 		}
