@@ -24,6 +24,7 @@
     <ClCompile Include="EventHookSystemForegound.cpp" />
     <ClCompile Include="GetMessageThread.cpp" />
     <ClCompile Include="GetMessageThreadManager.cpp" />
+    <ClCompile Include="KeyRemapRMenu.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />

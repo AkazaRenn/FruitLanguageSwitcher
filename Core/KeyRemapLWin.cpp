@@ -19,6 +19,7 @@ public:
         if (lWinKeyDown) {
             return;
         }
+
         otherKeyDown = false;
         lWinKeyDown = true;
     }
@@ -26,18 +27,19 @@ public:
     bool OnLWinUp() {
         lWinKeyDown = false;
 
-        if (!otherKeyDown) {
-            SendCommandPaletteShortcut();
-            return true;
+        if (otherKeyDown) {
+            return false;
         }
 
-        return false;
+        SendCommandPaletteShortcut();
+        return true;
     }
 
     void OnOtherKeyDown() {
         if (otherKeyDown) {
             return;
         }
+
         otherKeyDown = true;
     }
 };

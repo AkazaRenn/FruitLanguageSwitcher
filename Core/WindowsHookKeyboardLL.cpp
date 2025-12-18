@@ -4,6 +4,7 @@ import "GetMessageThreadManager.cpp";
 import "WindowsHook.cpp";
 import "KeyRemapCapital.cpp";
 import "KeyRemapLWin.cpp";
+import "KeyRemapRMenu.cpp";
 
 namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {
@@ -28,10 +29,15 @@ public:
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    return false;
+                    blockEvent = false;
+                    break;
+                case VK_RMENU:
+                    blockEvent = KeyRemapRMenu::Instance().OnRMenuDown();
+                    break;
                 case VK_CAPITAL:
                     KeyRemapCapital::Instance().OnCapitalKeyDown();
-                    return true;
+                    blockEvent = true;
+                    break;
                 default:
                     KeyRemapLWin::Instance().OnOtherKeyDown();
                     break;
@@ -39,10 +45,15 @@ public:
             } else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    return KeyRemapLWin::Instance().OnLWinUp();
+                    blockEvent = KeyRemapLWin::Instance().OnLWinUp();
+                    break;
+                case VK_RMENU:
+                    blockEvent = KeyRemapRMenu::Instance().OnRMenuUp();
+                    break;
                 case VK_CAPITAL:
                     KeyRemapCapital::Instance().OnCapitalKeyUp();
-                    return true;
+                    blockEvent =  true;
+                    break;
                 default:
                     break;
                 }

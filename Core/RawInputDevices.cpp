@@ -4,6 +4,7 @@ import <memory>;
 import <Windows.h>;
 import "GetMessageThreadManager.cpp";
 import "KeyRemapLWin.cpp";
+import "KeyRemapRMenu.cpp";
 
 namespace Core {
 class RawInputDevices: public Singleton<RawInputDevices> {
@@ -37,19 +38,20 @@ private:
                     //       kb.ExtraInformation,
                     //       raw->header.hDevice);
 
-                    if (kb.Flags & RI_KEY_BREAK) {
+                    if (!(kb.Flags & RI_KEY_BREAK)) {
                         switch (kb.VKey) {
                         case VK_LWIN:
-                        case VK_RWIN:
-                            GetMessageThreadManager::Instance().PostMessage(Message::WinKeyUp);
+                            KeyRemapLWin::Instance().OnLWinDown();
                             break;
                         default:
+                            KeyRemapRMenu::Instance().OnOtherKeyDown();
                             break;
                         }
                     } else {
                         switch (kb.VKey) {
                         case VK_LWIN:
-                            KeyRemapLWin::Instance().OnLWinDown();
+                        case VK_RWIN:
+                            GetMessageThreadManager::Instance().PostMessage(Message::WinKeyUp);
                             break;
                         default:
                             break;

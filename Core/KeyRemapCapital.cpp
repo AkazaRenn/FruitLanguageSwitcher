@@ -34,11 +34,12 @@ private:
     void ResetTimer() {
         handled = false;
 
-        FILETIME ft;
         // Negative value = relative time, in 100ns units
         LONGLONG dueTime = -static_cast<LONGLONG>(timerExpiryMs) * 10000;
-        ft.dwLowDateTime = static_cast<DWORD>(dueTime & 0xFFFFFFFF);
-        ft.dwHighDateTime = static_cast<DWORD>(dueTime >> 32);
+        FILETIME ft = {
+            .dwLowDateTime = static_cast<DWORD>(dueTime & 0xFFFFFFFF),
+            .dwHighDateTime = static_cast<DWORD>(dueTime >> 32),
+        };
 
         // Arm the timer for one-shot (period = 0)
         SetThreadpoolTimer(timer, &ft, 0, 0);
