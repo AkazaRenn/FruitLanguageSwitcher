@@ -77,7 +77,6 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
       <BuildStlModules>true</BuildStlModules>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TranslateIncludes>true</TranslateIncludes>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -101,7 +100,6 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard_C>stdclatest</LanguageStandard_C>
       <BuildStlModules>true</BuildStlModules>
-      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TranslateIncludes>true</TranslateIncludes>
     </ClCompile>

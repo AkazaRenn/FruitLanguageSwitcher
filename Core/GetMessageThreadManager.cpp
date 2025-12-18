@@ -26,12 +26,12 @@ public:
         }
     }
 
-    void PostMessage(Message message) {
+    void PostMessage(Message message, WPARAM wParam = 0, LPARAM lParam = 0) {
         std::lock_guard<std::mutex> lock(messageToThreadIdsMapMutex);
         const auto it = messageToThreadIdsMap.find(message);
         if (it != messageToThreadIdsMap.end()) {
             for (auto threadId : it->second) {
-                PostThreadMessage(threadId, VAL(message), 0, 0);
+                PostThreadMessage(threadId, VAL(message), wParam, lParam);
             }
         }
     }

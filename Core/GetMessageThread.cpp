@@ -6,10 +6,6 @@ import "GetMessageThreadManager.cpp";
 
 namespace Core {
 class GetMessageThread {
-public:
-    using ProcessMessageFunction = std::function<void(const MSG&)>;
-    using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
-
 private:
     void GetMessageProc() {
         threadId = GetCurrentThreadId();
@@ -38,6 +34,9 @@ private:
             DispatchMessage(&msg);
         }
     }
+
+    using ProcessMessageFunction = std::function<void(const MSG&)>;
+    using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
 
     const MessageToProcessFunctionMap messageToProcessFunctionMap;
     std::thread thread;

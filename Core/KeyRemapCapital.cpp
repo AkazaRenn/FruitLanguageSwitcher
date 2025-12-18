@@ -13,6 +13,7 @@ private:
     static void SetCapslockState(bool on) {
         if (GetCapslockState() != on) {
             SendKeySequence({VK_CAPITAL});
+            GetMessageThreadManager::Instance().PostMessage(on ? Message::CapsLockOn : Message::CapsLockOff);
         }
     }
 
@@ -26,7 +27,7 @@ private:
 
     static constexpr DWORD timerExpiryMs = 500;
 
-    bool capitalKeyDown = false;
+    bool CapitalKeyDown = false;
     std::atomic<bool> handled = false;
     PTP_TIMER timer = CreateThreadpoolTimer(OnTimerExpiry, this, nullptr);
 
@@ -54,10 +55,10 @@ public:
     }
 
     void OnCapitalKeyDown() {
-        if (capitalKeyDown) {
+        if (CapitalKeyDown) {
             return;
         } else {
-            capitalKeyDown = true;
+            CapitalKeyDown = true;
         }
 
         if (GetCapslockState()) {
@@ -70,9 +71,9 @@ public:
     void OnCapitalKeyUp() {
         if (!handled.exchange(true)) {
             CancelTimer();
-            GetMessageThreadManager::Instance().PostMessage(Message::CapitalkeyDown);
+            GetMessageThreadManager::Instance().PostMessage(Message::SwapCategoryTriggered);
         }
-        capitalKeyDown = false;
+        CapitalKeyDown = false;
     }
 };
 }

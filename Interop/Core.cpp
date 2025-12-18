@@ -1,18 +1,18 @@
 #pragma once
 
-#include <Windows.h>
 #include "Interop.hpp"
 
 namespace Interop {
 public ref class Core sealed {
 private:
+    using ProcessMessageFunctionPtr = void(__stdcall*)(const MSG&);
     delegate void ProcessMessageDelegate(const MSG& msg);
     ProcessMessageDelegate^ processMessageDelegate = gcnew ProcessMessageDelegate(this, &Core::ProcessMessage);
 
     System::IntPtr pUnmanaged;
 
-    ::Core::ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(ProcessMessageDelegate^ processMessageDelegate) {
-        return static_cast<::Core::ProcessMessageFunctionPtr>(
+    ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(ProcessMessageDelegate^ processMessageDelegate) {
+        return static_cast<ProcessMessageFunctionPtr>(
             System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(processMessageDelegate).ToPointer());
     }
 

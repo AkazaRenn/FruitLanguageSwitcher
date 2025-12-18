@@ -7,7 +7,9 @@ enum class Message: DWORD {
     Unused = WM_APP,
     ForegroundChanged,
     WinKeyUp,
-    CapitalkeyDown,
+    SwapCategoryTriggered,
+    CapsLockOn,
+    CapsLockOff,
 };
 
 constexpr DWORD VAL(Message msg) {
