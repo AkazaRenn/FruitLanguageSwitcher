@@ -52,6 +52,9 @@
       <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="Interop.cpp" />
+    <ClCompile Include="RawInputDevices.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interop.hpp" />

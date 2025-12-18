@@ -2,9 +2,10 @@
 
 import <Windows.h>;
 import "Common.cpp";
+import "Singleton.cpp";
 
 namespace Core {
-class KeyRemapLWin {
+class KeyRemapLWin: public Singleton<KeyRemapLWin> {
 private:
     bool lWinKeyDown = false;
     bool otherKeyDown = false;
@@ -15,14 +16,18 @@ private:
 
 public:
     void OnLWinDown() {
+        if (lWinKeyDown) {
+            return;
+        }
         otherKeyDown = false;
         lWinKeyDown = true;
     }
 
     bool OnLWinUp() {
+        lWinKeyDown = false;
+
         if (!otherKeyDown) {
             SendCommandPaletteShortcut();
-            lWinKeyDown = false;
             return true;
         }
 
@@ -30,6 +35,9 @@ public:
     }
 
     void OnOtherKeyDown() {
+        if (otherKeyDown) {
+            return;
+        }
         otherKeyDown = true;
     }
 };

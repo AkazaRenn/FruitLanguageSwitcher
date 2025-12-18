@@ -4,7 +4,7 @@ import <atomic>;
 import "GetMessageThreadManager.cpp";
 
 namespace Core {
-class KeyRemapCapital {
+class KeyRemapCapital: public Singleton<KeyRemapCapital> {
 private:
     static bool GetCapslockState() {
         return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;

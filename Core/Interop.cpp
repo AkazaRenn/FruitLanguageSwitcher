@@ -4,12 +4,14 @@
 
 import "EventHookSystemForegound.cpp";
 import "GetMessageThread.cpp";
+import "RawInputDevices.cpp";
 import "WindowsHookKeyboardLL.cpp";
 
 namespace Core {
 Interop::Interop(const MessageToProcessFunctionMap& messageToProcessFunctionMap) {
-    EventHookSystemForegound::Instance().Start();
-    WindowsHookKeyboardLL::Instance().Start();
+    EventHookSystemForegound::Instance();
+    WindowsHookKeyboardLL::Instance();
+    RawInputDevices::Instance();
 
     pThread = static_cast<void*>(new GetMessageThread(messageToProcessFunctionMap));
 }

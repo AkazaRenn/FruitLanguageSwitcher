@@ -7,10 +7,6 @@ import "KeyRemapLWin.cpp";
 
 namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {
-private:
-    KeyRemapLWin keyRemapLWin;
-    KeyRemapCapital keyRemapCapital;
-
 public:
     const static int IdHook = WH_KEYBOARD_LL;
 
@@ -32,28 +28,21 @@ public:
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    keyRemapLWin.OnLWinDown();
-                    break;
+                    return false;
                 case VK_CAPITAL:
-                    blockEvent = true;
-                    keyRemapCapital.OnCapitalKeyDown();
-                    [[fallthrough]];
+                    KeyRemapCapital::Instance().OnCapitalKeyDown();
+                    return true;
                 default:
-                    keyRemapLWin.OnOtherKeyDown();
+                    KeyRemapLWin::Instance().OnOtherKeyDown();
                     break;
                 }
             } else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    blockEvent = keyRemapLWin.OnLWinUp();
-                    [[fallthrough]];
-                case VK_RWIN:
-                    GetMessageThreadManager::Instance().PostMessage(Message::WinKeyUp);
-                    break;
+                    return KeyRemapLWin::Instance().OnLWinUp();
                 case VK_CAPITAL:
-                    blockEvent = true;
-                    keyRemapCapital.OnCapitalKeyUp();
-                    break;
+                    KeyRemapCapital::Instance().OnCapitalKeyUp();
+                    return true;
                 default:
                     break;
                 }

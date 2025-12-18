@@ -25,6 +25,7 @@
     <ClCompile Include="GetMessageThread.cpp" />
     <ClCompile Include="GetMessageThreadManager.cpp" />
     <ClCompile Include="Message.cpp" />
+    <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="WindowsHook.cpp" />
     <ClCompile Include="WindowsHookKeyboardLL.cpp" />

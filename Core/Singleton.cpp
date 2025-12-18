@@ -7,7 +7,7 @@ protected:
     Singleton(const Singleton&) = delete;
     Singleton& operator=(const Singleton&) = delete;
 
-    ~Singleton() = default;
+    virtual ~Singleton() = default;
 
 public:
     static T& Instance() {

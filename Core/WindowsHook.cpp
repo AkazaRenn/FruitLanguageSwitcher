@@ -6,8 +6,6 @@ import "Singleton.cpp";
 template<typename T>
 class WindowsHook: public Singleton<T> {
 private:
-    HHOOK hook = nullptr;
-
     static LRESULT CALLBACK HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
         if (T::Instance().OnEvent(nCode, wParam, lParam)) {
             return true;
@@ -16,6 +14,8 @@ private:
         }
     }
 
+    HHOOK hook = SetWindowsHookEx(T::IdHook, T::HookProc, T::hmod, T::dwThreadId);
+
 protected:
     inline const static HINSTANCE hmod = GetModuleHandle(nullptr);
     const static DWORD dwThreadId = 0;
@@ -23,18 +23,6 @@ protected:
     virtual bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) = 0;
 
     ~WindowsHook() {
-        Stop();
-    }
-
-public:
-    void Start() {
-        if (hook) {
-            return;
-        }
-        hook = SetWindowsHookEx(T::IdHook, T::HookProc, T::hmod, T::dwThreadId);
-    }
-
-    void Stop() {
         if (!hook) {
             return;
         }
