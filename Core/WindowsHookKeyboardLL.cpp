@@ -11,6 +11,7 @@ class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {
 public:
     const static int IdHook = WH_KEYBOARD_LL;
 
+public:
     bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) override {
         bool blockEvent = false;
 

@@ -20,6 +20,7 @@ protected:
     inline const static HINSTANCE hmod = GetModuleHandle(nullptr);
     const static DWORD dwThreadId = 0;
 
+protected:
     // Return true to block the event, false to pass it to next hook
     virtual bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) = 0;
 

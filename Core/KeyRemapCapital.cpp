@@ -27,6 +27,7 @@ private:
 
     static constexpr DWORD timerExpiryMs = 500;
 
+private:
     bool CapitalKeyDown = false;
     std::atomic<bool> handled = false;
     PTP_TIMER timer = CreateThreadpoolTimer(OnTimerExpiry, this, nullptr);

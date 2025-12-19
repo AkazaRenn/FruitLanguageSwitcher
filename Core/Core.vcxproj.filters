@@ -58,6 +58,12 @@
     <ClCompile Include="KeyRemapRMenu.cpp">
       <Filter>Key Remapping</Filter>
     </ClCompile>
+    <ClCompile Include="Language.cpp">
+      <Filter>Language Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include="LanguageManager.cpp">
+      <Filter>Language Switcher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interop.hpp" />

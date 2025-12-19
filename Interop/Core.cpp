@@ -1,6 +1,9 @@
 #pragma once
 
+#include <Windows.h>
+#include <imm.h>
 #include "Interop.hpp"
+#pragma comment(lib, "imm32.lib")
 
 namespace Interop {
 public ref class Core sealed {

@@ -9,7 +9,19 @@ import "KeyRemapRMenu.cpp";
 namespace Core {
 class RawInputDevices: public Singleton<RawInputDevices> {
 private:
-    static constexpr USHORT RAWMOUSE_FLAG_BUTTON_DOWN = 0x1;
+    static constexpr USHORT RI_MOUSE_ACTION =
+        RI_MOUSE_BUTTON_1_DOWN |
+        RI_MOUSE_BUTTON_1_UP |
+        RI_MOUSE_BUTTON_2_DOWN |
+        RI_MOUSE_BUTTON_2_UP |
+        RI_MOUSE_BUTTON_3_DOWN |
+        RI_MOUSE_BUTTON_3_UP |
+        RI_MOUSE_BUTTON_4_DOWN |
+        RI_MOUSE_BUTTON_4_UP |
+        RI_MOUSE_BUTTON_5_DOWN |
+        RI_MOUSE_BUTTON_5_UP |
+        RI_MOUSE_WHEEL |
+        RI_MOUSE_HWHEEL;
 
     static LRESULT CALLBACK OnInput(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         switch (msg) {
@@ -30,7 +42,7 @@ private:
                 if (raw->header.dwType == RIM_TYPEKEYBOARD) {
                     const RAWKEYBOARD& kb = raw->data.keyboard;
 
-                    //printf("Keyboard: MakeCode=%04x, Flags=%04x, VKey=%04x, Msg=%04x, Extra=%08x, hDevice=%p\n",
+                    // printf("Keyboard: MakeCode=%04x, Flags=%04x, VKey=%04x, Msg=%04x, Extra=%08x, hDevice=%p\n",
                     //       kb.MakeCode,
                     //       kb.Flags,
                     //       kb.VKey,
@@ -59,17 +71,16 @@ private:
                     }
                 } else if (raw->header.dwType == RIM_TYPEMOUSE) {
                     const RAWMOUSE& ms = raw->data.mouse;
+                    if (ms.usButtonFlags & RI_MOUSE_ACTION) {
 
-                    //printf("Mouse: Flags=%04x, Buttons=%04x, ButtonFlags=%04x, ButtonData=%04x, RawX=%ld, RawY=%ld, hDevice=%p\n",
-                    //       ms.usFlags,
-                    //       ms.ulButtons,
-                    //       ms.usButtonFlags,
-                    //       ms.usButtonData,
-                    //       ms.lLastX,
-                    //       ms.lLastY,
-                    //       raw->header.hDevice);
-
-                    if (ms.usButtonFlags & RAWMOUSE_FLAG_BUTTON_DOWN) {
+                        // printf("Mouse: Flags=%04x, Buttons=%04x, ButtonFlags=%04x, ButtonData=%04x, RawX=%ld, RawY=%ld, hDevice=%p\n",
+                        //        ms.usFlags,
+                        //        ms.ulButtons,
+                        //        ms.usButtonFlags,
+                        //        ms.usButtonData,
+                        //        ms.lLastX,
+                        //        ms.lLastY,
+                        //        raw->header.hDevice);
                     }
                 }
             }
@@ -82,6 +93,7 @@ private:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
 
+private:
     HINSTANCE hInstance = GetModuleHandle(nullptr);
     const LPCTSTR className = L"RawInputWindow";
     const WNDCLASS windowClass = {
@@ -106,7 +118,7 @@ public:
             .usUsage = 0x06, // Keyboard
             .dwFlags = RIDEV_INPUTSINK,
             .hwndTarget = hwnd,
-        }, };
+        }};
 
         RegisterRawInputDevices(rid, 2, sizeof(rid[0]));
     }
@@ -122,7 +134,7 @@ public:
             .usUsage = 0x06, // Keyboard
             .dwFlags = RIDEV_REMOVE,
             .hwndTarget = nullptr,
-        }, };
+        }};
 
         RegisterRawInputDevices(rid, 2, sizeof(rid[0]));
         DestroyWindow(hwnd);

@@ -25,6 +25,8 @@
     <ClCompile Include="GetMessageThread.cpp" />
     <ClCompile Include="GetMessageThreadManager.cpp" />
     <ClCompile Include="KeyRemapRMenu.cpp" />
+    <ClCompile Include="Language.cpp" />
+    <ClCompile Include="LanguageManager.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />
