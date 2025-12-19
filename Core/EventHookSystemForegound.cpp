@@ -11,7 +11,7 @@ public:
 public:
 	void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
 		if (hwnd == GetForegroundWindow()) {
-			GetMessageThreadManager::Instance().PostMessage(Message::ForegroundChanged);
+			GetMessageThreadManager::Instance().PostMessage(Message::ForegroundChanged, 0, reinterpret_cast<LPARAM>(hwnd));
 		}
 	}
 };

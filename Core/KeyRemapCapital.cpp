@@ -6,13 +6,8 @@ import "GetMessageThreadManager.cpp";
 namespace Core {
 class KeyRemapCapital: public Singleton<KeyRemapCapital> {
 private:
-    static bool GetCapslockState() {
-        return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-    }
-
-    static void SetCapslockState(bool on) {
-        if (GetCapslockState() != on) {
-            SendKeySequence({VK_CAPITAL});
+    static void SetCapsLockStateAndPostMessage(bool on) {
+        if (SetCapsLockState(on)) {
             GetMessageThreadManager::Instance().PostMessage(on ? Message::CapsLockOn : Message::CapsLockOff);
         }
     }
@@ -22,7 +17,7 @@ private:
         if ((!pThis) || (pThis->handled.exchange(true))) {
             return;
         }
-        SetCapslockState(true);
+        SetCapsLockStateAndPostMessage(true);
     }
 
     static constexpr DWORD timerExpiryMs = 500;
@@ -63,8 +58,8 @@ public:
             CapitalKeyDown = true;
         }
 
-        if (GetCapslockState()) {
-            SetCapslockState(false);
+        if (GetCapsLockState()) {
+            SetCapsLockStateAndPostMessage(false);
         } else {
             ResetTimer();
         }

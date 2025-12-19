@@ -34,4 +34,30 @@ inline UINT SendKeyCombination(std::vector<WORD> keys) {
 
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
 }
+
+inline bool GetCapsLockState() {
+    return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+}
+
+// Return true if the state was changed, false otherwise
+inline bool SetCapsLockState(bool on) {
+    if (GetCapsLockState() != on) {
+        SendKeySequence({VK_CAPITAL});
+        return true;
+    }
+    return false;
+}
+
+inline bool GetScrollLockState() {
+    return (GetKeyState(VK_SCROLL) & 0x0001) != 0;
+}
+
+// Return true if the state was changed, false otherwise
+inline bool SetScrollLockState(bool on) {
+    if (GetScrollLockState() != on) {
+        SendKeySequence({VK_SCROLL});
+        return true;
+    }
+    return false;
+}
 }

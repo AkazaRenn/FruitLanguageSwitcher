@@ -90,8 +90,8 @@ public:
         return hkl == other.hkl;
     }
 
-    void Activate(HWND hwnd, HKL currentHkl) {
-        if (hkl != currentHkl) {
+    void Activate(HWND hwnd, const Language& currentLanguage) {
+        if (*this != currentLanguage) {
             SendMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
         }
         SetConversionMode(hwnd);
