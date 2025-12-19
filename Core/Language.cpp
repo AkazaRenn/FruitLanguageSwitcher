@@ -36,35 +36,10 @@ private:
     }
 
 private:
-    bool GetConversionMode(HWND hwnd) {
-        switch (lcid) {
-        case zh_TW:
-            [[fallthrough]];
-        case zh_CN:
-            [[fallthrough]];
-        case zh_HK:
-            [[fallthrough]];
-        case zh_SG:
-            [[fallthrough]];
-        case zh_MO:
-            [[fallthrough]];
-        case ko_KR:
-            return SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) == 1;
-        case ja_JP:
-            return false;
-        case am_ET:
-            [[fallthrough]];
-        case ti_ET:
-            [[fallthrough]];
-        case ti_ER:
-            [[fallthrough]];
-        default:
-            return true;
-        }
-    }
-
     void SetConversionMode(HWND hwnd) {
         switch (lcid) {
+        case ko_KR:
+            [[fallthrough]];
         case zh_TW:
             [[fallthrough]];
         case zh_CN:
@@ -74,10 +49,14 @@ private:
         case zh_SG:
             [[fallthrough]];
         case zh_MO:
-            [[fallthrough]];
-        case ko_KR:
-            SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, 1);
-            SendKeyCombination({VK_LSHIFT, VK_SPACE});
+            {
+                const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
+                int retry = 3;
+                do {
+                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                    Sleep(50);
+                } while ((retry--) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+            }
             return;
         case ja_JP:
             SendKeySequence({VK_IME_ON});
@@ -103,10 +82,7 @@ public:
         if (hkl != currentHkl) {
             SendMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
         }
-        do {
-            SetConversionMode(hwnd);
-            Sleep(50);
-        } while (!GetConversionMode(hwnd));
+        SetConversionMode(hwnd);
     }
 
     bool RemapRMenu() {

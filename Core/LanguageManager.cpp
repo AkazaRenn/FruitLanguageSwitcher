@@ -1,6 +1,5 @@
 #pragma once
 
-import <map>;
 import <memory>;
 import <unordered_map>;
 import <Windows.h>;
@@ -49,6 +48,17 @@ private:
         }
     }
 
+    static void OnSwapCategoryTriggered(const MSG& msg) {
+        HWND hwnd = GetForegroundWindow();
+        auto& activeLanguage = Instance().activeLanguage;
+        if (activeLanguage.get().isImeLanguage) {
+            activeLanguage = Instance().activeLatinLanguage;
+        } else {
+            activeLanguage = Instance().activeImeLanguage;
+        }
+        activeLanguage.get().Activate(hwnd, nullptr);
+    }
+
     static const std::vector<HKL> GetHklList() {
         int count = GetKeyboardLayoutList(0, nullptr);
         std::vector<HKL> layouts(count);
@@ -56,17 +66,17 @@ private:
         return layouts;
     }
 
-    static const std::map<HKL, Language> GetHklToLanguageMap() {
+    static const std::unordered_map<HKL, Language> GetHklToLanguageMap() {
         auto layouts = GetHklList();
 
-        std::map<HKL, Language> map;
+        std::unordered_map<HKL, Language> map;
         for (const HKL& hkl : layouts) {
             map.emplace(hkl, Language(hkl));
         }
         return map;
     }
 
-    static Language& GetFirstLanguage(std::map<HKL, Language>& hklToLanguageMap, bool imeLanguage) {
+    static Language& GetFirstLanguage(std::unordered_map<HKL, Language>& hklToLanguageMap, bool imeLanguage) {
         for (const HKL layout : GetHklList()) {
             auto it = hklToLanguageMap.find(layout);
             if ((it != hklToLanguageMap.end()) && (it->second.isImeLanguage == imeLanguage)) {
@@ -77,7 +87,7 @@ private:
     }
 
 private:
-    std::map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
+    std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
     std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
     std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
     std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
@@ -85,6 +95,7 @@ private:
 
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, &OnForegroundChanged },
+        { Message::SwapCategoryTriggered, &OnSwapCategoryTriggered },
     });
 };
 }
