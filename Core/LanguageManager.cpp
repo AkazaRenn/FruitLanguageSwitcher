@@ -11,52 +11,41 @@ import "Singleton.cpp";
 namespace Core {
 class LanguageManager: public Singleton<LanguageManager> {
 private:
-    static const HKL GetCurrentWindowKeyboardLayout() {
-        HWND hwnd = GetForegroundWindow();
+    static const HKL GetCurrentWindowKeyboardLayout(HWND hwnd) {
         DWORD threadId = GetWindowThreadProcessId(hwnd, nullptr);
         return GetKeyboardLayout(threadId);
     }
 
     static void OnForegroundChanged(const MSG& msg) {
         const HWND hwnd = GetForegroundWindow();
-        auto& windowToLanguageMap = Instance().windowToLanguageMap;
-        auto& hklToLanguageMap = Instance().hklToLanguageMap;
-        HKL hkl = GetCurrentWindowKeyboardLayout();
 
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
-        auto it = windowToLanguageMap.find(hwnd);
-        if (it != windowToLanguageMap.end()) {
-            Instance().activeLanguage = it->second.get();
+        auto it = Instance().windowToLanguageMap.find(hwnd);
+        if (it != Instance().windowToLanguageMap.end()) {
+            Instance().ActivateLanguage(it->second, hwnd);
         } else {
-            auto hklToLanguageMapIt = hklToLanguageMap.find(hkl);
-            if (hklToLanguageMapIt != hklToLanguageMap.end()) {
-                Instance().activeLanguage = hklToLanguageMapIt->second;
-            } else {
-                hklToLanguageMap.emplace(hkl, Language(hkl));
-                Instance().activeLanguage = hklToLanguageMap.at(hkl);
-            }
-            windowToLanguageMap.emplace(hwnd, Instance().activeLanguage);
+            Instance().ActivateLanguage(GetCurrentWindowKeyboardLayout(hwnd), hwnd);
         }
 
-        Instance().activeLanguage.get().Activate(hwnd, hkl);
-        if (Instance().activeLanguage.get().isImeLanguage) {
-            Instance().activeImeLanguage = Instance().activeLanguage;
-        } else {
-            Instance().activeLatinLanguage = Instance().activeLanguage;
-        }
     }
 
     static void OnSwapCategoryTriggered(const MSG& msg) {
-        HWND hwnd = GetForegroundWindow();
-        auto& activeLanguage = Instance().activeLanguage;
-        if (activeLanguage.get().isImeLanguage) {
-            activeLanguage = Instance().activeLatinLanguage;
+        const HWND hwnd = GetForegroundWindow();
+
+        if (Instance().activeLanguage.get().isImeLanguage) {
+            Instance().ActivateLanguage(Instance().activeLatinLanguage, hwnd);
         } else {
-            activeLanguage = Instance().activeImeLanguage;
+            Instance().ActivateLanguage(Instance().activeImeLanguage, hwnd);
         }
-        activeLanguage.get().Activate(hwnd, nullptr);
+    }
+
+    static void OnWinKeyUp(const MSG& msg) {
+        Sleep(300); // Wait for IME value to update
+        const HWND hwnd = GetForegroundWindow();
+        HKL hkl = GetCurrentWindowKeyboardLayout(hwnd);
+        Instance().ActivateLanguage(hkl, hwnd);
     }
 
     static const std::vector<HKL> GetHklList() {
@@ -96,6 +85,27 @@ private:
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, &OnForegroundChanged },
         { Message::SwapCategoryTriggered, &OnSwapCategoryTriggered },
+        { Message::WinKeyUp, &OnWinKeyUp },
     });
+
+    void ActivateLanguage(HKL hkl, HWND hwnd) {
+        if (!hklToLanguageMap.contains(hkl)) {
+            hklToLanguageMap.emplace(hkl, Language(hkl));
+        }
+        ActivateLanguage(hklToLanguageMap.at(hkl), hwnd);
+    }
+
+    void ActivateLanguage(Language& language, HWND hwnd) {
+        language.Activate(hwnd, activeLanguage.get().hkl);
+
+        activeLanguage = language;
+        windowToLanguageMap.insert_or_assign(hwnd, activeLanguage);
+
+        if (activeLanguage.get().isImeLanguage) {
+            activeImeLanguage = activeLanguage;
+        } else {
+            activeLatinLanguage = activeLanguage;
+        }
+    }
 };
 }

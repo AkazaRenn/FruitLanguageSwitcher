@@ -38,8 +38,6 @@ private:
 private:
     void SetConversionMode(HWND hwnd) {
         switch (lcid) {
-        case ko_KR:
-            [[fallthrough]];
         case zh_TW:
             [[fallthrough]];
         case zh_CN:
@@ -51,13 +49,23 @@ private:
         case zh_MO:
             {
                 const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
-                int retry = 3;
+                int retry = 5;
                 do {
                     SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
                     Sleep(50);
-                } while ((retry--) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+                } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
             }
             return;
+        case ko_KR:
+        {
+            const DWORD expectedMode = IME_CMODE_NATIVE;
+            int retry = 5;
+            do {
+                SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                Sleep(50);
+            } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+        }
+        return;
         case ja_JP:
             SendKeySequence({VK_IME_ON});
             return;
@@ -77,6 +85,10 @@ public:
         : hkl(_hkl)
         , lcid(MAKELCID(LOWORD(reinterpret_cast<UINT_PTR>(hkl)), SORT_DEFAULT))
         , isImeLanguage(IsImeLanguage(lcid)) {}
+
+    bool operator==(const Language& other) const {
+        return hkl == other.hkl;
+    }
 
     void Activate(HWND hwnd, HKL currentHkl) {
         if (hkl != currentHkl) {
