@@ -102,6 +102,12 @@ private:
         }
     }
 
+    static void OnWindowDestroyed(const MSG& msg) {
+        auto& instance = Instance();
+        const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
+        instance.windowToLanguageMap.erase(hwnd);
+    }
+
 private:
     std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
     std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
@@ -112,6 +118,7 @@ private:
 
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, &OnForegroundChanged },
+        { Message::WindowDestroyed, &OnWindowDestroyed },
         { Message::SwapCategoryTriggered, &OnSwapCategoryTriggered },
         { Message::WinKeyUp, &OnWinKeyUp },
         { Message::CapsLockOn, &OnCapsLockOn },

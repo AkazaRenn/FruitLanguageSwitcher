@@ -6,6 +6,7 @@ namespace Core {
 enum class Message: DWORD {
     Unused = WM_APP,
     ForegroundChanged,
+    WindowDestroyed,
     WinKeyUp,
     SwapCategoryTriggered,
     CapsLockOn,
