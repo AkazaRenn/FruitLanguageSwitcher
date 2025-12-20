@@ -2,7 +2,7 @@
 
 import <unordered_set>;
 import <Windows.h>;
-import "Common.cpp";
+import "Utilities.cpp";
 
 namespace Core {
 class Language {
@@ -23,7 +23,7 @@ private:
 
     static constexpr bool IsImeLanguage(LCID lcid) {
         constexpr auto imeLanguages = std::to_array<LCID>({
-            zh_TW, ja_JP, ko_KR, am_ET, ti_ET, zh_CN, ti_ER, zh_HK, zh_SG, zh_MO, 
+            zh_TW, ja_JP, ko_KR, am_ET, ti_ET, zh_CN, ti_ER, zh_HK, zh_SG, zh_MO,
         });
 
         return std::ranges::contains(imeLanguages, lcid);
@@ -84,8 +84,8 @@ public:
         return hkl == other.hkl;
     }
 
-    void Activate(HWND hwnd, const Language& currentLanguage) const {
-        if (*this != currentLanguage) {
+    void Activate(HWND hwnd, bool isActive) const {
+        if (!isActive) {
             SendMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
         }
         SetConversionMode(hwnd);

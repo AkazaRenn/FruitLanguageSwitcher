@@ -5,12 +5,14 @@
 namespace Core {
 enum class Message: DWORD {
     Unused = WM_APP,
-    ForegroundChanged,
+    ForegroundChanged, // lParam: HWND
     WindowDestroyed,
     WinKeyUp,
     SwapCategoryTriggered,
     CapsLockOn,
     CapsLockOff,
+    ShowPopup, // wParam: isImeLanguage (WPARAM), lParam: lcid (LPARAM)
+    ClosePopup,
 };
 
 constexpr DWORD VAL(Message msg) {

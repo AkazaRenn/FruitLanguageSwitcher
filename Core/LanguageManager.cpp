@@ -3,9 +3,9 @@
 import <memory>;
 import <unordered_map>;
 import <Windows.h>;
+import "Enumerations.cpp";
 import "GetMessageThread.cpp";
 import "Language.cpp";
-import "Message.cpp";
 import "Singleton.cpp";
 
 namespace Core {
@@ -96,6 +96,7 @@ private:
 
     static void OnCapsLockOff(const MSG& msg) {
         auto& instance = Instance();
+        //GetMessageThreadManager::Instance().PostMessage(Message::ShowPopup, static_cast<WPARAM>(instance.activeLanguage.get().isImeLanguage), static_cast<LPARAM>(instance.activeImeLanguage.get().lcid));
         if (instance.activeLanguageBeforeCapsLock.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
             instance.ActivateLanguage(instance.activeLanguageBeforeCapsLock, hwnd);
@@ -133,7 +134,7 @@ private:
     }
 
     void ActivateLanguage(Language& language, HWND hwnd, bool updateWindowToLanguageMap = true) {
-        language.Activate(hwnd, activeLanguage);
+        language.Activate(hwnd, activeLanguage == language);
 
         activeLanguage = language;
         if (activeLanguage.get().isImeLanguage) {

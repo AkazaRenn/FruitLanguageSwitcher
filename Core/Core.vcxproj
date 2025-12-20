@@ -21,14 +21,14 @@
       <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="KeyRemapCapital.cpp" />
-    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="EventHookSystemForegound.cpp" />
     <ClCompile Include="GetMessageThread.cpp" />
     <ClCompile Include="GetMessageThreadManager.cpp" />
     <ClCompile Include="KeyRemapRMenu.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="LanguageManager.cpp" />
-    <ClCompile Include="Message.cpp" />
+    <ClCompile Include="Enumerations.cpp" />
     <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Timer.cpp" />

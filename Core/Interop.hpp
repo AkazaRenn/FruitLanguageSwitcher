@@ -5,7 +5,7 @@
 #include <functional>
 #include <unordered_map>
 #include <Windows.h>
-#include "Message.cpp"
+#include "Enumerations.cpp"
 
 namespace Core{
 using ProcessMessageFunction = std::function<void(const MSG&)>;

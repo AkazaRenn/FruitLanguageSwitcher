@@ -3,9 +3,9 @@
 import <mutex>;
 import <unordered_map>;
 import <unordered_set>;
-import "Common.cpp";
-import "Message.cpp";
+import "Enumerations.cpp";
 import "Singleton.cpp";
+import "Utilities.cpp";
 
 namespace Core {
 class GetMessageThreadManager: public Singleton<GetMessageThreadManager> {

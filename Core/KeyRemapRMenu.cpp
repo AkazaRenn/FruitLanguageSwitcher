@@ -1,9 +1,9 @@
 #pragma once
 
 import <Windows.h>;
-import "Common.cpp";
 import "LanguageManager.cpp";
 import "Singleton.cpp";
+import "Utilities.cpp";
 
 namespace Core {
 class KeyRemapRMenu: public Singleton<KeyRemapRMenu> {

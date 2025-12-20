@@ -1,8 +1,8 @@
 #pragma once
 
 import <Windows.h>;
-import "Common.cpp";
 import "Singleton.cpp";
+import "Utilities.cpp";
 
 namespace Core {
 class KeyRemapLWin: public Singleton<KeyRemapLWin> {

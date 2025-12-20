@@ -30,7 +30,7 @@
     <ClCompile Include="GetMessageThreadManager.cpp">
       <Filter>Others</Filter>
     </ClCompile>
-    <ClCompile Include="Common.cpp">
+    <ClCompile Include="Utilities.cpp">
       <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="WindowsHook.cpp">
@@ -48,7 +48,7 @@
     <ClCompile Include="KeyRemapCapital.cpp">
       <Filter>Key Remapping</Filter>
     </ClCompile>
-    <ClCompile Include="Message.cpp">
+    <ClCompile Include="Enumerations.cpp">
       <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="Interop.cpp" />
