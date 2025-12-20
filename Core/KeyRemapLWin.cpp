@@ -15,7 +15,7 @@ private:
     }
 
 public:
-    void OnLWinDown() {
+    constexpr void OnLWinDown() {
         if (lWinKeyDown) {
             return;
         }
@@ -35,7 +35,7 @@ public:
         return true;
     }
 
-    void OnOtherKeyDown() {
+    constexpr void OnOtherKeyDown() {
         if (otherKeyDown) {
             return;
         }

@@ -5,6 +5,8 @@ import "Singleton.cpp";
 
 template<typename T>
 class WindowsHook: public Singleton<T> {
+    friend class Singleton<T>;
+
 private:
     static LRESULT CALLBACK HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
         if (T::Instance().OnEvent(nCode, wParam, lParam)) {

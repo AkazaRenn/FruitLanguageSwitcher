@@ -7,9 +7,12 @@ import "Enumerations.cpp";
 import "GetMessageThread.cpp";
 import "Language.cpp";
 import "Singleton.cpp";
+import "Timer.cpp";
 
 namespace Core {
 class LanguageManager: public Singleton<LanguageManager> {
+    friend class Singleton<LanguageManager>;
+
 private:
     static const HKL GetCurrentWindowKeyboardLayout(HWND hwnd) {
         DWORD threadId = GetWindowThreadProcessId(hwnd, nullptr);
@@ -60,9 +63,11 @@ private:
     }
 
     static void OnSwapCategoryTriggered(const MSG& msg) {
+        auto& instance = Instance();
+        instance.ShowPopup(instance.activeLanguage.get().isImeLanguage ? LanguageState::Off : LanguageState::On);
+
         SetCapsLockState(false);
         const HWND hwnd = GetForegroundWindow();
-        auto& instance = Instance();
 
         if (instance.activeLanguage.get().isImeLanguage) {
             instance.ActivateLanguage(instance.activeLatinLanguage, hwnd);
@@ -75,8 +80,8 @@ private:
         Sleep(300); // Wait for IME value to update
         auto& instance = Instance();
         const HWND hwnd = GetForegroundWindow();
-        HKL newHkl = GetCurrentWindowKeyboardLayout(hwnd);
-        HKL oldHkl = instance.activeLanguage.get().hkl;
+        const HKL oldHkl = instance.activeLanguage.get().hkl;
+        const HKL newHkl = GetCurrentWindowKeyboardLayout(hwnd);
 
         instance.ActivateLanguage(newHkl, hwnd);
         if (newHkl != oldHkl) {
@@ -87,6 +92,8 @@ private:
 
     static void OnCapsLockOn(const MSG& msg) {
         auto& instance = Instance();
+        instance.ShowPopup(LanguageState::CapsLockOn);
+
         instance.activeLanguageBeforeCapsLock = instance.activeLanguage;
         if (instance.activeLanguage.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
@@ -96,7 +103,8 @@ private:
 
     static void OnCapsLockOff(const MSG& msg) {
         auto& instance = Instance();
-        //GetMessageThreadManager::Instance().PostMessage(Message::ShowPopup, static_cast<WPARAM>(instance.activeLanguage.get().isImeLanguage), static_cast<LPARAM>(instance.activeImeLanguage.get().lcid));
+        instance.ShowPopup(instance.activeLanguageBeforeCapsLock.get().isImeLanguage ? LanguageState::On : LanguageState::Off);
+
         if (instance.activeLanguageBeforeCapsLock.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
             instance.ActivateLanguage(instance.activeLanguageBeforeCapsLock, hwnd);
@@ -117,6 +125,9 @@ private:
     std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
     std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
 
+    bool checkMouseInput = false;
+    Timer popupTimer;
+
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, &OnForegroundChanged },
         { Message::WindowDestroyed, &OnWindowDestroyed },
@@ -125,6 +136,11 @@ private:
         { Message::CapsLockOn, &OnCapsLockOn },
         { Message::CapsLockOff, &OnCapsLockOff },
     });
+
+    LanguageManager()
+        : popupTimer(2000, [this]() {
+            ClosePopup();
+    }) {}
 
     void ActivateLanguage(HKL hkl, HWND hwnd) {
         if (!hklToLanguageMap.contains(hkl)) {
@@ -149,13 +165,30 @@ private:
         }
     }
 
+    void ShowPopup(LanguageState languageState) {
+        GetMessageThreadManager::Instance().PostMessage(Message::ShowPopup,
+            static_cast<WPARAM>(languageState),
+            static_cast<LPARAM>(Instance().activeImeLanguage.get().lcid));
+        popupTimer.Reset();
+        checkMouseInput = true;
+    }
+
+    void ClosePopup() {
+        checkMouseInput = false;
+        GetMessageThreadManager::Instance().PostMessage(Message::ClosePopup);
+    }
+
 public:
     void OnRMenuUp() const {
         activeLanguage.get().OnRMenuUp();
     }
 
-    bool InImeLanguage() const {
+    constexpr bool InImeLanguage() const {
         return activeLanguage.get().isImeLanguage;
+    }
+
+    constexpr bool CheckUserInput() const {
+        return checkMouseInput;
     }
 };
 }

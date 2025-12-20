@@ -5,6 +5,8 @@ import "Singleton.cpp";
 
 template<typename T>
 class WinEventHook: public Singleton<T> {
+    friend class Singleton<T>;
+
 private:
     static void CALLBACK HookProc(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) {
         T::Instance().OnEvent(hWinEventHook, dwEvent, hwnd, idObject, idChild, dwEventThread, dwmsEventTime);

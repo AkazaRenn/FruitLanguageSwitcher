@@ -5,9 +5,12 @@ import <Windows.h>;
 import "GetMessageThreadManager.cpp";
 import "KeyRemapLWin.cpp";
 import "KeyRemapRMenu.cpp";
+import "LanguageManager.cpp";
 
 namespace Core {
 class RawInputDevices: public Singleton<RawInputDevices> {
+    friend class Singleton<RawInputDevices>;
+
 private:
     static constexpr USHORT RI_MOUSE_ACTION =
         RI_MOUSE_BUTTON_1_DOWN |
@@ -61,6 +64,9 @@ private:
                             break;
                         default:
                             KeyRemapRMenu::Instance().OnOtherKeyDown();
+                            if (LanguageManager::Instance().CheckUserInput()) {
+                                GetMessageThreadManager::Instance().PostMessage(Message::UserInput);
+                            }
                             break;
                         }
                     } else {
@@ -85,6 +91,10 @@ private:
                         //        ms.lLastX,
                         //        ms.lLastY,
                         //        raw->header.hDevice);
+
+                        if (LanguageManager::Instance().CheckUserInput()) {
+                            GetMessageThreadManager::Instance().PostMessage(Message::UserInput);
+                        }
                     }
                 }
             }
@@ -107,7 +117,6 @@ private:
     };
     HWND hwnd = nullptr;
 
-public:
     RawInputDevices() {
         RegisterClass(&windowClass);
         hwnd = CreateWindowEx(0, className, className, 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, hInstance, nullptr);

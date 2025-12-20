@@ -18,7 +18,7 @@ private:
     }
 
 public:
-    void OnRMenuDown() {
+    constexpr void OnRMenuDown() {
         if (rMenuKeyDown) {
             return;
         }
@@ -43,7 +43,7 @@ public:
         return false;
     }
 
-    void OnOtherKeyDown() {
+    constexpr void OnOtherKeyDown() {
         if (otherKeyDown) {
             return;
         }

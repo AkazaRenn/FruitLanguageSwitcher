@@ -8,10 +8,12 @@ import "KeyRemapRMenu.cpp";
 
 namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {
-public:
+    friend class WindowsHook<WindowsHookKeyboardLL>;
+
+private:
     const static int IdHook = WH_KEYBOARD_LL;
 
-public:
+private:
     bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) override {
         bool blockEvent = false;
 
