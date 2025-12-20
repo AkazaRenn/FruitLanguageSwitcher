@@ -17,9 +17,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EventHookObjectDestroy.cpp" />
-    <ClCompile Include="Interop.cpp">
-      <CompileAs>CompileAsCpp</CompileAs>
-    </ClCompile>
     <ClCompile Include="KeyRemapCapital.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="EventHookSystemForegound.cpp" />
@@ -36,9 +33,10 @@
     <ClCompile Include="WindowsHookKeyboardLL.cpp" />
     <ClCompile Include="WinEventHook.cpp" />
     <ClCompile Include="KeyRemapLWin.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Interop.hpp" />
+    <ClCompile Include="Interop.hpp" />
+    <ClCompile Include="Interop.cpp">
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

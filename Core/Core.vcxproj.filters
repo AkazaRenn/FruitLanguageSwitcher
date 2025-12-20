@@ -51,7 +51,6 @@
     <ClCompile Include="Enumerations.cpp">
       <Filter>Others</Filter>
     </ClCompile>
-    <ClCompile Include="Interop.cpp" />
     <ClCompile Include="RawInputDevices.cpp">
       <Filter>Hooks</Filter>
     </ClCompile>
@@ -70,8 +69,7 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Others</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Interop.hpp" />
+    <ClCompile Include="Interop.hpp" />
+    <ClCompile Include="Interop.cpp" />
   </ItemGroup>
 </Project>

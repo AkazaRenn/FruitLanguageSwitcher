@@ -1,4 +1,4 @@
-#include "Interop.hpp"
+import "Interop.hpp";
 
 import "EventHookSystemForegound.cpp";
 import "GetMessageThread.cpp";

@@ -12,8 +12,8 @@ private:
     ProcessMessageDelegate^ processMessageDelegate = gcnew ProcessMessageDelegate(this, &Core::ProcessMessage);
 
     System::IntPtr pUnmanaged = System::IntPtr(new ::Core::Interop({
-            {::Core::Message::ForegroundChanged, ToProcessMessageFunctionPtr(processMessageDelegate)},
-        }));;
+        {::Core::Message::ForegroundChanged, ToProcessMessageFunctionPtr(processMessageDelegate)},
+    }));;
 
     ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(ProcessMessageDelegate^ processMessageDelegate) {
         return static_cast<ProcessMessageFunctionPtr>(

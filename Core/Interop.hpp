@@ -1,5 +1,4 @@
 #pragma once
-
 // Kept because C++/CLI doesn't support modules
 
 #include <functional>
