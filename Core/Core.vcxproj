@@ -31,6 +31,7 @@
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsHook.cpp" />
     <ClCompile Include="WindowsHookKeyboardLL.cpp" />
     <ClCompile Include="WinEventHook.cpp" />

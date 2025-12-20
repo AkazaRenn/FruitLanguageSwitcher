@@ -67,6 +67,7 @@
     <ClCompile Include="EventHookObjectDestroy.cpp">
       <Filter>Hooks</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interop.hpp" />
