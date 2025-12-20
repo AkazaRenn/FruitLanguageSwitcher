@@ -147,5 +147,14 @@ private:
             windowToLanguageMap.insert_or_assign(hwnd, activeLanguage);
         }
     }
+
+public:
+    void OnRMenuUp() const {
+        activeLanguage.get().OnRMenuUp();
+    }
+
+    bool InImeLanguage() const {
+        return activeLanguage.get().isImeLanguage;
+    }
 };
 }

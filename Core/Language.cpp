@@ -36,7 +36,7 @@ private:
     }
 
 private:
-    void SetConversionMode(HWND hwnd) {
+    void SetConversionMode(HWND hwnd) const {
         switch (lcid) {
         case zh_TW:
             [[fallthrough]];
@@ -90,18 +90,14 @@ public:
         return hkl == other.hkl;
     }
 
-    void Activate(HWND hwnd, const Language& currentLanguage) {
+    void Activate(HWND hwnd, const Language& currentLanguage) const {
         if (*this != currentLanguage) {
             SendMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
         }
         SetConversionMode(hwnd);
     }
 
-    bool RemapRMenu() {
-        return isImeLanguage;
-    }
-
-    void OnRMenuUp() {
+    void OnRMenuUp() const {
         switch (lcid) {
         case zh_TW:
             [[fallthrough]];
@@ -112,9 +108,26 @@ public:
         case zh_SG:
             [[fallthrough]];
         case zh_MO:
-            SendKeyCombination({VK_LSHIFT, VK_SPACE});
+            {
+                const HWND hwnd = GetForegroundWindow();
+                const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
+                if (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) {
+                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                } else {
+                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, 0);
+                }
+            }
             return;
         case ko_KR:
+            {
+                const HWND hwnd = GetForegroundWindow();
+                const DWORD expectedMode = IME_CMODE_NATIVE;
+                if (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) {
+                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                } else {
+                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, 0);
+                }
+            }
             return;
         case ja_JP:
             SendKeySequence({VK_NONCONVERT});

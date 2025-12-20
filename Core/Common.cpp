@@ -15,6 +15,11 @@ inline UINT SendKeySequence(std::vector<WORD> keys) {
         inputs[i * 2 + 1].type = INPUT_KEYBOARD;
         inputs[i * 2 + 1].ki.wVk = keys[i];
         inputs[i * 2 + 1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        if (keys[i] == VK_RMENU) {
+            inputs[i].ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+            inputs[numInputs - 1 - i].ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+        }
     }
 
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
@@ -30,6 +35,11 @@ inline UINT SendKeyCombination(std::vector<WORD> keys) {
         inputs[numInputs - 1 - i].type = INPUT_KEYBOARD;
         inputs[numInputs - 1 - i].ki.wVk = keys[i];
         inputs[numInputs - 1 - i].ki.dwFlags = KEYEVENTF_KEYUP;
+
+        if (keys[i] == VK_RMENU) {
+            inputs[i].ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+            inputs[numInputs - 1 - i].ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+        }
     }
 
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));

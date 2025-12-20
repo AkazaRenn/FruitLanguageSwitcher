@@ -20,7 +20,7 @@ public:
             if (kb->flags & LLKHF_INJECTED) {
                 return false;
             }
-
+            
             //printf("vkCode: %u\n", kb->vkCode);
             //printf("scanCode: %u\n", kb->scanCode);
             //printf("flags: 0x%X\n", kb->flags);
@@ -30,10 +30,9 @@ public:
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    blockEvent = false;
                     break;
                 case VK_RMENU:
-                    blockEvent = KeyRemapRMenu::Instance().OnRMenuDown();
+                    KeyRemapRMenu::Instance().OnRMenuDown();
                     break;
                 case VK_CAPITAL:
                     KeyRemapCapital::Instance().OnCapitalKeyDown();

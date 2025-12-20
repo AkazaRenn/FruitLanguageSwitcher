@@ -2,37 +2,45 @@
 
 import <Windows.h>;
 import "Common.cpp";
+import "LanguageManager.cpp";
 import "Singleton.cpp";
 
 namespace Core {
 class KeyRemapRMenu: public Singleton<KeyRemapRMenu> {
 private:
+    static constexpr DWORD VK_DUMMY = 0xff;
+
     bool rMenuKeyDown = false;
     bool otherKeyDown = false;
 
-public:
-    bool OnRMenuDown() {
-        return false;
+    static void SendIgnoreRMenuKeyCombination() {
+        SendKeyCombination({VK_RMENU,VK_DUMMY});
+    }
 
+public:
+    void OnRMenuDown() {
         if (rMenuKeyDown) {
-            return true;
+            return;
         }
 
         otherKeyDown = false;
         rMenuKeyDown = true;
+        return;
     }
 
     bool OnRMenuUp() {
-        return false;
-
         rMenuKeyDown = false;
 
         if (otherKeyDown) {
-            return true;
+            return false;
         }
 
-        //SendCommandPaletteShortcut();
-        return true;
+        if (LanguageManager::Instance().InImeLanguage()) {
+            SendIgnoreRMenuKeyCombination();
+            LanguageManager::Instance().OnRMenuUp();
+            return true;
+        }
+        return false;
     }
 
     void OnOtherKeyDown() {

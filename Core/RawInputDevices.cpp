@@ -55,6 +55,10 @@ private:
                         case VK_LWIN:
                             KeyRemapLWin::Instance().OnLWinDown();
                             break;
+                        case VK_RMENU:
+                            [[fallthrough]];
+                        case VK_MENU:
+                            break;
                         default:
                             KeyRemapRMenu::Instance().OnOtherKeyDown();
                             break;

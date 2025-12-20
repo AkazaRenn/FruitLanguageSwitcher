@@ -64,6 +64,9 @@
     <ClCompile Include="LanguageManager.cpp">
       <Filter>Language Switcher</Filter>
     </ClCompile>
+    <ClCompile Include="EventHookObjectDestroy.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interop.hpp" />

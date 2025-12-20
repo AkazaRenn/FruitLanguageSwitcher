@@ -16,6 +16,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EventHookObjectDestroy.cpp" />
     <ClCompile Include="Interop.cpp">
       <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
