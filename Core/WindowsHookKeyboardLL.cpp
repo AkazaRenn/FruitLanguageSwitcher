@@ -1,5 +1,3 @@
-#pragma once
-
 import "GetMessageThreadManager.cpp";
 import "WindowsHook.cpp";
 import "KeyRemapCapital.cpp";
@@ -22,7 +20,7 @@ private:
             if (kb->flags & LLKHF_INJECTED) {
                 return false;
             }
-            
+
             //printf("vkCode: %u\n", kb->vkCode);
             //printf("scanCode: %u\n", kb->scanCode);
             //printf("flags: 0x%X\n", kb->flags);

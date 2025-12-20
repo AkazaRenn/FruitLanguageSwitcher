@@ -1,5 +1,3 @@
-#pragma once
-
 import <functional>;
 import <thread>;
 import "GetMessageThreadManager.cpp";

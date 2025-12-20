@@ -1,5 +1,3 @@
-#pragma once
-
 import <memory>;
 import <Windows.h>;
 import "GetMessageThreadManager.cpp";

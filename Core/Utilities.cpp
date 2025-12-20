@@ -1,5 +1,3 @@
-#pragma once
-
 import <algorithm>;
 import <array>;
 import <memory>;
@@ -20,7 +18,7 @@ constexpr bool IsExtendedKey(WORD vk) {
 
 inline void SetKey(WORD key, std::unique_ptr<INPUT[]>& inputs, size_t downIndex, size_t upIndex) {
     DWORD flags = IsExtendedKey(key) ? KEYEVENTF_EXTENDEDKEY : 0;
-    
+
     inputs[downIndex] = INPUT {
         .type = INPUT_KEYBOARD,
         .ki = {

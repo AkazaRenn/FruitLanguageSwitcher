@@ -1,5 +1,3 @@
-#pragma once
-
 import <Windows.h>;
 import "LanguageManager.cpp";
 import "Singleton.cpp";

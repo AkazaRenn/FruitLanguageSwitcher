@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Interop.hpp"
 
 import "EventHookSystemForegound.cpp";

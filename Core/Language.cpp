@@ -1,5 +1,3 @@
-#pragma once
-
 import <unordered_set>;
 import <Windows.h>;
 import "Utilities.cpp";

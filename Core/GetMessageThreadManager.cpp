@@ -1,5 +1,3 @@
-#pragma once
-
 import <mutex>;
 import <unordered_map>;
 import <unordered_set>;

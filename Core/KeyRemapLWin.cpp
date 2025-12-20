@@ -1,5 +1,3 @@
-#pragma once
-
 import <Windows.h>;
 import "Singleton.cpp";
 import "Utilities.cpp";

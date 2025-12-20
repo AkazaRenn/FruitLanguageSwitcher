@@ -1,5 +1,3 @@
-#pragma once
-
 import <atomic>;
 import <functional>;
 import <stdexcept>;

@@ -1,5 +1,3 @@
-#pragma once
-
 import "GetMessageThreadManager.cpp";
 import "Timer.cpp";
 

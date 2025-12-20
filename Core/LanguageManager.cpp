@@ -1,5 +1,3 @@
-#pragma once
-
 import <memory>;
 import <unordered_map>;
 import <Windows.h>;
