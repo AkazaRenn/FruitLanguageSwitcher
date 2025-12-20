@@ -22,9 +22,9 @@ private:
     static constexpr LCID zh_MO = 0x1404; // Chinese (Traditional, Macao S.A.R.)
 
     static constexpr bool IsImeLanguage(LCID lcid) {
-        constexpr std::array imeLanguages = {
+        constexpr auto imeLanguages = std::to_array<LCID>({
             zh_TW, ja_JP, ko_KR, am_ET, ti_ET, zh_CN, ti_ER, zh_HK, zh_SG, zh_MO, 
-        };
+        });
 
         return std::ranges::contains(imeLanguages, lcid);
     }

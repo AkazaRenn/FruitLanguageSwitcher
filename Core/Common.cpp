@@ -1,23 +1,25 @@
 #pragma once
 
+import <algorithm>;
+import <array>;
 import <memory>;
 import <vector>;
 import <Windows.h>;
 
 namespace Core {
 constexpr bool IsExtendedKey(WORD vk) {
-    constexpr std::array extendedKeys = {
+    constexpr auto extendedKeys = std::to_array<WORD>({
         VK_RMENU, VK_RCONTROL, VK_INSERT, VK_DELETE,
         VK_HOME, VK_END, VK_PRIOR, VK_NEXT,
         VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT,
         VK_DIVIDE, VK_NUMLOCK, VK_APPS
-    };
+    });
 
     return std::ranges::contains(extendedKeys, vk);
 }
 
 inline void SetKey(WORD key, std::unique_ptr<INPUT[]>& inputs, size_t downIndex, size_t upIndex) {
-    DWORD flags = IsExtendedKey(vk) ? KEYEVENTF_EXTENDEDKEY : 0;
+    DWORD flags = IsExtendedKey(key) ? KEYEVENTF_EXTENDEDKEY : 0;
     
     inputs[downIndex] = INPUT {
         .type = INPUT_KEYBOARD,
