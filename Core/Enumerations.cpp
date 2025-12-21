@@ -9,7 +9,7 @@ enum class Message: DWORD {
     SwapCategoryTriggered,
     CapsLockOn,
     CapsLockOff,
-    ShowPopup, // wParam: languageState, lParam: lcid
+    ShowPopup, // wParam: LanguageState, lParam: LCID
     ClosePopup,
     UserInput,
 };

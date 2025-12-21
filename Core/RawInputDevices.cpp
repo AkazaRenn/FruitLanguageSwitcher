@@ -1,9 +1,9 @@
 import <memory>;
 import <Windows.h>;
-import "GetMessageThreadManager.cpp";
 import "KeyRemapLWin.cpp";
 import "KeyRemapRMenu.cpp";
 import "LanguageManager.cpp";
+import "MessageDispatcher.cpp";
 
 namespace Core {
 class RawInputDevices: public Singleton<RawInputDevices> {
@@ -25,16 +25,17 @@ private:
         RI_MOUSE_HWHEEL;
 
     static LRESULT CALLBACK OnInput(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+        static std::vector<BYTE> lpb;
+
         switch (msg) {
         case WM_INPUT:
         {
             UINT dwSize = 0;
             GetRawInputData((HRAWINPUT)lParam, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
-
-            auto lpb = std::make_unique<BYTE[]>(dwSize);
-            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb.get(), &dwSize, sizeof(RAWINPUTHEADER)) == dwSize) {
-
-                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(lpb.get());
+            if (lpb.size() < dwSize)
+                lpb.resize(dwSize);
+            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb.data(), &dwSize, sizeof(RAWINPUTHEADER)) == dwSize) {
+                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(lpb.data());
                 if (raw->header.hDevice == nullptr) {
                     // ignore synthetic input
                     break;
@@ -63,7 +64,7 @@ private:
                         default:
                             KeyRemapRMenu::Instance().OnOtherKeyDown();
                             if (LanguageManager::Instance().CheckUserInput()) {
-                                GetMessageThreadManager::Instance().PostMessage(Message::UserInput);
+                                MessageDispatcher::Instance().PostMessage(Message::UserInput);
                             }
                             break;
                         }
@@ -71,7 +72,7 @@ private:
                         switch (kb.VKey) {
                         case VK_LWIN:
                         case VK_RWIN:
-                            GetMessageThreadManager::Instance().PostMessage(Message::WinKeyUp);
+                            MessageDispatcher::Instance().PostMessage(Message::WinKeyUp);
                             break;
                         default:
                             break;
@@ -91,7 +92,7 @@ private:
                         //        raw->header.hDevice);
 
                         if (LanguageManager::Instance().CheckUserInput()) {
-                            GetMessageThreadManager::Instance().PostMessage(Message::UserInput);
+                            MessageDispatcher::Instance().PostMessage(Message::UserInput);
                         }
                     }
                 }

@@ -16,17 +16,17 @@ constexpr bool IsExtendedKey(WORD vk) {
     return std::ranges::contains(extendedKeys, vk);
 }
 
-inline void SetKey(WORD key, std::unique_ptr<INPUT[]>& inputs, size_t downIndex, size_t upIndex) {
+inline void SetKey(WORD key, INPUT& downInput, INPUT& upInput) {
     DWORD flags = IsExtendedKey(key) ? KEYEVENTF_EXTENDEDKEY : 0;
 
-    inputs[downIndex] = INPUT {
+    downInput = INPUT {
         .type = INPUT_KEYBOARD,
         .ki = {
             .wVk = key,
             .dwFlags = flags,
         },
     };
-    inputs[upIndex] = INPUT {
+    upInput = INPUT {
         .type = INPUT_KEYBOARD,
         .ki = {
             .wVk = key,
@@ -40,7 +40,7 @@ inline UINT SendKeySequence(std::vector<WORD> keys) {
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 
     for (size_t i = 0; i < keys.size(); i++) {
-        SetKey(keys[i], inputs, i * 2, i * 2 + 1);
+        SetKey(keys[i], inputs[i * 2], inputs[i * 2 + 1]);
     }
 
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
@@ -51,7 +51,7 @@ inline UINT SendKeyCombination(std::vector<WORD> keys) {
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 
     for (size_t i = 0; i < keys.size(); i++) {
-        SetKey(keys[i], inputs, i, numInputs - i - 1);
+        SetKey(keys[i], inputs[i], inputs[numInputs - i - 1]);
     }
 
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
@@ -81,5 +81,14 @@ inline bool SetScrollLockState(bool on) {
         return true;
     }
     return false;
+}
+
+// From https://github.com/microsoft/PowerToys/blob/main/src/common/utils/game_mode.h
+inline bool IsRunningD3DFullscreen() {
+    QUERY_USER_NOTIFICATION_STATE state;
+    if (SHQueryUserNotificationState(&state) != S_OK) {
+        return false; // unable to determine -> treat as not fullscreen
+    }
+    return (state == QUNS_RUNNING_D3D_FULL_SCREEN);
 }
 }

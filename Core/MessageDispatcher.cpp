@@ -6,10 +6,17 @@ import "Singleton.cpp";
 import "Utilities.cpp";
 
 namespace Core {
-class GetMessageThreadManager: public Singleton<GetMessageThreadManager> {
+class MessageDispatcher: public Singleton<MessageDispatcher> {
+    friend class Singleton<MessageDispatcher>;
+
 private:
     std::unordered_map<Message, std::unordered_set<DWORD>> messageToThreadIdsMap;
     std::mutex messageToThreadIdsMapMutex;
+
+    ~MessageDispatcher() {
+        std::lock_guard<std::mutex> lock(messageToThreadIdsMapMutex);
+        messageToThreadIdsMap.clear();
+    }
 
 public:
     void RegisterThread(Message message, DWORD threadId) {

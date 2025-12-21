@@ -1,6 +1,6 @@
 import <functional>;
 import <thread>;
-import "GetMessageThreadManager.cpp";
+import "MessageDispatcher.cpp";
 
 namespace Core {
 class GetMessageThread {
@@ -9,7 +9,7 @@ private:
         threadId = GetCurrentThreadId();
         for (const auto& [message, processMessageFunction] : messageToProcessFunctionMap) {
             if (processMessageFunction) {
-                GetMessageThreadManager::Instance().RegisterThread(message, threadId);
+                MessageDispatcher::Instance().RegisterThread(message, threadId);
             }
         }
 

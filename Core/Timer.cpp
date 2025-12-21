@@ -12,6 +12,7 @@ private:
             return;
         }
         pThis->onTimerExpiry();
+        SetThreadpoolTimer(pThis->threadpoolTimer, NULL, 0, 0);
     }
 
 private:
@@ -50,11 +51,13 @@ public:
         SetThreadpoolTimer(threadpoolTimer, &ft, 0, 0);
     }
 
-    // Return false if the timer has already been handled, true otherwise
+    // Return false if the timer has already been handled (cancellation failed), true otherwise
     bool Cancel() {
-        bool timerHandled = handled.exchange(true);
+        if (handled.exchange(true)) {
+            return false;
+        }
         SetThreadpoolTimer(threadpoolTimer, NULL, 0, 0);
-        return !timerHandled;
+        return true;
     }
 };
 }

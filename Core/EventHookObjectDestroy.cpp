@@ -1,4 +1,4 @@
-import "GetMessageThreadManager.cpp";
+import "MessageDispatcher.cpp";
 import "WinEventHook.cpp";
 
 namespace Core {
@@ -11,7 +11,7 @@ private:
 private:
 	void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
 		if (dwEvent == EVENT_OBJECT_DESTROY && idObject == OBJID_WINDOW) {
-			GetMessageThreadManager::Instance().PostMessage(Message::WindowDestroyed, 0, reinterpret_cast<LPARAM>(hwnd));
+			MessageDispatcher::Instance().PostMessage(Message::WindowDestroyed, 0, reinterpret_cast<LPARAM>(hwnd));
 		}
 	}
 };

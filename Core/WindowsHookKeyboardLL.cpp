@@ -1,8 +1,8 @@
-import "GetMessageThreadManager.cpp";
-import "WindowsHook.cpp";
 import "KeyRemapCapital.cpp";
 import "KeyRemapLWin.cpp";
 import "KeyRemapRMenu.cpp";
+import "MessageDispatcher.cpp";
+import "WindowsHook.cpp";
 
 namespace Core {
 class WindowsHookKeyboardLL: public WindowsHook<WindowsHookKeyboardLL> {

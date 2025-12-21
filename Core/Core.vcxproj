@@ -18,10 +18,11 @@
   <ItemGroup>
     <ClCompile Include="EventHookObjectDestroy.cpp" />
     <ClCompile Include="KeyRemapCapital.cpp" />
+    <ClCompile Include="Task.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="EventHookSystemForegound.cpp" />
     <ClCompile Include="GetMessageThread.cpp" />
-    <ClCompile Include="GetMessageThreadManager.cpp" />
+    <ClCompile Include="MessageDispatcher.cpp" />
     <ClCompile Include="KeyRemapRMenu.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="LanguageManager.cpp" />

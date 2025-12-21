@@ -16,6 +16,9 @@
     <Filter Include="Abstract">
       <UniqueIdentifier>{b283f720-42fa-4336-9e3b-66a33a7356a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Messaging">
+      <UniqueIdentifier>{72c37d3a-de9d-40fb-ae07-fb4b8d494ab0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinEventHook.cpp">
@@ -23,12 +26,6 @@
     </ClCompile>
     <ClCompile Include="Singleton.cpp">
       <Filter>Abstract</Filter>
-    </ClCompile>
-    <ClCompile Include="GetMessageThread.cpp">
-      <Filter>Others</Filter>
-    </ClCompile>
-    <ClCompile Include="GetMessageThreadManager.cpp">
-      <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="Utilities.cpp">
       <Filter>Others</Filter>
@@ -68,6 +65,15 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDispatcher.cpp">
+      <Filter>Messaging</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMessageThread.cpp">
+      <Filter>Messaging</Filter>
     </ClCompile>
     <ClCompile Include="Interop.hpp" />
     <ClCompile Include="Interop.cpp" />

@@ -1,4 +1,4 @@
-import "GetMessageThreadManager.cpp";
+import "MessageDispatcher.cpp";
 import "Timer.cpp";
 
 namespace Core {
@@ -8,7 +8,7 @@ class KeyRemapCapital: public Singleton<KeyRemapCapital> {
 private:
     static void SetCapsLockStateAndPostMessage(bool on) {
         if (SetCapsLockState(on)) {
-            GetMessageThreadManager::Instance().PostMessage(on ? Message::CapsLockOn : Message::CapsLockOff);
+            MessageDispatcher::Instance().PostMessage(on ? Message::CapsLockOn : Message::CapsLockOff);
         }
     }
 
@@ -39,7 +39,7 @@ public:
 
     void OnCapitalKeyUp() {
         if (timer.Cancel()) {
-            GetMessageThreadManager::Instance().PostMessage(Message::SwapCategoryTriggered);
+            MessageDispatcher::Instance().PostMessage(Message::SwapCategoryTriggered);
         }
         CapitalKeyDown = false;
     }

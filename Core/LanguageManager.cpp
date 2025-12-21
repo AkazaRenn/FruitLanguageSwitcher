@@ -5,14 +5,16 @@ import "Enumerations.cpp";
 import "GetMessageThread.cpp";
 import "Language.cpp";
 import "Singleton.cpp";
+import "Task.cpp";
 import "Timer.cpp";
+import "Utilities.cpp";
 
 namespace Core {
 class LanguageManager: public Singleton<LanguageManager> {
     friend class Singleton<LanguageManager>;
 
 private:
-    static const HKL GetCurrentWindowKeyboardLayout(HWND hwnd) {
+    static const HKL GetWindowKeyboardLayout(HWND hwnd) {
         DWORD threadId = GetWindowThreadProcessId(hwnd, nullptr);
         return GetKeyboardLayout(threadId);
     }
@@ -56,7 +58,7 @@ private:
         if (it != instance.windowToLanguageMap.end()) {
             instance.ActivateLanguage(it->second, hwnd);
         } else {
-            instance.ActivateLanguage(GetCurrentWindowKeyboardLayout(hwnd), hwnd);
+            instance.ActivateLanguage(GetWindowKeyboardLayout(hwnd), hwnd);
         }
     }
 
@@ -75,17 +77,8 @@ private:
     }
 
     static void OnWinKeyUp(const MSG& msg) {
-        Sleep(300); // Wait for IME value to update
-        auto& instance = Instance();
-        const HWND hwnd = GetForegroundWindow();
-        const HKL oldHkl = instance.activeLanguage.get().hkl;
-        const HKL newHkl = GetCurrentWindowKeyboardLayout(hwnd);
-
-        instance.ActivateLanguage(newHkl, hwnd);
-        if (newHkl != oldHkl) {
-            // Turn off capslock if the language changes
-            SetCapsLockState(false);
-        }
+        Instance().pollingLanguageUpdate = true;
+        Instance().updateLanguageTask.Start();
     }
 
     static void OnCapsLockOn(const MSG& msg) {
@@ -115,16 +108,24 @@ private:
         instance.windowToLanguageMap.erase(hwnd);
     }
 
+    static void OnUserInput(const MSG& msg) {
+        Instance().ClosePopup();
+        Instance().closePopupTimer.Cancel();
+    }
+
 private:
+std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
     std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
     std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
     std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
     std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
-    std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
     std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
 
-    bool checkMouseInput = false;
-    Timer popupTimer;
+    bool checkUserInput = false;
+    Timer closePopupTimer;
+
+    bool pollingLanguageUpdate = false;
+    Task updateLanguageTask;
 
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, &OnForegroundChanged },
@@ -133,12 +134,16 @@ private:
         { Message::WinKeyUp, &OnWinKeyUp },
         { Message::CapsLockOn, &OnCapsLockOn },
         { Message::CapsLockOff, &OnCapsLockOff },
+        { Message::UserInput, &OnUserInput },
     });
 
     LanguageManager()
-        : popupTimer(2000, [this]() {
+        : closePopupTimer(2000, [this]() {
             ClosePopup();
-    }) {}
+        })
+        , updateLanguageTask([this]() {
+            UpdateLanguage();
+        }) {}
 
     void ActivateLanguage(HKL hkl, HWND hwnd) {
         if (!hklToLanguageMap.contains(hkl)) {
@@ -157,23 +162,52 @@ private:
             activeLatinLanguage = activeLanguage;
         }
         SetScrollLockState(activeLanguage.get().isImeLanguage);
+        pollingLanguageUpdate = false;
 
         if (updateWindowToLanguageMap) {
             windowToLanguageMap.insert_or_assign(hwnd, activeLanguage);
         }
+
     }
 
     void ShowPopup(LanguageState languageState) {
-        GetMessageThreadManager::Instance().PostMessage(Message::ShowPopup,
+        if (IsRunningD3DFullscreen()) {
+            return;
+        }
+        MessageDispatcher::Instance().PostMessage(Message::ShowPopup,
             static_cast<WPARAM>(languageState),
             static_cast<LPARAM>(Instance().activeImeLanguage.get().lcid));
-        popupTimer.Reset();
-        checkMouseInput = true;
+        closePopupTimer.Reset();
+        checkUserInput = true;
     }
 
     void ClosePopup() {
-        checkMouseInput = false;
-        GetMessageThreadManager::Instance().PostMessage(Message::ClosePopup);
+        if (!checkUserInput) {
+            return;
+        }
+        checkUserInput = false;
+        MessageDispatcher::Instance().PostMessage(Message::ClosePopup);
+        closePopupTimer.Cancel();
+    }
+
+    void UpdateLanguage() {
+        // Poll the HKL update as it would have a delay
+        const HWND hwnd = GetForegroundWindow();
+        const HKL oldHkl = activeLanguage.get().hkl;
+        HKL newHkl;
+        int retry = 10;
+        while (((newHkl = GetWindowKeyboardLayout(hwnd)) == oldHkl) && (retry-- > 0)) {
+            Sleep(50);
+            if (!pollingLanguageUpdate) {
+                return;
+            }
+        }
+
+        ActivateLanguage(newHkl, hwnd);
+        if (newHkl != oldHkl) {
+            // Turn off capslock if the language changes
+            SetCapsLockState(false);
+        }
     }
 
 public:
@@ -186,7 +220,7 @@ public:
     }
 
     constexpr bool CheckUserInput() const {
-        return checkMouseInput;
+        return checkUserInput;
     }
 };
 }
