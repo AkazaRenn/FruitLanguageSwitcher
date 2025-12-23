@@ -1,6 +1,7 @@
 import <algorithm>;
 import <array>;
 import <memory>;
+import <string>;
 import <vector>;
 import <Windows.h>;
 
@@ -78,6 +79,25 @@ inline bool GetScrollLockState() {
 inline bool SetScrollLockState(bool on) {
     if (GetScrollLockState() != on) {
         SendKeySequence({VK_SCROLL});
+        return true;
+    }
+    return false;
+}
+
+inline bool IsPackageInstalled(const std::wstring& packageFamilyName) {
+    const std::wstring basePath = L"Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\CurrentVersion\\AppModel\\SystemAppData\\";
+
+    HKEY hKey;
+    LONG result = RegOpenKeyEx(
+        HKEY_CURRENT_USER,
+        (basePath + packageFamilyName).c_str(),
+        0,
+        KEY_READ,
+        &hKey
+    );
+
+    if (result == ERROR_SUCCESS) {
+        RegCloseKey(hKey);
         return true;
     }
     return false;

@@ -5,12 +5,14 @@ import "Utilities.cpp";
 namespace Core {
 class KeyRemapLWin: public Singleton<KeyRemapLWin> {
 private:
-    bool lWinKeyDown = false;
-    bool otherKeyDown = false;
-
     static void SendCommandPaletteShortcut() {
         SendKeyCombination({VK_LWIN,VK_MENU,VK_SPACE});
     }
+
+private:
+    bool lWinKeyDown = false;
+    bool otherKeyDown = false;
+    const bool commandPaletteInstalled = IsPackageInstalled(L"Microsoft.CommandPalette_8wekyb3d8bbwe");
 
 public:
     constexpr void OnLWinDown() {
@@ -25,7 +27,7 @@ public:
     bool OnLWinUp() {
         lWinKeyDown = false;
 
-        if (otherKeyDown) {
+        if (otherKeyDown || (!commandPaletteInstalled)) {
             return false;
         }
 
