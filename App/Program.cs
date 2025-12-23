@@ -27,15 +27,25 @@ namespace App {
 
         static void Main(string[] args) {
             Interop.Core core = new();
-            core.OnEvent += Obj_OnSomethingHappened;
+            core.ShowFlyoutLanguageEvent += OnShowFlyoutLanguageEvent;
+            core.ShowFlyoutCapsLockEvent += OnShowFlyoutCapsLockEvent;
+            core.CloseFlyoutEvent += OnCloseFlyoutEvent;
             MSG msg;
             while (GetMessage(out msg, IntPtr.Zero, 0, 0)) {
                 TranslateMessage(ref msg);
                 DispatchMessage(ref msg);
             }
         }
-        private static void Obj_OnSomethingHappened() {
-            Console.WriteLine("App: Event received");
+        private static void OnShowFlyoutLanguageEvent(bool inImeLanguage, uint lcid) {
+            Console.WriteLine($"App: ShowFlyoutEvent inImeLanguage:{inImeLanguage} lcid:0x{lcid:X}");
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+        private static void OnShowFlyoutCapsLockEvent() {
+            Console.WriteLine($"App: ShowFlyoutCapsLockEvent");
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+        private static void OnCloseFlyoutEvent() {
+            Console.WriteLine("App: CloseFlyoutEvent");
             Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 

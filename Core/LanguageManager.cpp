@@ -64,7 +64,7 @@ private:
 
     static void OnSwapCategoryTriggered(const MSG& msg) {
         auto& instance = Instance();
-        instance.ShowPopup(instance.activeLanguage.get().isImeLanguage ? LanguageState::Off : LanguageState::On);
+        instance.ShowFlyout(instance.activeLanguage.get().isImeLanguage ? FlyoutState::Latin : FlyoutState::IME);
 
         SetCapsLockState(false);
         const HWND hwnd = GetForegroundWindow();
@@ -83,7 +83,7 @@ private:
 
     static void OnCapsLockOn(const MSG& msg) {
         auto& instance = Instance();
-        instance.ShowPopup(LanguageState::CapsLockOn);
+        instance.ShowFlyout(FlyoutState::CapsLock);
 
         instance.activeLanguageBeforeCapsLock = instance.activeLanguage;
         if (instance.activeLanguage.get().isImeLanguage) {
@@ -94,7 +94,7 @@ private:
 
     static void OnCapsLockOff(const MSG& msg) {
         auto& instance = Instance();
-        instance.ShowPopup(instance.activeLanguageBeforeCapsLock.get().isImeLanguage ? LanguageState::On : LanguageState::Off);
+        instance.ShowFlyout(instance.activeLanguageBeforeCapsLock.get().isImeLanguage ? FlyoutState::IME : FlyoutState::Latin);
 
         if (instance.activeLanguageBeforeCapsLock.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
@@ -109,8 +109,8 @@ private:
     }
 
     static void OnUserInput(const MSG& msg) {
-        Instance().ClosePopup();
-        Instance().closePopupTimer.Cancel();
+        Instance().CloseFlyout();
+        Instance().closeFlyoutTimer.Cancel();
     }
 
 private:
@@ -122,7 +122,7 @@ std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
     std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
 
     bool checkUserInput = false;
-    Timer closePopupTimer;
+    Timer closeFlyoutTimer;
 
     bool pollingLanguageUpdate = false;
     Task updateLanguageTask;
@@ -138,8 +138,8 @@ std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
     });
 
     LanguageManager()
-        : closePopupTimer(2000, [this]() {
-            ClosePopup();
+        : closeFlyoutTimer(2000, [this]() {
+            CloseFlyout();
         })
         , updateLanguageTask([this]() {
             UpdateLanguage();
@@ -170,24 +170,21 @@ std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
 
     }
 
-    void ShowPopup(LanguageState languageState) {
-        if (IsRunningD3DFullscreen()) {
-            return;
-        }
-        MessageDispatcher::Instance().PostMessage(Message::ShowPopup,
-            static_cast<WPARAM>(languageState),
+    void ShowFlyout(FlyoutState flyoutState) {
+        MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
+            static_cast<WPARAM>(flyoutState),
             static_cast<LPARAM>(Instance().activeImeLanguage.get().lcid));
-        closePopupTimer.Reset();
+        closeFlyoutTimer.Reset();
         checkUserInput = true;
     }
 
-    void ClosePopup() {
+    void CloseFlyout() {
         if (!checkUserInput) {
             return;
         }
         checkUserInput = false;
-        MessageDispatcher::Instance().PostMessage(Message::ClosePopup);
-        closePopupTimer.Cancel();
+        MessageDispatcher::Instance().PostMessage(Message::CloseFlyout);
+        closeFlyoutTimer.Cancel();
     }
 
     void UpdateLanguage() {

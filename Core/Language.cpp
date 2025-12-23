@@ -29,6 +29,9 @@ private:
 
 private:
     void SetConversionMode(HWND hwnd) const {
+        int retry = 2;
+        const int retryPeriodMs = 100;
+
         switch (lcid) {
         case zh_TW:
             [[fallthrough]];
@@ -38,29 +41,29 @@ private:
             [[fallthrough]];
         case zh_SG:
             [[fallthrough]];
-        case zh_MO:
-            {
-                const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
-                int retry = 5;
-                do {
-                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                    Sleep(50);
-                } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
-            }
-            return;
-        case ko_KR:
-        {
-            const DWORD expectedMode = IME_CMODE_NATIVE;
-            int retry = 5;
+        case zh_MO: {
+            const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
             do {
                 SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                Sleep(50);
+                Sleep(retryPeriodMs);
             } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
-        }
-        return;
-        case ja_JP:
-            SendKeySequence({VK_IME_ON});
             return;
+        }
+        case ko_KR: {
+            const DWORD expectedMode = IME_CMODE_NATIVE;
+            do {
+                SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                Sleep(retryPeriodMs);
+            } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+            return;
+        }
+        case ja_JP: {
+            do {
+                SendKeySequence({VK_IME_ON});
+                Sleep(retryPeriodMs);
+            } while (retry-- > 0);
+            return;
+        }
         case am_ET:
             [[fallthrough]];
         case ti_ET:

@@ -82,13 +82,4 @@ inline bool SetScrollLockState(bool on) {
     }
     return false;
 }
-
-// From https://github.com/microsoft/PowerToys/blob/main/src/common/utils/game_mode.h
-inline bool IsRunningD3DFullscreen() {
-    QUERY_USER_NOTIFICATION_STATE state;
-    if (SHQueryUserNotificationState(&state) != S_OK) {
-        return false; // unable to determine -> treat as not fullscreen
-    }
-    return (state == QUNS_RUNNING_D3D_FULL_SCREEN);
-}
 }

@@ -5,7 +5,14 @@ import "MessageDispatcher.cpp";
 namespace Core {
 class GetMessageThread {
 private:
-    void GetMessageProc() {
+    using ProcessMessageFunction = std::function<void(const MSG&)>;
+    using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
+
+    const MessageToProcessFunctionMap messageToProcessFunctionMap;
+    std::thread thread;
+    DWORD threadId = 0;
+
+    void ThreadProc() {
         threadId = GetCurrentThreadId();
         for (const auto& [message, processMessageFunction] : messageToProcessFunctionMap) {
             if (processMessageFunction) {
@@ -33,17 +40,10 @@ private:
         }
     }
 
-    using ProcessMessageFunction = std::function<void(const MSG&)>;
-    using MessageToProcessFunctionMap = std::unordered_map<Message, ProcessMessageFunction>;
-
-    const MessageToProcessFunctionMap messageToProcessFunctionMap;
-    std::thread thread;
-    DWORD threadId = 0;
-
 public:
     GetMessageThread(const MessageToProcessFunctionMap _messageToProcessFunctionMap)
         : messageToProcessFunctionMap(_messageToProcessFunctionMap),
-        thread(&GetMessageThread::GetMessageProc, this) {}
+        thread(&GetMessageThread::ThreadProc, this) {}
 
     ~GetMessageThread() {
         PostThreadMessage(threadId, WM_QUIT, 0, 0);

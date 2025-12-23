@@ -9,18 +9,18 @@ enum class Message: DWORD {
     SwapCategoryTriggered,
     CapsLockOn,
     CapsLockOff,
-    ShowPopup, // wParam: LanguageState, lParam: LCID
-    ClosePopup,
     UserInput,
+    ShowFlyout, // wParam: FlyoutState, lParam: LCID
+    CloseFlyout,
 };
 
 constexpr DWORD VAL(Message msg) {
     return static_cast<DWORD>(msg);
 }
 
-enum class LanguageState {
-    On,
-    Off,
-    CapsLockOn,
+enum class FlyoutState {
+    Latin,
+    IME,
+    CapsLock,
 };
 }
