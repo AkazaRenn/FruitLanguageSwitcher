@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tb="using:H.NotifyIcon"
+    >
+    <XamlUICommand
+        x:Key="Command1"
+        Label="Command1"
+        Description="Command1"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="ContactInfo" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <XamlUICommand
+        x:Key="Command2"
+        Label="Command2"
+        Description="Command2"
+        >
+        <XamlUICommand.IconSource>
+            <SymbolIconSource Symbol="Admin" />
+        </XamlUICommand.IconSource>
+    </XamlUICommand>
+    <tb:TaskbarIcon
+        x:Key="NotifyIcon"
+        Visibility="Visible"
+        IconSource="/Assets/durian.ico"
+        ContextMenuMode="PopupMenu"
+        NoLeftClickDelay="True"
+        MenuActivation="RightClick"
+        ToolTipText="Fruit Language Switcher"
+        >
+        <tb:TaskbarIcon.ContextFlyout>
+            <MenuFlyout >
+                <MenuFlyoutItem Command="{StaticResource Command1}" />
+                <MenuFlyoutSeparator />
+                <MenuFlyoutItem Command="{StaticResource Command2}" />
+            </MenuFlyout>
+        </tb:TaskbarIcon.ContextFlyout>
+    </tb:TaskbarIcon>
+</ResourceDictionary>
