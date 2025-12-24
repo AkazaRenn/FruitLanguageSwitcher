@@ -7,46 +7,35 @@
 namespace Interop {
 public ref class Core sealed {
 private:
-    using ProcessMessageFunctionPtr = void(__stdcall*)(const MSG&);
-    delegate void ProcessMessageDelegate(const MSG& msg);
-    System::Collections::Generic::HashSet<ProcessMessageDelegate^>^ delegates = gcnew System::Collections::Generic::HashSet<ProcessMessageDelegate^>();
+    delegate void ShowFlyoutDelegate(LCID activeLcid, LCID activeImeLcid);
+    ShowFlyoutDelegate^ showFlyoutDelegate = gcnew ShowFlyoutDelegate(this, &Core::ShowFlyout);
+    ::Core::Interop* pUnmanaged = new ::Core::Interop(ToShowFlyoutFunctionPtr(gcnew ShowFlyoutDelegate(this, &Core::ShowFlyout)));
 
-    System::IntPtr pUnmanaged = System::IntPtr(new ::Core::Interop({
-        {::Core::Message::ShowFlyout, ToProcessMessageFunctionPtr(gcnew ProcessMessageDelegate(this, &Core::OnShowFlyout))},
-        {::Core::Message::CloseFlyout, ToProcessMessageFunctionPtr(gcnew ProcessMessageDelegate(this, &Core::OnCloseFlyout))},
-    }));;;
-
-    ProcessMessageFunctionPtr ToProcessMessageFunctionPtr(ProcessMessageDelegate^ processMessageDelegate) {
-        delegates->Add(processMessageDelegate);
-        return static_cast<ProcessMessageFunctionPtr>(
+    ::Core::ShowFlyoutFunction ToShowFlyoutFunctionPtr(ShowFlyoutDelegate^ processMessageDelegate) {
+        return static_cast<::Core::ShowFlyoutFunction>(
             System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(processMessageDelegate).ToPointer());
     }
 
-    void OnShowFlyout(const MSG& msg) {
-        if (static_cast<::Core::FlyoutState>(msg.wParam) == ::Core::FlyoutState::CapsLock) {
-            ShowFlyoutCapsLockEvent();
+    void ShowFlyout(LCID activeLcid, LCID activeImeLcid) {
+        if (activeLcid) {
+            ShowFlyoutLanguageEvent(activeLcid == activeImeLcid, activeImeLcid);
         } else {
-            ShowFlyoutLanguageEvent(
-                static_cast<::Core::FlyoutState>(msg.wParam) == ::Core::FlyoutState::IME,
-                static_cast<LCID>(msg.lParam)
-            );
+            ShowFlyoutCapsLockEvent();
         }
     }
 
-    void OnCloseFlyout(const MSG& msg) {
-        CloseFlyoutEvent();
-    }
-
 public:
-    delegate void ShowFlyoutLanguageEventHandler(bool inImeLanguage, LCID lcid);
+    delegate void ShowFlyoutLanguageEventHandler(bool on, LCID imeLanguageLcid);
     event ShowFlyoutLanguageEventHandler^ ShowFlyoutLanguageEvent;
     delegate void ShowFlyoutCapsLockEventHandler();
     event ShowFlyoutCapsLockEventHandler^ ShowFlyoutCapsLockEvent;
-    delegate void CloseFlyoutEventHandler();
-    event CloseFlyoutEventHandler^ CloseFlyoutEvent;
 
     ~Core() {
-        delete static_cast<::Core::Interop*>(pUnmanaged.ToPointer());
+        this->!Core();
+    }
+
+    !Core() {
+        delete pUnmanaged;
     }
 };
 }

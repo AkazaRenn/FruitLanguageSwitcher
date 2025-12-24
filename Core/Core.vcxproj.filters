@@ -48,9 +48,6 @@
     <ClCompile Include="Enumerations.cpp">
       <Filter>Others</Filter>
     </ClCompile>
-    <ClCompile Include="RawInputDevices.cpp">
-      <Filter>Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="KeyRemapRMenu.cpp">
       <Filter>Key Remapping</Filter>
     </ClCompile>

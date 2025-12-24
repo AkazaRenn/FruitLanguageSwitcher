@@ -5,22 +5,19 @@
     xmlns:tb="using:H.NotifyIcon"
     >
     <XamlUICommand
-        x:Key="Command1"
-        Label="Command1"
-        Description="Command1"
+        x:Key="ExitApplicationCommand"
+        Label="Exit"
+        Description="Exit"
         >
         <XamlUICommand.IconSource>
-            <SymbolIconSource Symbol="ContactInfo" />
+            <SymbolIconSource Symbol="ClosePane" />
         </XamlUICommand.IconSource>
-    </XamlUICommand>
-    <XamlUICommand
-        x:Key="Command2"
-        Label="Command2"
-        Description="Command2"
-        >
-        <XamlUICommand.IconSource>
-            <SymbolIconSource Symbol="Admin" />
-        </XamlUICommand.IconSource>
+        <XamlUICommand.KeyboardAccelerators>
+            <KeyboardAccelerator
+                Key="E"
+                Modifiers="Control"
+                />
+        </XamlUICommand.KeyboardAccelerators>
     </XamlUICommand>
     <tb:TaskbarIcon
         x:Key="NotifyIcon"
@@ -33,9 +30,7 @@
         >
         <tb:TaskbarIcon.ContextFlyout>
             <MenuFlyout >
-                <MenuFlyoutItem Command="{StaticResource Command1}" />
-                <MenuFlyoutSeparator />
-                <MenuFlyoutItem Command="{StaticResource Command2}" />
+                <MenuFlyoutItem Command="{StaticResource ExitApplicationCommand}" />
             </MenuFlyout>
         </tb:TaskbarIcon.ContextFlyout>
     </tb:TaskbarIcon>

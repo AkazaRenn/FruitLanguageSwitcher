@@ -46,7 +46,32 @@ private:
         throw std::runtime_error("No language found");
     }
 
-    static void OnForegroundChanged(const MSG& msg) {
+private:
+    std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
+    std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
+    std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
+    std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
+    std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
+    std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
+
+    bool pollingLanguageUpdate = false;
+    Task updateLanguageTask;
+
+    GetMessageThread getMessageThread = GetMessageThread({
+        { Message::ForegroundChanged, [this](const MSG& msg) {OnForegroundChanged(msg); } },
+        { Message::WindowDestroyed, [this](const MSG& msg) {OnWindowDestroyed(msg); } },
+        { Message::SwapCategoryTriggered, [this](const MSG& msg) {OnSwapCategoryTriggered(msg); } },
+        { Message::WinKeyUp, [this](const MSG& msg) {OnWinKeyUp(msg); } },
+        { Message::CapsLockOn, [this](const MSG& msg) {OnCapsLockOn(msg); } },
+        { Message::CapsLockOff,[this](const MSG& msg) {OnCapsLockOff(msg); } },
+    });
+
+    LanguageManager()
+        : updateLanguageTask([this]() {
+        UpdateLanguage();
+    }) {}
+
+    void OnForegroundChanged(const MSG& msg) {
         SetCapsLockState(false);
         const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
         auto& instance = Instance();
@@ -54,96 +79,55 @@ private:
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
-        auto it = instance.windowToLanguageMap.find(hwnd);
-        if (it != instance.windowToLanguageMap.end()) {
-            instance.ActivateLanguage(it->second, hwnd);
+        auto it = windowToLanguageMap.find(hwnd);
+        if (it != windowToLanguageMap.end()) {
+            ActivateLanguage(it->second, hwnd);
         } else {
-            instance.ActivateLanguage(GetWindowKeyboardLayout(hwnd), hwnd);
+            ActivateLanguage(GetWindowKeyboardLayout(hwnd), hwnd);
         }
     }
 
-    static void OnSwapCategoryTriggered(const MSG& msg) {
-        auto& instance = Instance();
-        instance.ShowFlyout(instance.activeLanguage.get().isImeLanguage ? FlyoutState::Latin : FlyoutState::IME);
+    void OnWindowDestroyed(const MSG& msg) {
+        const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
+        windowToLanguageMap.erase(hwnd);
+    }
+
+    void OnSwapCategoryTriggered(const MSG& msg) {
+        ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
 
         SetCapsLockState(false);
         const HWND hwnd = GetForegroundWindow();
 
-        if (instance.activeLanguage.get().isImeLanguage) {
-            instance.ActivateLanguage(instance.activeLatinLanguage, hwnd);
+        if (activeLanguage.get().isImeLanguage) {
+            ActivateLanguage(activeLatinLanguage, hwnd);
         } else {
-            instance.ActivateLanguage(instance.activeImeLanguage, hwnd);
+            ActivateLanguage(activeImeLanguage, hwnd);
         }
     }
 
-    static void OnWinKeyUp(const MSG& msg) {
-        Instance().pollingLanguageUpdate = true;
-        Instance().updateLanguageTask.Start();
+    void OnWinKeyUp(const MSG& msg) {
+        pollingLanguageUpdate = true;
+        updateLanguageTask.Start();
     }
 
-    static void OnCapsLockOn(const MSG& msg) {
-        auto& instance = Instance();
-        instance.ShowFlyout(FlyoutState::CapsLock);
+    void OnCapsLockOn(const MSG& msg) {
+        ShowFlyout(0);
 
-        instance.activeLanguageBeforeCapsLock = instance.activeLanguage;
-        if (instance.activeLanguage.get().isImeLanguage) {
+        activeLanguageBeforeCapsLock = activeLanguage;
+        if (activeLanguage.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
-            instance.ActivateLanguage(instance.activeLatinLanguage, hwnd, false);
+            ActivateLanguage(activeLatinLanguage, hwnd, false);
         }
     }
 
-    static void OnCapsLockOff(const MSG& msg) {
-        auto& instance = Instance();
-        instance.ShowFlyout(instance.activeLanguageBeforeCapsLock.get().isImeLanguage ? FlyoutState::IME : FlyoutState::Latin);
+    void OnCapsLockOff(const MSG& msg) {
+        ShowFlyout(GetActiveLanguage(activeLanguageBeforeCapsLock.get().isImeLanguage).lcid);
 
-        if (instance.activeLanguageBeforeCapsLock.get().isImeLanguage) {
+        if (activeLanguageBeforeCapsLock.get().isImeLanguage) {
             const HWND hwnd = GetForegroundWindow();
-            instance.ActivateLanguage(instance.activeLanguageBeforeCapsLock, hwnd);
+            ActivateLanguage(activeLanguageBeforeCapsLock, hwnd);
         }
     }
-
-    static void OnWindowDestroyed(const MSG& msg) {
-        auto& instance = Instance();
-        const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
-        instance.windowToLanguageMap.erase(hwnd);
-    }
-
-    static void OnUserInput(const MSG& msg) {
-        Instance().CloseFlyout();
-        Instance().closeFlyoutTimer.Cancel();
-    }
-
-private:
-std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
-    std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
-    std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
-    std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
-    std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
-    std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
-
-    bool checkUserInput = false;
-    Timer closeFlyoutTimer;
-
-    bool pollingLanguageUpdate = false;
-    Task updateLanguageTask;
-
-    GetMessageThread getMessageThread = GetMessageThread({
-        { Message::ForegroundChanged, &OnForegroundChanged },
-        { Message::WindowDestroyed, &OnWindowDestroyed },
-        { Message::SwapCategoryTriggered, &OnSwapCategoryTriggered },
-        { Message::WinKeyUp, &OnWinKeyUp },
-        { Message::CapsLockOn, &OnCapsLockOn },
-        { Message::CapsLockOff, &OnCapsLockOff },
-        { Message::UserInput, &OnUserInput },
-    });
-
-    LanguageManager()
-        : closeFlyoutTimer(2000, [this]() {
-            CloseFlyout();
-        })
-        , updateLanguageTask([this]() {
-            UpdateLanguage();
-        }) {}
 
     void ActivateLanguage(HKL hkl, HWND hwnd) {
         if (!hklToLanguageMap.contains(hkl)) {
@@ -170,21 +154,10 @@ std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
 
     }
 
-    void ShowFlyout(FlyoutState flyoutState) {
+    void ShowFlyout(LCID activeLcid) const {
         MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
-            static_cast<WPARAM>(flyoutState),
+            static_cast<WPARAM>(activeLcid),
             static_cast<LPARAM>(Instance().activeImeLanguage.get().lcid));
-        closeFlyoutTimer.Reset();
-        checkUserInput = true;
-    }
-
-    void CloseFlyout() {
-        if (!checkUserInput) {
-            return;
-        }
-        checkUserInput = false;
-        MessageDispatcher::Instance().PostMessage(Message::CloseFlyout);
-        closeFlyoutTimer.Cancel();
     }
 
     void UpdateLanguage() {
@@ -207,6 +180,10 @@ std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
         }
     }
 
+    constexpr Language& GetActiveLanguage(bool imeLanguage) const {
+        return imeLanguage ? activeImeLanguage.get() : activeLatinLanguage.get();
+    }
+
 public:
     void OnRMenuUp() const {
         activeLanguage.get().OnRMenuUp();
@@ -214,10 +191,6 @@ public:
 
     constexpr bool InImeLanguage() const {
         return activeLanguage.get().isImeLanguage;
-    }
-
-    constexpr bool CheckUserInput() const {
-        return checkUserInput;
     }
 };
 }

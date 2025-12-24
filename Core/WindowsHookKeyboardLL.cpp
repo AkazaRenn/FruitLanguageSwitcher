@@ -30,6 +30,7 @@ private:
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
+                    KeyRemapLWin::Instance().OnLWinDown();
                     break;
                 case VK_RMENU:
                     KeyRemapRMenu::Instance().OnRMenuDown();
@@ -39,6 +40,7 @@ private:
                     blockEvent = true;
                     break;
                 default:
+                    KeyRemapRMenu::Instance().OnOtherKeyDown();
                     KeyRemapLWin::Instance().OnOtherKeyDown();
                     break;
                 }
@@ -46,6 +48,9 @@ private:
                 switch (kb->vkCode) {
                 case VK_LWIN:
                     blockEvent = KeyRemapLWin::Instance().OnLWinUp();
+                    [[fallthrough]];
+                case VK_RWIN:
+                    MessageDispatcher::Instance().PostMessage(Message::WinKeyUp);
                     break;
                 case VK_RMENU:
                     blockEvent = KeyRemapRMenu::Instance().OnRMenuUp();

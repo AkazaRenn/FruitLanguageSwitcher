@@ -3,24 +3,16 @@
 namespace Core {
 enum class Message: DWORD {
     Unused = WM_APP,
-    ForegroundChanged, // lParam: HWND
+    ForegroundChanged, // lParam: HWND hwnd
     WindowDestroyed,
     WinKeyUp,
     SwapCategoryTriggered,
     CapsLockOn,
     CapsLockOff,
-    UserInput,
-    ShowFlyout, // wParam: FlyoutState, lParam: LCID
-    CloseFlyout,
+    ShowFlyout, // wParam: LCID activeLanguage, lParam: LCID activeImeLanguage
 };
 
 constexpr DWORD VAL(Message msg) {
     return static_cast<DWORD>(msg);
 }
-
-enum class FlyoutState {
-    Latin,
-    IME,
-    CapsLock,
-};
 }

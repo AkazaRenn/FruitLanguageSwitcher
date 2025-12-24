@@ -27,7 +27,6 @@
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="LanguageManager.cpp" />
     <ClCompile Include="Enumerations.cpp" />
-    <ClCompile Include="RawInputDevices.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsHook.cpp" />

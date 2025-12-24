@@ -1,5 +1,8 @@
-﻿using Microsoft.UI.Xaml;
-using H.NotifyIcon;
+﻿using H.NotifyIcon;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
+using System;
+using System.Collections.Generic;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -9,8 +12,7 @@ namespace App {
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     public partial class App: Application {
-        private TaskbarIcon? notifyIcon;
-        private Interop.Core? core;
+        private readonly HashSet<IDisposable> disposables = [];
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -21,10 +23,22 @@ namespace App {
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args) {
-            notifyIcon = (TaskbarIcon)Resources["NotifyIcon"];
+            var exitApplicationCommand = (XamlUICommand)Resources["ExitApplicationCommand"];
+            exitApplicationCommand.ExecuteRequested += ExitApplicationCommand_ExecuteRequested;
+
+            TaskbarIcon notifyIcon = (TaskbarIcon)Resources["NotifyIcon"];
             notifyIcon.ForceCreate();
 
-            core = new();
+            disposables.Add(notifyIcon);
+            disposables.Add(new Interop.Core());
+        }
+
+        private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) {
+            foreach (var disposable in disposables) {
+                disposable.Dispose();
+            }
+
+            Exit();
         }
     }
 }
