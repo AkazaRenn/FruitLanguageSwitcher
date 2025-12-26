@@ -1,4 +1,5 @@
 ﻿using H.NotifyIcon;
+using Interop;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using System;
@@ -12,9 +13,9 @@ namespace App {
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     public partial class App: Application {
-        private readonly HashSet<IDisposable> disposables = [];
-
-        Flyout.Window window;
+        readonly HashSet<IDisposable> disposables = [];
+        Interop.Core? core;
+        Flyout.Window? window;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -30,17 +31,18 @@ namespace App {
 
             TaskbarIcon notifyIcon = (TaskbarIcon)Resources["NotifyIcon"];
             notifyIcon.ForceCreate();
-
             disposables.Add(notifyIcon);
-            //disposables.Add(new Interop.Core());
 
-            window = new();
+            core = new();
+            disposables.Add(core);
+
+            window = new(core);
             window.Show();
         }
 
         private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) {
             foreach (var disposable in disposables) {
-                disposable.Dispose();
+                disposable?.Dispose();
             }
 
             Exit();

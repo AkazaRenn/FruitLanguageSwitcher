@@ -21,11 +21,6 @@
                         <Setter Property="Padding" Value="0" />
                     </Style>
                 </Flyout.FlyoutPresenterStyle>
-                <StackPanel Width="32" Height="32" Padding="0,7,0,0">
-                    <FontIcon x:Name="FlyoutContent" Glyph="&#xE985;" FontSize="16" />
-                    <Border x:Name="FlyoutActiveIndicator" Height="2" CornerRadius="1" Margin="0,3,0,0"
-                        Width="16" Background="{ThemeResource TextFillColorPrimary}" />
-                </StackPanel>
                 <Flyout.SystemBackdrop>
                     <DesktopAcrylicBackdrop />
                 </Flyout.SystemBackdrop>
