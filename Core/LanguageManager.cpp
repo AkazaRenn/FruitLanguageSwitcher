@@ -74,7 +74,6 @@ private:
     void OnForegroundChanged(const MSG& msg) {
         SetCapsLockState(false);
         const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
-        auto& instance = Instance();
 
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.

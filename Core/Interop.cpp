@@ -1,5 +1,6 @@
 import "Interop.hpp";
 
+import "EventHookObjectDestroy.cpp";
 import "EventHookSystemForegound.cpp";
 import "GetMessageThread.cpp";
 import "LanguageManager.cpp";
@@ -7,6 +8,7 @@ import "WindowsHookKeyboardLL.cpp";
 
 namespace Core {
 Interop::Interop(ShowFlyoutFunction showFlyoutFunction) {
+    EventHookObjectDestroy::Instance();
     EventHookSystemForegound::Instance();
     LanguageManager::Instance();
     WindowsHookKeyboardLL::Instance();

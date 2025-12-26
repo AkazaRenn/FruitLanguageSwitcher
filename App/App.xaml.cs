@@ -14,6 +14,8 @@ namespace App {
     public partial class App: Application {
         private readonly HashSet<IDisposable> disposables = [];
 
+        Flyout.Window window;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -30,7 +32,10 @@ namespace App {
             notifyIcon.ForceCreate();
 
             disposables.Add(notifyIcon);
-            disposables.Add(new Interop.Core());
+            //disposables.Add(new Interop.Core());
+
+            window = new();
+            window.Show();
         }
 
         private void ExitApplicationCommand_ExecuteRequested(object? _, ExecuteRequestedEventArgs args) {
