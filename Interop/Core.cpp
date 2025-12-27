@@ -18,14 +18,14 @@ private:
 
     void ShowFlyout(LCID activeLcid, LCID activeImeLcid) {
         if (activeLcid) {
-            ShowFlyoutLanguageEvent(activeLcid == activeImeLcid, activeImeLcid);
+            ShowFlyoutLanguageEvent(activeLcid, activeImeLcid);
         } else {
             ShowFlyoutCapsLockEvent();
         }
     }
 
 public:
-    delegate void ShowFlyoutLanguageEventHandler(bool on, LCID imeLanguageLcid);
+    delegate void ShowFlyoutLanguageEventHandler(LCID activeLcid, LCID activeImeLcid);
     event ShowFlyoutLanguageEventHandler^ ShowFlyoutLanguageEvent;
     delegate void ShowFlyoutCapsLockEventHandler();
     event ShowFlyoutCapsLockEventHandler^ ShowFlyoutCapsLockEvent;

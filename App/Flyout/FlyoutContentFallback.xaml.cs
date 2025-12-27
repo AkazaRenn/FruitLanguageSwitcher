@@ -33,7 +33,7 @@ public sealed partial class FlyoutContentFallback: UserControl, IFlyoutContent {
                 (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"];
         } else {
             newFlyoutContent.Opacity = 0.5;
-            FlyoutActiveIndicator.Scale = new Vector3(0.67f, 1, 1);
+            FlyoutActiveIndicator.Scale = new Vector3(0.5f, 1, 1);
             FlyoutActiveIndicator.Background =
                 (Brush)Application.Current.Resources["TextFillColorDisabledBrush"];
         }

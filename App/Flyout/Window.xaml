@@ -9,7 +9,7 @@
     xmlns:winex="using:WinUIEx"
     mc:Ignorable="d">
 
-    <TextBlock x:Name="FlyoutAnchor">
+    <Canvas x:Name="FlyoutAnchor">
         <FlyoutBase.AttachedFlyout>
             <Flyout x:Name="FlyoutControl" Placement="Bottom" ShouldConstrainToRootBounds="False" >
                 <Flyout.FlyoutPresenterStyle>
@@ -26,7 +26,7 @@
                 </Flyout.SystemBackdrop>
             </Flyout>
         </FlyoutBase.AttachedFlyout>
-    </TextBlock>
+    </Canvas>
     <Window.SystemBackdrop>
         <winex:TransparentTintBackdrop TintColor="Transparent" />
     </Window.SystemBackdrop>

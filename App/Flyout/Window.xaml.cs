@@ -15,15 +15,16 @@ public sealed partial class Window: WindowEx {
         InitializeComponent();
 
         this.SetWindowStyle(WindowStyle.Popup);
-
-        Width = 0;
-        Height = 0;
+        this.SetExtendedWindowStyle(ExtendedWindowStyle.NoActivate);
 
         IsAlwaysOnTop = true;
         IsResizable = false;
         IsMaximizable = false;
         IsMinimizable = false;
         IsShownInSwitchers = false;
+
+        Width = 0;
+        Height = 0;
 
         hideFlyoutTimer = DispatcherQueue.CreateTimer();
         hideFlyoutTimer.Interval = TimeSpan.FromSeconds(2);
@@ -35,7 +36,7 @@ public sealed partial class Window: WindowEx {
         flyoutContentAtCaret = new();
         flyoutContentFallback = new();
 
-        FlyoutAnchor.Loaded += (_, _) => ShowFlyoutLanguage(false, 0x404); // To be removed; for testing
+        //FlyoutAnchor.Loaded += (_, _) => ShowFlyoutLanguage(0, 0x404); // To be removed; for testing
         FlyoutControl.Opening += (_, _) => this.Show();
         FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
         FlyoutControl.Closed += (_, _) => this.Hide();
@@ -51,17 +52,17 @@ public sealed partial class Window: WindowEx {
         hideFlyoutTimer.Start();
     }
 
-    void ShowFlyoutLanguage(bool on, UInt32 imeLanguageLcid) {
+    void ShowFlyoutLanguage(UInt32 activeLcid, UInt32 activeImeLcid) {
         DispatcherQueue.TryEnqueue(() => {
             FlyoutControl.Content = flyoutContentFallback; // Depending on caret position
-            ((IFlyoutContent)FlyoutControl.Content).SetContentLanguage(on, imeLanguageLcid);
+            ((IFlyoutContent)FlyoutControl.Content).SetContentLanguage(activeLcid == activeImeLcid, activeImeLcid);
             ShowFlyout();
         });
     }
 
     void ShowFlyoutCapsLock() {
         DispatcherQueue.TryEnqueue(() => {
-            FlyoutControl.Content = flyoutContentAtCaret; // Depending on caret position
+            FlyoutControl.Content = flyoutContentFallback; // Depending on caret position
             ((IFlyoutContent)FlyoutControl.Content).SetContentCapsLock();
             ShowFlyout();
         });
