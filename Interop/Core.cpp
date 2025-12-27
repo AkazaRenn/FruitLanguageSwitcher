@@ -9,7 +9,7 @@ public ref class Core sealed {
 private:
     delegate void ShowFlyoutDelegate(LCID activeLcid, LCID activeImeLcid);
     ShowFlyoutDelegate^ showFlyoutDelegate = gcnew ShowFlyoutDelegate(this, &Core::ShowFlyout);
-    ::Core::Interop* pUnmanaged = new ::Core::Interop(ToShowFlyoutFunctionPtr(gcnew ShowFlyoutDelegate(this, &Core::ShowFlyout)));
+    ::Core::Interop* pUnmanaged = new ::Core::Interop(ToShowFlyoutFunctionPtr(showFlyoutDelegate));
 
     ::Core::ShowFlyoutFunction ToShowFlyoutFunctionPtr(ShowFlyoutDelegate^ processMessageDelegate) {
         return static_cast<::Core::ShowFlyoutFunction>(

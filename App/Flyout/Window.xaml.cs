@@ -2,63 +2,68 @@
 using System;
 using WinUIEx;
 
-namespace App.Flyout {
-    public sealed partial class Window: WindowEx {
-        readonly DispatcherQueueTimer hideFlyoutTimer;
-        readonly CaretFlyoutContent caretFlyoutContent;
-        readonly Interop.Core core;
+namespace App.Flyout;
 
-        public Window(Interop.Core _core) {
-            core = _core;
-            InitializeComponent();
+public sealed partial class Window: WindowEx {
+    readonly DispatcherQueueTimer hideFlyoutTimer;
+    readonly FlyoutContentAtCaret flyoutContentAtCaret;
+    readonly FlyoutContentFallback flyoutContentFallback;
+    readonly Interop.Core core;
 
-            this.SetWindowStyle(WindowStyle.Popup);
+    public Window(Interop.Core _core) {
+        core = _core;
+        InitializeComponent();
 
-            Width = 0;
-            Height = 0;
+        this.SetWindowStyle(WindowStyle.Popup);
 
-            IsAlwaysOnTop = true;
-            IsResizable = false;
-            IsMaximizable = false;
-            IsMinimizable = false;
-            IsShownInSwitchers = false;
+        Width = 0;
+        Height = 0;
 
-            hideFlyoutTimer = DispatcherQueue.CreateTimer();
-            hideFlyoutTimer.Interval = TimeSpan.FromSeconds(2);
-            hideFlyoutTimer.Tick += (_, _) => {
-                FlyoutControl.Hide();
-                hideFlyoutTimer.Stop();
-            };
+        IsAlwaysOnTop = true;
+        IsResizable = false;
+        IsMaximizable = false;
+        IsMinimizable = false;
+        IsShownInSwitchers = false;
 
-            caretFlyoutContent = new(FlyoutControl);
+        hideFlyoutTimer = DispatcherQueue.CreateTimer();
+        hideFlyoutTimer.Interval = TimeSpan.FromSeconds(2);
+        hideFlyoutTimer.Tick += (_, _) => {
+            FlyoutControl.Hide();
+            hideFlyoutTimer.Stop();
+        };
 
-            FlyoutAnchor.Loaded += (_, _) => ShowFlyoutLanguage(false, 0x404); // To be removed; for testing
-            FlyoutControl.Opening += (_, _) => this.Show();
-            FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
-            FlyoutControl.Closed += (_, _) => this.Hide();
+        flyoutContentAtCaret = new();
+        flyoutContentFallback = new();
 
-            core.ShowFlyoutLanguageEvent += ShowFlyoutLanguage;
-            core.ShowFlyoutCapsLockEvent += ShowFlyoutCapsLock;
+        FlyoutAnchor.Loaded += (_, _) => ShowFlyoutLanguage(false, 0x404); // To be removed; for testing
+        FlyoutControl.Opening += (_, _) => this.Show();
+        FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
+        FlyoutControl.Closed += (_, _) => this.Hide();
 
-            DispatcherQueue.TryEnqueue(() => this.Hide());
-        }
+        core.ShowFlyoutLanguageEvent += ShowFlyoutLanguage;
+        core.ShowFlyoutCapsLockEvent += ShowFlyoutCapsLock;
 
-        void ShowFlyoutLanguage(bool on, UInt32 imeLanguageLcid) {
-            DispatcherQueue.TryEnqueue(() => {
-                FlyoutControl.Content = caretFlyoutContent; // Depending on caret position
-                caretFlyoutContent.SetContentLanguage(on, imeLanguageLcid);
-                FlyoutControl.ShowAt(FlyoutAnchor);
-                hideFlyoutTimer.Start();
-            });
-        }
+        DispatcherQueue.TryEnqueue(() => this.Hide());
+    }
 
-        void ShowFlyoutCapsLock() {
-            DispatcherQueue.TryEnqueue(() => {
-                FlyoutControl.Content = caretFlyoutContent; // Depending on caret position
-                caretFlyoutContent.SetContentCapsLock();
-                FlyoutControl.ShowAt(FlyoutAnchor);
-                hideFlyoutTimer.Start();
-            });
-        }
+    void ShowFlyout() {
+        FlyoutControl.ShowAt(FlyoutAnchor);
+        hideFlyoutTimer.Start();
+    }
+
+    void ShowFlyoutLanguage(bool on, UInt32 imeLanguageLcid) {
+        DispatcherQueue.TryEnqueue(() => {
+            FlyoutControl.Content = flyoutContentFallback; // Depending on caret position
+            ((IFlyoutContent)FlyoutControl.Content).SetContentLanguage(on, imeLanguageLcid);
+            ShowFlyout();
+        });
+    }
+
+    void ShowFlyoutCapsLock() {
+        DispatcherQueue.TryEnqueue(() => {
+            FlyoutControl.Content = flyoutContentAtCaret; // Depending on caret position
+            ((IFlyoutContent)FlyoutControl.Content).SetContentCapsLock();
+            ShowFlyout();
+        });
     }
 }

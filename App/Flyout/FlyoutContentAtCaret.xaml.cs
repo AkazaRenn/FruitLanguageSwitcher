@@ -1,24 +1,13 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Numerics;
-using Windows.UI;
 
 namespace App.Flyout;
 
-public sealed partial class CaretFlyoutContent: UserControl {
-    readonly Microsoft.UI.Xaml.Controls.Flyout flyoutControl;
-
-    public CaretFlyoutContent(Microsoft.UI.Xaml.Controls.Flyout _flyoutControl) {
-        InitializeComponent();
-
-        flyoutControl = _flyoutControl;
-    }
-
-    String GetLanguageGlyph(UInt32 lcid) {
+public sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
+    static string GetLanguageGlyph(UInt32 lcid) {
         const UInt32 zh_TW = 0x404; // Chinese (Traditional, Taiwan)
         const UInt32 ja_JP = 0x411; // Japanese (Japan)
         const UInt32 ko_KR = 0x412; // Korean (Korea)
@@ -48,6 +37,10 @@ public sealed partial class CaretFlyoutContent: UserControl {
         default:
             return "\uE92E"; // KeyboardStandard
         }
+    }
+
+    public FlyoutContentAtCaret() {
+        InitializeComponent();
     }
 
     void Update(bool isActive, string glyph) {
