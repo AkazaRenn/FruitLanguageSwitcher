@@ -2,6 +2,8 @@ import <unordered_set>;
 import <Windows.h>;
 import "Utilities.cpp";
 
+#pragma comment(lib, "imm32.lib")
+
 namespace Core {
 class Language {
 private:

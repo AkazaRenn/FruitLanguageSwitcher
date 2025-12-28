@@ -1,28 +1,38 @@
-import "Interop.hpp";
-
+import <Windows.h>;
 import "EventHookObjectDestroy.cpp";
 import "EventHookSystemForegound.cpp";
 import "GetMessageThread.cpp";
 import "LanguageManager.cpp";
+import "Enumerations.cpp";
 import "WindowsHookKeyboardLL.cpp";
 
 namespace Core {
-Interop::Interop(ShowFlyoutFunction showFlyoutFunction) {
-    EventHookObjectDestroy::Instance();
-    EventHookSystemForegound::Instance();
-    LanguageManager::Instance();
-    WindowsHookKeyboardLL::Instance();
+using ShowFlyoutFunction = void(__stdcall*)(LCID, LCID);
 
-    pThread = static_cast<void*>(new GetMessageThread({
-        {Message::ShowFlyout, [showFlyoutFunction](const MSG& msg) {
-            showFlyoutFunction(static_cast<LCID>(msg.wParam), static_cast<LCID>(msg.lParam));
-        }},
-    }));
-}
+class Interop {
+private:
+    GetMessageThread getMessageThread;
 
-Interop::~Interop() {
-    if (pThread) {
-        delete static_cast<GetMessageThread*>(pThread);
+public:
+    Interop(ShowFlyoutFunction showFlyoutFunction)
+        : getMessageThread({
+            {Message::ShowFlyout, [showFlyoutFunction](const MSG& msg) {
+                    showFlyoutFunction(static_cast<LCID>(msg.wParam), static_cast<LCID>(msg.lParam)); }},
+        }) {
+        EventHookObjectDestroy::Instance();
+        EventHookSystemForegound::Instance();
+        LanguageManager::Instance();
+        WindowsHookKeyboardLL::Instance();
     }
+};
 }
+
+extern "C" {
+    __declspec(dllexport) Core::Interop* __stdcall Start(Core::ShowFlyoutFunction showFlyoutFunction) {
+        return new Core::Interop(showFlyoutFunction);
+    }
+
+    __declspec(dllexport) void __stdcall Stop(Core::Interop* instance) {
+        delete instance;
+    }
 }

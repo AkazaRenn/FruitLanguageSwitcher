@@ -3,25 +3,38 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>$(SolutionName)</AssemblyName>
     <Platforms>x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
-    <PublishAot>true</PublishAot>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseOutputPath>$(SolutionDir)\bin</BaseOutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Flyout\FlyoutContentFallback.xaml" />
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SplashScreen.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(OutDir)\..\..\*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <PackagePath>%(Filename)%(Extension)</PackagePath>
+    </Content>
+    <None Remove="bin\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="**\*.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--
@@ -39,24 +52,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
     <PackageReference Include="WinUIEx" Version="2.9.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Interop\Interop.vcxproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Flyout\FlyoutContentFallback.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Flyout\FlyoutContentAtCaret.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Flyout\Window.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
@@ -73,6 +68,7 @@
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-    <AssemblyName>$(SolutionName)</AssemblyName>
+    <PublishAot Condition="'$(Configuration)' == 'Debug'">False</PublishAot>
+    <PublishAot Condition="'$(Configuration)' != 'Debug'">True</PublishAot>
   </PropertyGroup>
 </Project>

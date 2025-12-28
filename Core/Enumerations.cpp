@@ -1,4 +1,4 @@
-#include <Windows.h>
+import <Windows.h>;
 
 namespace Core {
 enum class Message: DWORD {

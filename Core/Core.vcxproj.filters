@@ -72,7 +72,6 @@
     <ClCompile Include="GetMessageThread.cpp">
       <Filter>Messaging</Filter>
     </ClCompile>
-    <ClCompile Include="Interop.hpp" />
     <ClCompile Include="Interop.cpp" />
   </ItemGroup>
 </Project>

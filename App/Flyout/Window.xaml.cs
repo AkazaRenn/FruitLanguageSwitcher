@@ -7,7 +7,7 @@ using WinUIEx;
 
 namespace App.Flyout;
 
-public sealed partial class Window: WindowEx {
+internal sealed partial class Window: WindowEx {
     readonly Interop.Core core;
     readonly DispatcherQueueTimer hideFlyoutTimer;
     readonly FlyoutContentAtCaret flyoutContentAtCaret = new();
