@@ -22,16 +22,18 @@
                 </FontIcon.OpacityTransition>
             </FontIcon>
         </Grid>
-        <Border x:Name="FlyoutActiveIndicator" 
-            Height="2" Width="12" Margin="0,4,0,0" 
-            CornerRadius="1" CenterPoint="6,1,0"
-            Background="{StaticResource AccentTextFillColorTertiaryBrush}">
-        <Border.BackgroundTransition>
-            <BrushTransition Duration="0:0:0.15"/>
-        </Border.BackgroundTransition>
-        <Border.ScaleTransition>
-            <Vector3Transition Duration="0:0:0.15"/>
-        </Border.ScaleTransition>
-    </Border>
+        <Grid>
+            <Border x:Name="FlyoutActiveIndicator" 
+                Height="2" Width="12" Margin="0,4,0,0" 
+                CornerRadius="1" CenterPoint="6,1,0"
+                Background="{StaticResource AccentTextFillColorTertiaryBrush}">
+                <Border.BackgroundTransition>
+                    <BrushTransition Duration="0:0:0.15"/>
+                </Border.BackgroundTransition>
+                <Border.ScaleTransition>
+                    <Vector3Transition Duration="0:0:0.15"/>
+                </Border.ScaleTransition>
+            </Border>
+        </Grid>
     </StackPanel>
 </UserControl>

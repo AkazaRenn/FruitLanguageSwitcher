@@ -13,7 +13,7 @@ public sealed partial class Window: WindowEx {
     readonly FlyoutContentAtCaret flyoutContentAtCaret = new();
     readonly FlyoutContentFallback flyoutContentFallback = new();
 
-public Window(Interop.Core _core) {
+    public Window(Interop.Core _core) {
         core = _core;
         InitializeComponent();
 
@@ -56,15 +56,13 @@ public Window(Interop.Core _core) {
             return false;
         }
         DispatcherQueue.TryEnqueue(() => {
-            //if (caretInfoOrNull is CaretInfo caretInfo) {
-            //    FlyoutControl.Content = flyoutContentAtCaret;
-            //    this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height);
-            //} else {
-            //    FlyoutControl.Content = flyoutContentFallback;
-            //    this.MoveAndResize(1920, 2000, 0, 0);
-            //}
-            FlyoutControl.Content = flyoutContentFallback;
-            this.MoveAndResize(1920, 2160 - 100, 0, 0);
+            if (caretInfoOrNull is CaretInfo caretInfo) {
+                FlyoutControl.Content = flyoutContentAtCaret;
+                this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height);
+            } else {
+                FlyoutControl.Content = flyoutContentFallback;
+                this.MoveAndResize(1920, 2160 - 100, 0, 0);
+            }
         });
         return true;
     }

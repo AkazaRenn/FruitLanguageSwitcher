@@ -9,11 +9,8 @@
     <Platform Solution="*|x64" Project="x64" />
     <Deploy />
   </Project>
-  <Project Path="Core/Core.vcxproj" Id="1264994a-c112-4a63-bcf5-548f6d1501af">
-    <Platform Project="x64" />
-  </Project>
+  <Project Path="Core/Core.vcxproj" Id="1264994a-c112-4a63-bcf5-548f6d1501af" />
   <Project Path="Interop/Interop.vcxproj" Id="6af4c2fd-95ba-43d9-8646-017e11172867">
     <BuildDependency Project="Core/Core.vcxproj" />
-    <Platform Project="x64" />
   </Project>
 </Solution>

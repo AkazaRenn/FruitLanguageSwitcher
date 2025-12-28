@@ -8,5 +8,6 @@
     <AssemblyOriginatorKeyFile>$(SolutionDir)\Key.snk</AssemblyOriginatorKeyFile>
     <ManagedAssembly>true</ManagedAssembly>
     <LinkKeyFile>$(SolutionDir)\Key.snk</LinkKeyFile>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
 </Project>
