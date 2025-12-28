@@ -1,8 +1,11 @@
 ﻿using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
 using System;
 using System.Drawing;
+using Vanara.PInvoke;
 using WinUIEx;
 
 namespace App.Flyout;
@@ -29,12 +32,12 @@ internal sealed partial class Window: WindowEx {
         Width = 0;
         Height = 0;
 
+        DispatcherQueue.TryEnqueue(() => this.Hide());
+
         hideFlyoutTimer = DispatcherQueue.CreateTimer();
+        hideFlyoutTimer.IsRepeating = false;
         hideFlyoutTimer.Interval = TimeSpan.FromSeconds(2);
-        hideFlyoutTimer.Tick += (_, _) => {
-            FlyoutControl.Hide();
-            hideFlyoutTimer.Stop();
-        };
+        hideFlyoutTimer.Tick += (_, _) => FlyoutControl.Hide();
 
         FlyoutControl.Opening += (_, _) => this.Show();
         FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
@@ -42,8 +45,10 @@ internal sealed partial class Window: WindowEx {
 
         core.ShowFlyoutLanguageEvent += ShowFlyoutLanguage;
         core.ShowFlyoutCapsLockEvent += ShowFlyoutCapsLock;
+    }
 
-        DispatcherQueue.TryEnqueue(() => this.Hide());
+    void MoveAndResize(CaretInfo caretInfo) {
+        this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height / this.Content.XamlRoot.RasterizationScale);
     }
 
     void ShowFlyout() {
@@ -58,16 +63,16 @@ internal sealed partial class Window: WindowEx {
         DispatcherQueue.TryEnqueue(() => {
             if (caretInfoOrNull is CaretInfo caretInfo) {
                 FlyoutControl.Content = flyoutContentAtCaret;
-                this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height);
+                MoveAndResize(caretInfo);
             } else {
                 FlyoutControl.Content = flyoutContentFallback;
-                this.MoveAndResize(1920, 2160 - 100, 0, 0);
+                this.MoveAndResize(GetFallbackCaretPosition());
             }
         });
         return true;
     }
 
-    void ShowFlyoutLanguage(UInt32 activeLcid, UInt32 activeImeLcid) {
+    void ShowFlyoutLanguage(LCID activeLcid, LCID activeImeLcid) {
         if (!MoveFlyout()) {
             return;
         }
@@ -89,12 +94,18 @@ internal sealed partial class Window: WindowEx {
 
     struct CaretInfo {
         // X and Y for the top-center of the caret
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Height { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Height { get; set; }
+
+        public CaretInfo(double x, double y, double height) {
+            X = x;
+            Y = y;
+            Height = height;
+        }
 
         public CaretInfo(Rectangle rect) {
-            X = (rect.Left + rect.Right) / 2;
+            X = (double)(rect.Left + rect.Right) / 2;
             Y = rect.Top;
             Height = rect.Height;
         }
@@ -118,6 +129,13 @@ internal sealed partial class Window: WindowEx {
                 break;
             }
             var textRange = selection[0];
+            if (textRange.CompareEndpoints(TextPatternRangeEndpoint.Start, textRange, TextPatternRangeEndpoint.End) == 0) {
+                var caretRectangles = textRange.GetBoundingRectangles();
+                if (caretRectangles != null && caretRectangles.Length > 0) {
+                    caretInfo = new CaretInfo(caretRectangles[0]);
+                    break;
+                }
+            }
             var caretRange = textPattern.GetCaretRange(out bool _);
             if (caretRange == null) {
                 break;
@@ -127,11 +145,11 @@ internal sealed partial class Window: WindowEx {
             } else {
                 textRange.MoveEndpointByRange(TextPatternRangeEndpoint.End, textRange, TextPatternRangeEndpoint.Start);
             }
-            var rectangles = textRange.GetBoundingRectangles();
-            if (rectangles == null || rectangles.Length == 0) {
+            var anchorRectangles = textRange.GetBoundingRectangles();
+            if (anchorRectangles == null || anchorRectangles.Length == 0) {
                 break;
             }
-            caretInfo = new CaretInfo(rectangles[0]);
+            caretInfo = new CaretInfo(anchorRectangles[0]);
         } while (false);
 
         if (caretInfo == null)
@@ -161,5 +179,16 @@ internal sealed partial class Window: WindowEx {
             } while (false);
 
         return true;
+    }
+
+    CaretInfo GetFallbackCaretPosition() {
+        HWND hwnd = User32.GetForegroundWindow();
+        WindowId windowId = Win32Interop.GetWindowIdFromWindow(hwnd.DangerousGetHandle());
+        DisplayArea display = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Primary);
+        return new CaretInfo(
+            (double)display.WorkArea.Width / 2,
+            display.WorkArea.Height - 10 * this.Content.XamlRoot.RasterizationScale,
+            0
+        );
     }
 }

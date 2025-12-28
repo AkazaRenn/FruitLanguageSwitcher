@@ -3,11 +3,12 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Numerics;
+using Vanara.PInvoke;
 
 namespace App.Flyout;
 
 public sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
-    static string GetLanguageGlyph(UInt32 lcid) {
+    static string GetLanguageGlyph(LCID lcid) {
         const UInt32 zh_TW = 0x404; // Chinese (Traditional, Taiwan)
         const UInt32 ja_JP = 0x411; // Japanese (Japan)
         const UInt32 ko_KR = 0x412; // Korean (Korea)
@@ -19,7 +20,7 @@ public sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
         const UInt32 zh_SG = 0x1004; // Chinese (Simplified, Singapore)
         const UInt32 zh_MO = 0x1404; // Chinese (Traditional, Macao S.A.R.)
 
-        switch (lcid) {
+        switch (lcid.Value) {
         case zh_TW:
         case zh_CN:
         case zh_HK:
@@ -74,7 +75,7 @@ public sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
         Update(true, "\uE72E"); // Lock icon
     }
 
-    public void SetContentLanguage(bool active, UInt32 lcid) {
+    public void SetContentLanguage(bool active, LCID lcid) {
         Update(active, GetLanguageGlyph(lcid));
     }
 }

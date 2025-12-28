@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Vanara.PInvoke;
 
 namespace App.Interop;
 
 internal sealed partial class Core: IDisposable {
-    public delegate void ShowFlyoutLanguageEventHandler(UInt32 activeLcid, UInt32 activeImeLcid);
+    public delegate void ShowFlyoutLanguageEventHandler(LCID activeLcid, LCID activeImeLcid);
     public event ShowFlyoutLanguageEventHandler? ShowFlyoutLanguageEvent;
 
     public delegate void ShowFlyoutCapsLockEventHandler();
     public event ShowFlyoutCapsLockEventHandler? ShowFlyoutCapsLockEvent;
 
-    delegate void ShowFlyoutDelegate(UInt32 activeLcid, UInt32 activeImeLcid);
+    delegate void ShowFlyoutDelegate(LCID activeLcid, LCID activeImeLcid);
     readonly ShowFlyoutDelegate showFlyoutDelegate;
     readonly IntPtr pUnmanaged;
 
@@ -28,8 +29,8 @@ internal sealed partial class Core: IDisposable {
         GC.SuppressFinalize(this);
     }
 
-    void ShowFlyout(UInt32 activeLcid, UInt32 activeImeLcid) {
-        if (activeLcid > 0) {
+    void ShowFlyout(LCID activeLcid, LCID activeImeLcid) {
+        if (activeLcid.Value > 0) {
             ShowFlyoutLanguageEvent?.Invoke(activeLcid, activeImeLcid);
         } else {
             ShowFlyoutCapsLockEvent?.Invoke();

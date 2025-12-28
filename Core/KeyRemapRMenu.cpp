@@ -1,10 +1,9 @@
 import <Windows.h>;
 import "LanguageManager.cpp";
-import "Singleton.cpp";
 import "Utilities.cpp";
 
 namespace Core {
-class KeyRemapRMenu: public Singleton<KeyRemapRMenu> {
+class KeyRemapRMenu {
 private:
     static constexpr DWORD VK_DUMMY = 0xff;
 

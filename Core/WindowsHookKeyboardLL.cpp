@@ -12,6 +12,10 @@ private:
     const static int IdHook = WH_KEYBOARD_LL;
 
 private:
+    KeyRemapLWin keyRemapLWin;
+    KeyRemapRMenu keyRemapRMenu;
+    KeyRemapCapital keyRemapCapital;
+
     bool OnEvent(int nCode, WPARAM wParam, LPARAM lParam) override {
         bool blockEvent = false;
 
@@ -30,33 +34,33 @@ private:
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    KeyRemapLWin::Instance().OnLWinDown();
+                    keyRemapLWin.OnLWinDown();
                     break;
                 case VK_RMENU:
-                    KeyRemapRMenu::Instance().OnRMenuDown();
+                    keyRemapRMenu.OnRMenuDown();
                     break;
                 case VK_CAPITAL:
-                    KeyRemapCapital::Instance().OnCapitalKeyDown();
+                    keyRemapCapital.OnCapitalKeyDown();
                     blockEvent = true;
                     break;
                 default:
-                    KeyRemapRMenu::Instance().OnOtherKeyDown();
-                    KeyRemapLWin::Instance().OnOtherKeyDown();
+                    keyRemapRMenu.OnOtherKeyDown();
+                    keyRemapLWin.OnOtherKeyDown();
                     break;
                 }
             } else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
                 switch (kb->vkCode) {
                 case VK_LWIN:
-                    blockEvent = KeyRemapLWin::Instance().OnLWinUp();
+                    blockEvent = keyRemapLWin.OnLWinUp();
                     [[fallthrough]];
                 case VK_RWIN:
                     MessageDispatcher::Instance().PostMessage(Message::WinKeyUp);
                     break;
                 case VK_RMENU:
-                    blockEvent = KeyRemapRMenu::Instance().OnRMenuUp();
+                    blockEvent = keyRemapRMenu.OnRMenuUp();
                     break;
                 case VK_CAPITAL:
-                    KeyRemapCapital::Instance().OnCapitalKeyUp();
+                    keyRemapCapital.OnCapitalKeyUp();
                     blockEvent =  true;
                     break;
                 default:

@@ -2,9 +2,7 @@ import "MessageDispatcher.cpp";
 import "Timer.cpp";
 
 namespace Core {
-class KeyRemapCapital: public Singleton<KeyRemapCapital> {
-    friend class Singleton<KeyRemapCapital>;
-
+class KeyRemapCapital {
 private:
     static void SetCapsLockStateAndPostMessage(bool on) {
         if (SetCapsLockState(on)) {
@@ -18,11 +16,11 @@ private:
         SetCapsLockStateAndPostMessage(true);
     });
 
+public:
     ~KeyRemapCapital() {
         timer.Cancel();
     }
 
-public:
     void OnCapitalKeyDown() {
         if (CapitalKeyDown) {
             return;

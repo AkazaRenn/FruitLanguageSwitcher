@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Globalization;
 using System.Numerics;
+using Vanara.PInvoke;
 
 namespace App.Flyout;
 
@@ -43,7 +44,7 @@ public sealed partial class FlyoutContentFallback: UserControl, IFlyoutContent {
         Update(true, "CapsLock ON");
     }
 
-    public void SetContentLanguage(bool active, UInt32 lcid) {
-        Update(active, new CultureInfo((int)lcid).NativeName);
+    public void SetContentLanguage(bool active, LCID lcid) {
+        Update(active, new CultureInfo((int)lcid.Value).NativeName);
     }
 }
