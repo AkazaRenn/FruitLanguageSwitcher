@@ -52,7 +52,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
     }
 
     void MoveAndResize(Utilities.CaretInfo caretInfo) {
-        this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height / this.Content.XamlRoot.RasterizationScale);
+        this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height / Content.XamlRoot.RasterizationScale);
     }
 
     void ShowFlyout() {

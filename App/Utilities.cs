@@ -3,8 +3,11 @@ using FlaUI.UIA3;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.Windows.AppLifecycle;
+using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using Vanara.PInvoke;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 
 namespace App;
@@ -113,25 +116,37 @@ internal static class Utilities {
     }
 
     public static void Restart() {
-        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
         if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
             var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
             var operation = cmdLineArgs.Operation;
-            AppInstance.Restart(operation.Arguments);
+            Microsoft.Windows.AppLifecycle.AppInstance.Restart(operation.Arguments);
         } else {
-            AppInstance.Restart(string.Empty);
+            Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
         }
     }
 
     public static HRESULT RegisterAutoRestart() {
         var applicationRestartFlags = Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH;
-        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
         if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
             var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
             var operation = cmdLineArgs.Operation;
             return Kernel32.RegisterApplicationRestart(operation.Arguments, applicationRestartFlags);
         } else {
             return Kernel32.RegisterApplicationRestart(string.Empty, applicationRestartFlags);
+        }
+    }
+
+    public static async Task RequestStartup() {
+        var startupTask = await StartupTask.GetAsync("MyStartupId");
+        switch (startupTask.State) {
+        case StartupTaskState.Disabled:
+            await startupTask.RequestEnableAsync();
+            break;
+        case StartupTaskState.DisabledByUser:
+        case StartupTaskState.Enabled:
+            break;
         }
     }
 }

@@ -2,8 +2,6 @@
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
 
 namespace App;
 
@@ -19,7 +17,7 @@ public partial class App: Application {
 
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
         Utilities.RegisterAutoRestart();
-        _ = RequestStartup();
+        _ = Utilities.RequestStartup();
 
         core = new();
         disposables.Add(core);
@@ -31,18 +29,6 @@ public partial class App: Application {
         taskbarIcon.RestartEvent += Utilities.Restart;
         taskbarIcon.ExitEvent += Exit;
         disposables.Add(taskbarIcon);
-    }
-
-    private async Task RequestStartup() {
-        var startupTask = await StartupTask.GetAsync("MyStartupId");
-        switch (startupTask.State) {
-        case StartupTaskState.Disabled:
-            await startupTask.RequestEnableAsync();
-            break;
-        case StartupTaskState.DisabledByUser:
-        case StartupTaskState.Enabled:
-            break;
-        }
     }
 
     private new void Exit() {
