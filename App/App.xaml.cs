@@ -1,13 +1,16 @@
-﻿using App.NotifyIcon;
+﻿using App.Interop;
+using App.NotifyIcon;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Collections.Generic;
+using Vanara.PInvoke;
 
 namespace App;
 
 public partial class App: Application {
     readonly HashSet<IDisposable> disposables = [];
-    Interop.Core? core;
+    Core? core;
     Flyout.Window? window;
     TaskbarIcon? taskbarIcon;
 
@@ -16,7 +19,7 @@ public partial class App: Application {
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
-        Utilities.RegisterAutoRestart();
+        Kernel32.RegisterApplicationRestart(Utilities.StartupArguments, Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH);
         _ = Utilities.RequestStartup();
 
         core = new();
@@ -26,7 +29,7 @@ public partial class App: Application {
         disposables.Add(window);
 
         taskbarIcon = new();
-        taskbarIcon.RestartEvent += Utilities.Restart;
+        taskbarIcon.RestartEvent += () => AppInstance.Restart(Utilities.StartupArguments);
         taskbarIcon.ExitEvent += Exit;
         disposables.Add(taskbarIcon);
     }

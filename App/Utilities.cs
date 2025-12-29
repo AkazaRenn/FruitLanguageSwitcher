@@ -117,7 +117,7 @@ internal static class Utilities {
         }
     }
 
-    private static string StartupArguments {
+    public static string StartupArguments {
         get {
             var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
             if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
@@ -127,14 +127,6 @@ internal static class Utilities {
                 return string.Empty;
             }
         }
-    }
-
-    public static void Restart() {
-        Microsoft.Windows.AppLifecycle.AppInstance.Restart(StartupArguments);
-    }
-
-    public static HRESULT RegisterAutoRestart() {
-        return Kernel32.RegisterApplicationRestart(StartupArguments, Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH);
     }
 
     public static async Task RequestStartup() {

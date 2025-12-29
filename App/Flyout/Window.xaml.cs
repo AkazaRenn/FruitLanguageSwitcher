@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Dispatching;
+﻿using App.Interop;
+using Microsoft.UI.Dispatching;
 using System;
 using Vanara.PInvoke;
 using WinUIEx;
@@ -6,13 +7,13 @@ using WinUIEx;
 namespace App.Flyout;
 
 internal sealed partial class Window: WindowEx, IDisposable {
-    readonly Interop.Core core;
+    readonly Core core;
     readonly DispatcherQueueTimer hideFlyoutTimer;
     readonly FlyoutContentAtCaret flyoutContentAtCaret = new();
     readonly FlyoutContentFallback flyoutContentFallback = new();
     readonly RawInput rawInput;
 
-    public Window(Interop.Core _core) {
+    public Window(Core _core) {
         InitializeComponent();
 
         this.SetWindowStyle(WindowStyle.Popup);
