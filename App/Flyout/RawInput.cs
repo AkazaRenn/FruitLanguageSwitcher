@@ -19,6 +19,7 @@ internal sealed class RawInput: IDisposable {
 
     readonly nuint uIdSubclass = (nuint)Random.Shared.Next();
     readonly HWND hwnd;
+    readonly ComCtl32.SUBCLASSPROC subclassProc;
     readonly User32.RAWINPUTDEVICE[] rawInputDevicesRegister;
     readonly User32.RAWINPUTDEVICE[] rawInputDevicesUnregister;
 
@@ -26,18 +27,19 @@ internal sealed class RawInput: IDisposable {
 
     public RawInput(HWND _hwnd) {
         hwnd = _hwnd;
-        ComCtl32.SetWindowSubclass(hwnd, OnRawInput, uIdSubclass, 0);
+        subclassProc = OnRawInput;
+        ComCtl32.SetWindowSubclass(hwnd, subclassProc, uIdSubclass, 0);
 
         rawInputDevicesRegister = [
             new User32.RAWINPUTDEVICE {
                 usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,   
+                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,
                 dwFlags = User32.RIDEV.RIDEV_INPUTSINK,
                 hwndTarget = hwnd,
             },
             new User32.RAWINPUTDEVICE {
-                usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC, 
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_KEYBOARD, 
+                usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
+                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_KEYBOARD,
                 dwFlags = User32.RIDEV.RIDEV_INPUTSINK,
                 hwndTarget = hwnd,
             },
@@ -46,7 +48,7 @@ internal sealed class RawInput: IDisposable {
         rawInputDevicesUnregister = [
             new User32.RAWINPUTDEVICE {
                 usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,   
+                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,
                 dwFlags = User32.RIDEV.RIDEV_REMOVE,
                 hwndTarget = HWND.NULL,
             },
@@ -63,7 +65,7 @@ internal sealed class RawInput: IDisposable {
 
     public void Dispose() {
         Stop();
-        ComCtl32.RemoveWindowSubclass(hwnd, OnRawInput, uIdSubclass);
+        ComCtl32.RemoveWindowSubclass(hwnd, subclassProc, uIdSubclass);
         GC.SuppressFinalize(this);
     }
 
