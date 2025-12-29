@@ -13,26 +13,26 @@ internal sealed partial class FlyoutContentFallback: UserControl, IFlyoutContent
     }
 
     void Update(bool isActive, string text) {
-        TextBlock currentFlyoutContent;
-        TextBlock newFlyoutContent;
+        TextBlock flyoutContentCurrent;
+        TextBlock flyoutContentNew;
         if (FlyoutContent.Opacity > 0) {
-            currentFlyoutContent = FlyoutContent;
-            newFlyoutContent = FlyoutContentAlt;
+            flyoutContentCurrent = FlyoutContent;
+            flyoutContentNew = FlyoutContentAlt;
         } else {
-            currentFlyoutContent = FlyoutContentAlt;
-            newFlyoutContent = FlyoutContent;
+            flyoutContentCurrent = FlyoutContentAlt;
+            flyoutContentNew = FlyoutContent;
         }
 
-        newFlyoutContent.Text = text;
-        currentFlyoutContent.Opacity = 0;
+        flyoutContentNew.Text = text;
+        flyoutContentCurrent.Opacity = 0;
 
         if (isActive) {
-            newFlyoutContent.Opacity = 1;
+            flyoutContentNew.Opacity = 1;
             FlyoutActiveIndicator.Scale = new Vector3(1, 1, 1);
             FlyoutActiveIndicator.Background =
                 (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"];
         } else {
-            newFlyoutContent.Opacity = 0.5;
+            flyoutContentNew.Opacity = 0.5;
             FlyoutActiveIndicator.Scale = new Vector3(0.5f, 1, 1);
             FlyoutActiveIndicator.Background =
                 (Brush)Application.Current.Resources["TextFillColorDisabledBrush"];

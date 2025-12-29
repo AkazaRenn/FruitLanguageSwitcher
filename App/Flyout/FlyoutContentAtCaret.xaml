@@ -9,14 +9,12 @@
     mc:Ignorable="d">
     <StackPanel Width="32" Height="32" Padding="0,6,0,0">
         <Grid>
-            <FontIcon x:Name="FlyoutContent" FontSize="16"
-                Foreground="{StaticResource TextFillColorPrimaryBrush}">
+            <FontIcon x:Name="FlyoutContent" FontSize="16">
                 <FontIcon.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.15"/>
                 </FontIcon.OpacityTransition>
             </FontIcon>
-            <FontIcon x:Name="FlyoutContentAlt" FontSize="16" Opacity="0"
-                Foreground="{StaticResource TextFillColorPrimaryBrush}">
+            <FontIcon x:Name="FlyoutContentAlt" FontSize="16" Opacity="0">
                 <FontIcon.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.15"/>
                 </FontIcon.OpacityTransition>

@@ -34,26 +34,26 @@ internal sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent 
     }
 
     void Update(bool isActive, string glyph) {
-        FontIcon currentFlyoutContent;
-        FontIcon newFlyoutContent;
+        FontIcon flyoutContentCurrent;
+        FontIcon flyoutContentNew;
         if (FlyoutContent.Opacity > 0) {
-            currentFlyoutContent = FlyoutContent;
-            newFlyoutContent = FlyoutContentAlt;
+            flyoutContentCurrent = FlyoutContent;
+            flyoutContentNew = FlyoutContentAlt;
         } else {
-            currentFlyoutContent = FlyoutContentAlt;
-            newFlyoutContent = FlyoutContent;
+            flyoutContentCurrent = FlyoutContentAlt;
+            flyoutContentNew = FlyoutContent;
         }
 
-        newFlyoutContent.Glyph = glyph;
-        currentFlyoutContent.Opacity = 0;
+        flyoutContentNew.Glyph = glyph;
+        flyoutContentCurrent.Opacity = 0;
 
         if (isActive) {
-            newFlyoutContent.Opacity = 1;
+            flyoutContentNew.Opacity = 1;
             FlyoutActiveIndicator.Scale = new Vector3(1, 1, 1);
             FlyoutActiveIndicator.Background =
                 (Brush)Application.Current.Resources["AccentTextFillColorTertiaryBrush"];
         } else {
-            newFlyoutContent.Opacity = 0.5;
+            flyoutContentNew.Opacity = 0.5;
             FlyoutActiveIndicator.Scale = new Vector3(0.67f, 1, 1);
             FlyoutActiveIndicator.Background =
                 (Brush)Application.Current.Resources["TextFillColorDisabledBrush"];

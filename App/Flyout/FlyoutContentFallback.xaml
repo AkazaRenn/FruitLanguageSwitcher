@@ -10,7 +10,6 @@
     <StackPanel>
         <Grid>
             <TextBlock x:Name="FlyoutContent"
-                Foreground="{StaticResource TextFillColorPrimaryBrush}"
                 IsHitTestVisible="false"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -22,7 +21,6 @@
                 </TextBlock.OpacityTransition>
             </TextBlock>
             <TextBlock x:Name="FlyoutContentAlt"
-                Foreground="{StaticResource TextFillColorPrimaryBrush}"
                 IsHitTestVisible="false"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
