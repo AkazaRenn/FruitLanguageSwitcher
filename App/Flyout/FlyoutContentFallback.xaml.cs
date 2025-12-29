@@ -8,7 +8,7 @@ using Vanara.PInvoke;
 
 namespace App.Flyout;
 
-public sealed partial class FlyoutContentFallback: UserControl, IFlyoutContent {
+internal sealed partial class FlyoutContentFallback: UserControl, IFlyoutContent {
     public FlyoutContentFallback() {
         InitializeComponent();
     }

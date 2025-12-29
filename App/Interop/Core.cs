@@ -20,9 +20,7 @@ internal sealed partial class Core: IDisposable {
         pUnmanaged = CoreStart(Marshal.GetFunctionPointerForDelegate(showFlyoutDelegate));
     }
 
-    ~Core() {
-        Dispose();
-    }
+    ~Core() => Dispose();
 
     public void Dispose() {
         CoreStop(pUnmanaged);

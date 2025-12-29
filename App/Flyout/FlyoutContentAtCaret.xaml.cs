@@ -7,7 +7,7 @@ using Vanara.PInvoke;
 
 namespace App.Flyout;
 
-public sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
+internal sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
     static string GetLanguageGlyph(LCID lcid) {
         const UInt32 zh_TW = 0x404; // Chinese (Traditional, Taiwan)
         const UInt32 ja_JP = 0x411; // Japanese (Japan)

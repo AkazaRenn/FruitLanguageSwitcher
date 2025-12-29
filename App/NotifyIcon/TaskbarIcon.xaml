@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tb:TaskbarIcon
+    x:Class="App.NotifyIcon.TaskbarIcon"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App.NotifyIcon"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="using:H.NotifyIcon"
+    mc:Ignorable="d">
+    <tb:TaskbarIcon.ToolTipText>Fruit Language Switcher</tb:TaskbarIcon.ToolTipText>
+    <tb:TaskbarIcon.IconSource>/Assets/durian.ico</tb:TaskbarIcon.IconSource>
+    <tb:TaskbarIcon.Visibility>Visible</tb:TaskbarIcon.Visibility>
+    <tb:TaskbarIcon.ContextMenuMode>PopupMenu</tb:TaskbarIcon.ContextMenuMode>
+    <tb:TaskbarIcon.NoLeftClickDelay>True</tb:TaskbarIcon.NoLeftClickDelay>
+    <tb:TaskbarIcon.MenuActivation>RightClick</tb:TaskbarIcon.MenuActivation>
+    <tb:TaskbarIcon.ContextFlyout>
+        <MenuFlyout >
+            <MenuFlyoutItem>
+                <MenuFlyoutItem.Command>
+                    <XamlUICommand x:Name="ExitCommand"
+                                   Label="Exit" Description="Exit">
+                        <XamlUICommand.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="E" Modifiers="Control" />
+                        </XamlUICommand.KeyboardAccelerators>
+                    </XamlUICommand>
+                </MenuFlyoutItem.Command>
+            </MenuFlyoutItem>
+        </MenuFlyout>
+    </tb:TaskbarIcon.ContextFlyout>
+</tb:TaskbarIcon>
