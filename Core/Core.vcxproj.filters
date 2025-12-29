@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Hooks">
+      <UniqueIdentifier>{a0377f29-5c26-4c7b-aab8-c8bcb6fcd08a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Others">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Language Switcher">
+      <UniqueIdentifier>{fe89bf99-24fb-4345-bfd6-8d0c5e6b745e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Key Remapping">
+      <UniqueIdentifier>{6703b06d-31ee-438a-b4a7-7f90921945e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Abstract">
+      <UniqueIdentifier>{b283f720-42fa-4336-9e3b-66a33a7356a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messaging">
+      <UniqueIdentifier>{72c37d3a-de9d-40fb-ae07-fb4b8d494ab0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WinEventHook.cpp">
+      <Filter>Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsHook.cpp">
+      <Filter>Abstract</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHookSystemForegound.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsHookKeyboardLL.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyRemapLWin.cpp">
+      <Filter>Key Remapping</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyRemapCapital.cpp">
+      <Filter>Key Remapping</Filter>
+    </ClCompile>
+    <ClCompile Include="Enumerations.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyRemapRMenu.cpp">
+      <Filter>Key Remapping</Filter>
+    </ClCompile>
+    <ClCompile Include="Language.cpp">
+      <Filter>Language Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include="LanguageManager.cpp">
+      <Filter>Language Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHookObjectDestroy.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDispatcher.cpp">
+      <Filter>Messaging</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMessageThread.cpp">
+      <Filter>Messaging</Filter>
+    </ClCompile>
+    <ClCompile Include="Interop.cpp" />
+  </ItemGroup>
+</Project>
