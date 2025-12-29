@@ -71,25 +71,28 @@ internal sealed class RawInput: IDisposable {
 
     private IntPtr OnRawInput(HWND hwnd, uint uMsg, nint wParam, nint lParam, nuint uldSubclass, nint dwRefData) {
         do {
-            if (uMsg == (uint)User32.WindowMessage.WM_INPUT) {
-                var data = RawInputData.FromHandle(lParam);
-                if (Linearstar.Windows.RawInput.Native.RawInputDeviceHandle.GetRawValue(data.Header.DeviceHandle) == 0)
-                    break;
+            if (uMsg != (uint)User32.WindowMessage.WM_INPUT) {
+                break;
+            }
 
-                switch (data) {
-                case RawInputMouseData mouse:
-                    if ((mouse.Mouse.Buttons & ANY_BUTTON_DOWN) != 0) {
-                        UserInputEvent?.Invoke();
-                    }
-                    break;
-                case RawInputKeyboardData keyboard:
-                    if ((keyboard.Keyboard.Flags & Linearstar.Windows.RawInput.Native.RawKeyboardFlags.Up) == 0) {
-                        UserInputEvent?.Invoke();
-                    }
-                    break;
-                default:
-                    break;
+            var data = RawInputData.FromHandle(lParam);
+            if (Linearstar.Windows.RawInput.Native.RawInputDeviceHandle.GetRawValue(data.Header.DeviceHandle) == 0) {
+                break;
+            }
+
+            switch (data) {
+            case RawInputMouseData mouse:
+                if ((mouse.Mouse.Buttons & ANY_BUTTON_DOWN) != 0) {
+                    UserInputEvent?.Invoke();
                 }
+                break;
+            case RawInputKeyboardData keyboard:
+                if ((keyboard.Keyboard.Flags & Linearstar.Windows.RawInput.Native.RawKeyboardFlags.Up) == 0) {
+                    UserInputEvent?.Invoke();
+                }
+                break;
+            default:
+                break;
             }
         } while (false);
 
