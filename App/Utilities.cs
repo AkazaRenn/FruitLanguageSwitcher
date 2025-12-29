@@ -122,4 +122,16 @@ internal static class Utilities {
             AppInstance.Restart(string.Empty);
         }
     }
+
+    public static HRESULT RegisterAutoRestart() {
+        var applicationRestartFlags = Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH;
+        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+        if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
+            var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
+            var operation = cmdLineArgs.Operation;
+            return Kernel32.RegisterApplicationRestart(operation.Arguments, applicationRestartFlags);
+        } else {
+            return Kernel32.RegisterApplicationRestart(string.Empty, applicationRestartFlags);
+        }
+    }
 }

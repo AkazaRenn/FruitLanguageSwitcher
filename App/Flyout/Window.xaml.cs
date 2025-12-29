@@ -1,10 +1,5 @@
-﻿using FlaUI.Core.Definitions;
-using FlaUI.UIA3;
-using Microsoft.UI;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Windowing;
+﻿using Microsoft.UI.Dispatching;
 using System;
-using System.Drawing;
 using Vanara.PInvoke;
 using WinUIEx;
 

@@ -18,6 +18,7 @@ public partial class App: Application {
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
+        Utilities.RegisterAutoRestart();
         _ = RequestStartup();
 
         core = new();

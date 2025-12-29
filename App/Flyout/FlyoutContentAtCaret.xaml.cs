@@ -9,35 +9,24 @@ namespace App.Flyout;
 
 internal sealed partial class FlyoutContentAtCaret: UserControl, IFlyoutContent {
     static string GetLanguageGlyph(LCID lcid) {
-        const UInt32 zh_TW = 0x404; // Chinese (Traditional, Taiwan)
-        const UInt32 ja_JP = 0x411; // Japanese (Japan)
-        const UInt32 ko_KR = 0x412; // Korean (Korea)
-        const UInt32 am_ET = 0x45E; // Amharic (Ethiopia)
-        const UInt32 ti_ET = 0x473; // Tigrinya (Ethiopia)
-        const UInt32 zh_CN = 0x804; // Chinese (Simplified, PRC)
-        const UInt32 ti_ER = 0x873; // Tigrinya (Eritrea)
-        const UInt32 zh_HK = 0xC04; // Chinese (Traditional, Hong Kong S.A.R.)
-        const UInt32 zh_SG = 0x1004; // Chinese (Simplified, Singapore)
-        const UInt32 zh_MO = 0x1404; // Chinese (Traditional, Macao S.A.R.)
+        const uint zh_TW = 0x404; // Chinese (Traditional, Taiwan)
+        const uint ja_JP = 0x411; // Japanese (Japan)
+        const uint ko_KR = 0x412; // Korean (Korea)
+        const uint am_ET = 0x45E; // Amharic (Ethiopia)
+        const uint ti_ET = 0x473; // Tigrinya (Ethiopia)
+        const uint zh_CN = 0x804; // Chinese (Simplified, PRC)
+        const uint ti_ER = 0x873; // Tigrinya (Eritrea)
+        const uint zh_HK = 0xC04; // Chinese (Traditional, Hong Kong S.A.R.)
+        const uint zh_SG = 0x1004; // Chinese (Simplified, Singapore)
+        const uint zh_MO = 0x1404; // Chinese (Traditional, Macao S.A.R.)
 
-        switch (lcid.Value) {
-        case zh_TW:
-        case zh_CN:
-        case zh_HK:
-        case zh_SG:
-        case zh_MO:
-            return "\uE982"; // QWERTYOn
-        case ko_KR:
-            return "\uE97D"; // Korean
-        case ja_JP:
-            return "\uE985"; // Japanese
-        case am_ET:
-        case ti_ET:
-        case ti_ER:
-            return "\uEC31"; // KeyboardFull
-        default:
-            return "\uE92E"; // KeyboardStandard
-        }
+        return lcid.Value switch {
+            zh_TW or zh_CN or zh_HK or zh_SG or zh_MO => "\uE982",// QWERTYOn
+            ko_KR => "\uE97D",// Korean
+            ja_JP => "\uE985",// Japanese
+            am_ET or ti_ET or ti_ER => "\uEC31",// KeyboardFull
+            _ => "\uE92E",// KeyboardStandard
+        };
     }
 
     public FlyoutContentAtCaret() {
