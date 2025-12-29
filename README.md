@@ -5,7 +5,11 @@ A language switcher to mimic the famous you-know-who fruit on Windows.
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 </a>
 
+(Not available in EU, sorry...)
+
 ## What it does
+https://github.com/user-attachments/assets/4dab0b0c-61f8-4483-9839-ac828fb55b8e
+
 ### Category-based swtiching
 It separates the Windows keyboard layouts `win + space` into two categories: latin
 languages and IME languages. Now it would track the both the active latin language and
