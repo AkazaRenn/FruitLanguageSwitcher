@@ -1,8 +1,9 @@
 ﻿using App.NotifyIcon;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.ApplicationModel;
 
 namespace App;
 
@@ -17,6 +18,8 @@ public partial class App: Application {
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
+        _ = RequestStartup();
+
         core = new();
         disposables.Add(core);
 
@@ -24,8 +27,21 @@ public partial class App: Application {
         disposables.Add(window);
 
         taskbarIcon = new();
+        taskbarIcon.RestartEvent += Utilities.Restart;
         taskbarIcon.ExitEvent += Exit;
         disposables.Add(taskbarIcon);
+    }
+
+    private async Task RequestStartup() {
+        var startupTask = await StartupTask.GetAsync("MyStartupId");
+        switch (startupTask.State) {
+        case StartupTaskState.Disabled:
+            await startupTask.RequestEnableAsync();
+            break;
+        case StartupTaskState.DisabledByUser:
+        case StartupTaskState.Enabled:
+            break;
+        }
     }
 
     private new void Exit() {

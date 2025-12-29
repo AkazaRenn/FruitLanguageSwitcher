@@ -1,12 +1,11 @@
 ﻿using FlaUI.Core.Definitions;
 using FlaUI.UIA3;
-using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
-using System;
+using Microsoft.Windows.AppLifecycle;
 using System.Drawing;
 using Vanara.PInvoke;
+using Windows.ApplicationModel.Activation;
 
 namespace App;
 
@@ -111,5 +110,16 @@ internal static class Utilities {
             display.WorkArea.Height - 10 * (dpi / 96.0),
             0
         );
+    }
+
+    public static void Restart() {
+        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+        if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
+            var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
+            var operation = cmdLineArgs.Operation;
+            AppInstance.Restart(operation.Arguments);
+        } else {
+            AppInstance.Restart(string.Empty);
+        }
     }
 }

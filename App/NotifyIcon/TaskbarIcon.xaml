@@ -18,8 +18,18 @@
         <MenuFlyout >
             <MenuFlyoutItem>
                 <MenuFlyoutItem.Command>
+                    <XamlUICommand x:Name="RestartCommand"
+                                   Label="Restart">
+                        <XamlUICommand.KeyboardAccelerators>
+                            <KeyboardAccelerator Key="R" Modifiers="Control" />
+                        </XamlUICommand.KeyboardAccelerators>
+                    </XamlUICommand>
+                </MenuFlyoutItem.Command>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem>
+                <MenuFlyoutItem.Command>
                     <XamlUICommand x:Name="ExitCommand"
-                                   Label="Exit" Description="Exit">
+                                   Label="Exit">
                         <XamlUICommand.KeyboardAccelerators>
                             <KeyboardAccelerator Key="E" Modifiers="Control" />
                         </XamlUICommand.KeyboardAccelerators>
