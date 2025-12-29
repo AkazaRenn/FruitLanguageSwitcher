@@ -1,18 +1,52 @@
-# Fruit Toolbox
+# Fruit Language Switcher
+A language switcher to mimic the famous you-know-who fruit on Windows.
 
-A tool to mimic the famous you-know-who fruit's language switcher on Windows.
-
-[![Microsoft Store Link](https://camo.githubusercontent.com/34f495b817d32130aac0e9d20193b89a6f92b7ef119c6fbd536a876213dcbba8/68747470733a2f2f6765742e6d6963726f736f66742e636f6d2f696d616765732f656e2d55532532306c696768742e737667)](https://apps.microsoft.com/detail/fruit-language-switcher/9NJD8G4V1G1K)
+<a href="https://apps.microsoft.com/detail/9njd8g4v1g1k?referrer=appbadge&mode=direct">
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+</a>
 
 ## What it does
+### Category-based swtiching
+It separates the Windows keyboard layouts `win + space` into two categories: latin
+languages and IME languages. Now it would track the both the active latin language and
+the IME language to allow you to switch between them with a single click on `CapsLock`
+(yes, just like on that fruit).
 
-It separates the Windows keyboard layouts `win + space` into two
-categories: keyboard languages and IME languages, and adds a hotkey (Caps Lock)
-to switch within or between categories.
+To toggle the actual `CapsLock` state, hold `CapsLock` key for more than 500ms.
 
-Currently, `capslock` is used to switch between the categories, so the original `capslock` function will be blocked.
-To toggle the actual `capslock` state, hold `capslock` for more than 500ms.
-`lwin + space` will be used to select any language and the app will update itself accordingly.
+For example as a user with `[en-US, zh-TW, fr-CA, ja-JP]` as the available languages
+for the OS.
 
-For example, as a user with `[en-US, zh-TW, fr-CA, ja-JP]` as the
-available languages for the OS, if current language is `en-US`, hitting `capslock` will swtich from `en-US ([en-US, fr-CA])` to `zh-TW ([zh-TW, ja-JP])`.
+The startup state of the langauges: \
+**`en-US ([en-US, fr-CA])`** `zh-TW ([zh-TW, ja-JP])`
+
+After hitting `CapsLock`: \
+`en-US ([en-US, fr-CA])` **`zh-TW ([zh-TW, ja-JP])`**
+
+After switching to `fr-CA`: \
+**`fr-CA ([en-US, fr-CA])`** `zh-TW ([zh-TW, ja-JP])`
+
+After hitting `CapsLock`: \
+`fr-CA ([en-US, fr-CA])` **`zh-TW ([zh-TW, ja-JP])`**
+
+After switching to `ja-JP`: \
+`fr-CA ([en-US, fr-CA])` **`ja-JP ([zh-TW, ja-JP])`**
+
+### Fix conversion mode
+It's well-know that Microsoft does something stupid regarding the convertion mode
+on IMEs, e.g. setting the conversion mode to Alphanumeric when you have switched to it
+from a latin language. It will fix the conversion mode when an IME language is activated.
+
+### RAlt enhancement
+The `RAlt` button is replaced by useful functions.
+
+#### Japanese
+`RAlt` now swaps between Katakana, Hirakana and half-width Kana modes (done by sending `VK_IME_ON`);
+
+#### Chinese and Korean
+`RAlt` now toggles between Alphanumeric mode and convert mode. It still defaults to the convert mode
+due to the aforementioend fix.
+
+## Extra
+It remaps single `LWin` key press to `LWin + Alt + Space` to bring up `Command Palette` from [`PowerToys`](https://github.com/microsoft/PowerToys). **It will only do so when it detects
+`Command Palette` is installed.**
