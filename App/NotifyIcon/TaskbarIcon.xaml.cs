@@ -1,10 +1,10 @@
+using System;
+
 namespace App.NotifyIcon;
 
 internal sealed partial class TaskbarIcon: H.NotifyIcon.TaskbarIcon {
-    public delegate void CommandEventHandler();
-
-    public event CommandEventHandler? ExitEvent;
-    public event CommandEventHandler? RestartEvent;
+    public event Action? ExitEvent;
+    public event Action? RestartEvent;
 
     public TaskbarIcon() {
         InitializeComponent();

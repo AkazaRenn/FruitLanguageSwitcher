@@ -26,7 +26,7 @@ internal static class Utilities {
         }
 
         public CaretInfo(Rectangle rect) {
-            X = (double)(rect.Left + rect.Right) / 2;
+            X = (rect.Left + rect.Right) / 2.0;
             Y = rect.Top;
             Height = rect.Height;
         }
@@ -102,40 +102,39 @@ internal static class Utilities {
         return true;
     }
 
-    public static CaretInfo GetFallbackCaretPosition() {
-        var hwnd = User32.GetForegroundWindow();
-        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd.DangerousGetHandle());
-        var display = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Primary);
-        var dpi = User32.GetDpiForWindow(hwnd);
+    public static CaretInfo FallbackCaretPosition {
+        get {
+            var hwnd = User32.GetForegroundWindow();
+            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd.DangerousGetHandle());
+            var display = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Primary);
+            var dpi = User32.GetDpiForWindow(hwnd);
 
-        return new CaretInfo(
-            (double)display.WorkArea.Width / 2,
-            display.WorkArea.Height - 10 * (dpi / 96.0),
-            0
-        );
+            return new CaretInfo(
+                display.WorkArea.Width / 2.0,
+                display.WorkArea.Height - 10 * (dpi / 96.0),
+                0
+            );
+        }
+    }
+
+    private static string StartupArguments {
+        get {
+            var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+            if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
+                var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
+                return cmdLineArgs.Operation.Arguments;
+            } else {
+                return string.Empty;
+            }
+        }
     }
 
     public static void Restart() {
-        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
-            var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
-            var operation = cmdLineArgs.Operation;
-            Microsoft.Windows.AppLifecycle.AppInstance.Restart(operation.Arguments);
-        } else {
-            Microsoft.Windows.AppLifecycle.AppInstance.Restart(string.Empty);
-        }
+        Microsoft.Windows.AppLifecycle.AppInstance.Restart(StartupArguments);
     }
 
     public static HRESULT RegisterAutoRestart() {
-        var applicationRestartFlags = Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH;
-        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (activatedEventArgs.Kind == ExtendedActivationKind.CommandLineLaunch) {
-            var cmdLineArgs = (CommandLineActivatedEventArgs)activatedEventArgs.Data;
-            var operation = cmdLineArgs.Operation;
-            return Kernel32.RegisterApplicationRestart(operation.Arguments, applicationRestartFlags);
-        } else {
-            return Kernel32.RegisterApplicationRestart(string.Empty, applicationRestartFlags);
-        }
+        return Kernel32.RegisterApplicationRestart(StartupArguments, Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH);
     }
 
     public static async Task RequestStartup() {
@@ -144,8 +143,7 @@ internal static class Utilities {
         case StartupTaskState.Disabled:
             await startupTask.RequestEnableAsync();
             break;
-        case StartupTaskState.DisabledByUser:
-        case StartupTaskState.Enabled:
+        default:
             break;
         }
     }

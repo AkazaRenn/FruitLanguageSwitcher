@@ -10,9 +10,9 @@ internal sealed partial class Window: WindowEx, IDisposable {
     readonly DispatcherQueueTimer hideFlyoutTimer;
     readonly FlyoutContentAtCaret flyoutContentAtCaret = new();
     readonly FlyoutContentFallback flyoutContentFallback = new();
+    readonly RawInput rawInput;
 
     public Window(Interop.Core _core) {
-        core = _core;
         InitializeComponent();
 
         this.SetWindowStyle(WindowStyle.Popup);
@@ -29,15 +29,21 @@ internal sealed partial class Window: WindowEx, IDisposable {
 
         DispatcherQueue.TryEnqueue(() => this.Hide());
 
+        rawInput = new RawInput(this.GetWindowHandle());
+        rawInput.UserInputEvent += () => FlyoutControl.Hide();
+
         hideFlyoutTimer = DispatcherQueue.CreateTimer();
         hideFlyoutTimer.IsRepeating = false;
         hideFlyoutTimer.Interval = TimeSpan.FromSeconds(2);
         hideFlyoutTimer.Tick += (_, _) => FlyoutControl.Hide();
 
         FlyoutControl.Opening += (_, _) => this.Show();
+        FlyoutControl.Opened += (_, _) => rawInput.Start();
         FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
+        FlyoutControl.Closing += (_, _) => rawInput.Stop();
         FlyoutControl.Closed += (_, _) => this.Hide();
 
+        core = _core;
         core.ShowFlyoutLanguageEvent += ShowFlyoutLanguage;
         core.ShowFlyoutCapsLockEvent += ShowFlyoutCapsLock;
     }
@@ -45,9 +51,10 @@ internal sealed partial class Window: WindowEx, IDisposable {
     ~Window() => Dispose();
 
     public void Dispose() {
-        core.ShowFlyoutLanguageEvent -= ShowFlyoutLanguage;
-        core.ShowFlyoutCapsLockEvent -= ShowFlyoutCapsLock;
-        this.Close();
+        core?.ShowFlyoutLanguageEvent -= ShowFlyoutLanguage;
+        core?.ShowFlyoutCapsLockEvent -= ShowFlyoutCapsLock;
+        rawInput?.Dispose();
+        Close();
         GC.SuppressFinalize(this);
     }
 
@@ -70,7 +77,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
                 MoveAndResize(caretInfo);
             } else {
                 FlyoutControl.Content = flyoutContentFallback;
-                this.MoveAndResize(Utilities.GetFallbackCaretPosition());
+                MoveAndResize(Utilities.FallbackCaretPosition);
             }
         });
         return true;
