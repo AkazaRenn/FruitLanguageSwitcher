@@ -39,6 +39,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
         hideFlyoutTimer.Tick += (_, _) => FlyoutControl.Hide();
 
         FlyoutControl.Opening += (_, _) => this.Show();
+        FlyoutControl.Opened += (_, _) => hideFlyoutTimer.Start();
         FlyoutControl.Opened += (_, _) => rawInput.Start();
         FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
         FlyoutControl.Closing += (_, _) => rawInput.Stop();
@@ -64,8 +65,11 @@ internal sealed partial class Window: WindowEx, IDisposable {
     }
 
     void ShowFlyout() {
-        FlyoutControl.ShowAt(FlyoutAnchor);
-        hideFlyoutTimer.Start();
+        if (FlyoutControl.IsOpen) {
+            hideFlyoutTimer.Start();
+        } else {
+            FlyoutControl.ShowAt(FlyoutAnchor);
+        }
     }
 
     bool MoveFlyout() {
