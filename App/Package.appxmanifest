@@ -11,7 +11,7 @@
 	<Identity
 		Name="AkazaRenn.82975CBC0BB1"
 		Publisher="CN=92F75277-E533-4C36-9417-4BC1004ABAD7"
-		Version="3.0.1.0" />
+		Version="3.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="57e66d9e-ca4e-4015-94ee-793ecc1145df" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -35,7 +35,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-			  DisplayName="$(ProjectNameFull)"
+			  DisplayName="Fruit Langauge Switcher"
         Description="Fruit Langauge Switcher"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
