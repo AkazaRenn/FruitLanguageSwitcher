@@ -29,11 +29,24 @@ private:
         return std::ranges::contains(imeLanguages, lcid);
     }
 
-private:
-    void SetConversionMode(HWND hwnd) const {
+    const static void SetConversionMode(HWND hwnd, DWORD expectedMode) {
         int retry = 2;
         const int retryPeriodMs = 100;
 
+        do {
+            SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+            Sleep(retryPeriodMs);
+        } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+    }
+
+    const static void ToggleConversionMode(DWORD expectedMode) {
+        const HWND hwnd = GetForegroundWindow();
+        const DWORD newMode = (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) ? expectedMode : 0;
+        SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, newMode);
+    }
+
+private:
+    void SetConversionMode(HWND hwnd) const {
         switch (lcid) {
         case zh_TW:
             [[fallthrough]];
@@ -43,29 +56,17 @@ private:
             [[fallthrough]];
         case zh_SG:
             [[fallthrough]];
-        case zh_MO: {
-            const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
-            do {
-                PostMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                Sleep(retryPeriodMs);
-            } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+        case zh_MO: 
+            SetConversionMode(hwnd, IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE);
             return;
-        }
-        case ko_KR: {
-            const DWORD expectedMode = IME_CMODE_NATIVE;
-            do {
-                PostMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                Sleep(retryPeriodMs);
-            } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
+        case ko_KR: 
+            SetConversionMode(hwnd, IME_CMODE_NATIVE);
             return;
-        }
-        case ja_JP: {
-            do {
-                SendKeySequence({VK_IME_ON});
-                Sleep(retryPeriodMs);
-            } while (retry-- > 0);
+        case ja_JP: 
+            SendKeySequence({VK_IME_ON});
+            Sleep(100);
+            SendKeySequence({VK_IME_ON});
             return;
-        }
         case am_ET:
             [[fallthrough]];
         case ti_ET:
@@ -89,7 +90,7 @@ public:
 
     void Activate(HWND hwnd, bool isActive) const {
         if (!isActive) {
-            SendMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
+            PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
         }
         SetConversionMode(hwnd);
     }
@@ -105,26 +106,10 @@ public:
         case zh_SG:
             [[fallthrough]];
         case zh_MO:
-            {
-                const HWND hwnd = GetForegroundWindow();
-                const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
-                if (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) {
-                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                } else {
-                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, 0);
-                }
-            }
+            ToggleConversionMode(IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE);
             return;
         case ko_KR:
-            {
-                const HWND hwnd = GetForegroundWindow();
-                const DWORD expectedMode = IME_CMODE_NATIVE;
-                if (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) {
-                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
-                } else {
-                    SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, 0);
-                }
-            }
+            ToggleConversionMode(IME_CMODE_NATIVE);
             return;
         case ja_JP:
             SendKeySequence({VK_NONCONVERT});
