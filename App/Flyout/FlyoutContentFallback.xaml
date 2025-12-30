@@ -14,7 +14,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 CharacterSpacing="-3" FontSize="14.1"
-                Height="32.5"
+                Height="32"
                 Margin="14, 12, 14, -8">
                 <TextBlock.OpacityTransition>
                     <ScalarTransition Duration="0:0:0.15" />
@@ -25,7 +25,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 CharacterSpacing="-3" FontSize="14.1"
-                Height="32.5"
+                Height="32"
                 Margin="14, 12, 14, -8"
                 Opacity="0">
                 <TextBlock.OpacityTransition>
