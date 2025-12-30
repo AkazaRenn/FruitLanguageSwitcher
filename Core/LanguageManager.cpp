@@ -129,11 +129,15 @@ private:
         }
     }
 
-    void ActivateLanguage(HKL hkl, HWND hwnd) {
+    Language& GetLanguageForHkl(HKL hkl) {
         if (!hklToLanguageMap.contains(hkl)) {
             hklToLanguageMap.emplace(hkl, Language(hkl));
         }
-        ActivateLanguage(hklToLanguageMap.at(hkl), hwnd);
+        return hklToLanguageMap.at(hkl);
+    }
+
+    void ActivateLanguage(HKL hkl, HWND hwnd) {
+        ActivateLanguage(GetLanguageForHkl(hkl), hwnd);
     }
 
     void ActivateLanguage(Language& language, HWND hwnd, bool updateWindowToLanguageMap = true) {
@@ -174,11 +178,17 @@ private:
             }
         }
 
-        ActivateLanguage(newHkl, hwnd);
-        if (newHkl != oldHkl) {
-            // Turn off capslock if the language changes
-            SetCapsLockState(false);
+        if (oldHkl == newHkl) {
+            return;
         }
+
+        Language& newLanguage = GetLanguageForHkl(newHkl);
+        MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
+            static_cast<WPARAM>(newLanguage.lcid),
+            static_cast<LPARAM>(newLanguage.isImeLanguage ? newLanguage.lcid : activeImeLanguage.get().lcid));
+        ActivateLanguage(newHkl, hwnd);
+        // Turn off capslock if the language changes
+        SetCapsLockState(false);
     }
 
     constexpr Language& GetActiveLanguage(bool imeLanguage) const {

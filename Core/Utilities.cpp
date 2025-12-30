@@ -17,7 +17,7 @@ constexpr bool IsExtendedKey(WORD vk) {
     return std::ranges::contains(extendedKeys, vk);
 }
 
-inline void SetKey(WORD key, INPUT& downInput, INPUT& upInput) {
+const inline void SetKey(WORD key, INPUT& downInput, INPUT& upInput) {
     DWORD flags = IsExtendedKey(key) ? KEYEVENTF_EXTENDEDKEY : 0;
 
     downInput = INPUT {
@@ -36,7 +36,7 @@ inline void SetKey(WORD key, INPUT& downInput, INPUT& upInput) {
     };
 }
 
-inline UINT SendKeySequence(std::vector<WORD> keys) {
+const inline UINT SendKeySequence(std::vector<WORD> keys) {
     size_t numInputs = keys.size() * 2;
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 
@@ -47,7 +47,7 @@ inline UINT SendKeySequence(std::vector<WORD> keys) {
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
 }
 
-inline UINT SendKeyCombination(std::vector<WORD> keys) {
+const inline UINT SendKeyCombination(std::vector<WORD> keys) {
     size_t numInputs = keys.size() * 2;
     auto inputs = std::make_unique<INPUT[]>(numInputs);
 
@@ -58,12 +58,12 @@ inline UINT SendKeyCombination(std::vector<WORD> keys) {
     return SendInput(static_cast<UINT>(numInputs), inputs.get(), sizeof(INPUT));
 }
 
-inline bool GetCapsLockState() {
+const inline bool GetCapsLockState() {
     return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
 }
 
 // Return true if the state was changed, false otherwise
-inline bool SetCapsLockState(bool on) {
+const inline bool SetCapsLockState(bool on) {
     if (GetCapsLockState() != on) {
         SendKeySequence({VK_CAPITAL});
         return true;
@@ -71,12 +71,12 @@ inline bool SetCapsLockState(bool on) {
     return false;
 }
 
-inline bool GetScrollLockState() {
+const inline bool GetScrollLockState() {
     return (GetKeyState(VK_SCROLL) & 0x0001) != 0;
 }
 
 // Return true if the state was changed, false otherwise
-inline bool SetScrollLockState(bool on) {
+const inline bool SetScrollLockState(bool on) {
     if (GetScrollLockState() != on) {
         SendKeySequence({VK_SCROLL});
         return true;
@@ -84,7 +84,7 @@ inline bool SetScrollLockState(bool on) {
     return false;
 }
 
-inline bool IsPackageInstalled(const std::wstring& packageFamilyName) {
+const inline bool IsPackageInstalled(const std::wstring& packageFamilyName) {
     const std::wstring basePath = L"Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\CurrentVersion\\AppModel\\SystemAppData\\";
 
     HKEY hKey;
@@ -101,5 +101,9 @@ inline bool IsPackageInstalled(const std::wstring& packageFamilyName) {
         return true;
     }
     return false;
+}
+
+const inline LCID HklToLcid(HKL hkl) {
+    return MAKELCID(LOWORD(reinterpret_cast<UINT_PTR>(hkl)), SORT_DEFAULT);
 }
 }

@@ -80,7 +80,7 @@ private:
 public:
     Language(HKL _hkl)
         : hkl(_hkl)
-        , lcid(MAKELCID(LOWORD(reinterpret_cast<UINT_PTR>(hkl)), SORT_DEFAULT))
+        , lcid(HklToLcid(hkl))
         , isImeLanguage(IsImeLanguage(lcid)) {}
 
     bool operator==(const Language& other) const {
