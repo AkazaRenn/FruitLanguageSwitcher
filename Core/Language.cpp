@@ -46,7 +46,7 @@ private:
         case zh_MO: {
             const DWORD expectedMode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
             do {
-                SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                PostMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
                 Sleep(retryPeriodMs);
             } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
             return;
@@ -54,7 +54,7 @@ private:
         case ko_KR: {
             const DWORD expectedMode = IME_CMODE_NATIVE;
             do {
-                SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
+                PostMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
                 Sleep(retryPeriodMs);
             } while ((retry-- > 0) && (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode));
             return;

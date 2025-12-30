@@ -53,6 +53,7 @@ private:
     std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
     std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
     std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
+    std::reference_wrapper<Language> defaultLanguage = activeLanguage;
 
     bool pollingLanguageUpdate = false;
     Task updateLanguageTask;
@@ -82,7 +83,7 @@ private:
         if (it != windowToLanguageMap.end()) {
             ActivateLanguage(it->second, hwnd);
         } else {
-            ActivateLanguage(GetWindowKeyboardLayout(hwnd), hwnd);
+            ActivateLanguage(defaultLanguage, hwnd);
         }
     }
 
