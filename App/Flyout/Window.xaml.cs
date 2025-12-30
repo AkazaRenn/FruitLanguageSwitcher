@@ -76,33 +76,31 @@ internal sealed partial class Window: WindowEx, IDisposable {
         if (!Utilities.GetCaretPosition(out Utilities.CaretInfo? caretInfoOrNull)) {
             return false;
         }
-        DispatcherQueue.TryEnqueue(() => {
-            if (caretInfoOrNull is Utilities.CaretInfo caretInfo) {
-                FlyoutControl.Content = flyoutContentAtCaret;
-                MoveAndResize(caretInfo);
-            } else {
-                FlyoutControl.Content = flyoutContentFallback;
-                MoveAndResize(Utilities.FallbackCaretPosition);
-            }
-        });
+        if (caretInfoOrNull is Utilities.CaretInfo caretInfo) {
+            FlyoutControl.Content = flyoutContentAtCaret;
+            MoveAndResize(caretInfo);
+        } else {
+            FlyoutControl.Content = flyoutContentFallback;
+            MoveAndResize(Utilities.FallbackCaretPosition);
+        }
         return true;
     }
 
     void ShowFlyoutLanguage(LCID activeLcid, LCID activeImeLcid) {
-        if (!MoveFlyout()) {
-            return;
-        }
         DispatcherQueue.TryEnqueue(() => {
+            if (!MoveFlyout()) {
+                return;
+            }
             ((IFlyoutContent)FlyoutControl.Content).SetContentLanguage(activeLcid == activeImeLcid, activeImeLcid);
             ShowFlyout();
         });
     }
 
     void ShowFlyoutCapsLock() {
-        if (!MoveFlyout()) {
-            return;
-        }
         DispatcherQueue.TryEnqueue(() => {
+            if (!MoveFlyout()) {
+                return;
+            }
             ((IFlyoutContent)FlyoutControl.Content).SetContentCapsLock();
             ShowFlyout();
         });
