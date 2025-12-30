@@ -55,6 +55,8 @@ private:
     std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
     std::reference_wrapper<Language> defaultLanguage = activeLanguage;
 
+    HWND activeWindow = GetForegroundWindow();
+
     bool pollingLanguageUpdate = false;
     Task updateLanguageTask;
 
@@ -74,16 +76,16 @@ private:
 
     void OnForegroundChanged(const MSG& msg) {
         SetCapsLockState(false);
-        const HWND hwnd = reinterpret_cast<HWND>(msg.lParam);
+        activeWindow = reinterpret_cast<HWND>(msg.lParam);
 
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
-        auto it = windowToLanguageMap.find(hwnd);
+        auto it = windowToLanguageMap.find(activeWindow);
         if (it != windowToLanguageMap.end()) {
-            ActivateLanguage(it->second, hwnd);
+            ActivateLanguage(it->second);
         } else {
-            ActivateLanguage(defaultLanguage, hwnd);
+            ActivateLanguage(defaultLanguage);
         }
     }
 
@@ -95,13 +97,10 @@ private:
     void OnSwapCategoryTriggered(const MSG& msg) {
         ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
 
-        SetCapsLockState(false);
-        const HWND hwnd = GetForegroundWindow();
-
         if (activeLanguage.get().isImeLanguage) {
-            ActivateLanguage(activeLatinLanguage, hwnd);
+            ActivateLanguage(activeLatinLanguage);
         } else {
-            ActivateLanguage(activeImeLanguage, hwnd);
+            ActivateLanguage(activeImeLanguage);
         }
     }
 
@@ -115,8 +114,7 @@ private:
 
         activeLanguageBeforeCapsLock = activeLanguage;
         if (activeLanguage.get().isImeLanguage) {
-            const HWND hwnd = GetForegroundWindow();
-            ActivateLanguage(activeLatinLanguage, hwnd, false);
+            ActivateLanguage(activeLatinLanguage, false);
         }
     }
 
@@ -124,8 +122,7 @@ private:
         ShowFlyout(GetActiveLanguage(activeLanguageBeforeCapsLock.get().isImeLanguage).lcid);
 
         if (activeLanguageBeforeCapsLock.get().isImeLanguage) {
-            const HWND hwnd = GetForegroundWindow();
-            ActivateLanguage(activeLanguageBeforeCapsLock, hwnd);
+            ActivateLanguage(activeLanguageBeforeCapsLock);
         }
     }
 
@@ -136,13 +133,13 @@ private:
         return hklToLanguageMap.at(hkl);
     }
 
-    void ActivateLanguage(HKL hkl, HWND hwnd) {
-        ActivateLanguage(GetLanguageForHkl(hkl), hwnd);
+    void ActivateLanguage(HKL hkl) {
+        ActivateLanguage(GetLanguageForHkl(hkl));
     }
 
-    void ActivateLanguage(Language& language, HWND hwnd, bool updateWindowToLanguageMap = true) {
-        const HKL activeHkl = GetWindowKeyboardLayout(hwnd);
-        language.Activate(hwnd, activeHkl == language.hkl);
+    void ActivateLanguage(Language& language, bool updateWindowToLanguageMap = true) {
+        const HKL activeHkl = GetWindowKeyboardLayout(activeWindow);
+        language.Activate(activeWindow, activeHkl == language.hkl);
 
         activeLanguage = language;
         if (activeLanguage.get().isImeLanguage) {
@@ -154,7 +151,7 @@ private:
         pollingLanguageUpdate = false;
 
         if (updateWindowToLanguageMap) {
-            windowToLanguageMap.insert_or_assign(hwnd, activeLanguage);
+            windowToLanguageMap.insert_or_assign(activeWindow, activeLanguage);
         }
 
     }
@@ -166,8 +163,11 @@ private:
     }
 
     void UpdateLanguage() {
-        // Poll the HKL update as it would have a delay
         const HWND hwnd = GetForegroundWindow();
+        if (hwnd != activeWindow) {
+            return;
+        }
+        // Poll the HKL update as it would have a delay
         const HKL oldHkl = activeLanguage.get().hkl;
         HKL newHkl;
         int retry = 10;
@@ -186,7 +186,7 @@ private:
         MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
             static_cast<WPARAM>(newLanguage.lcid),
             static_cast<LPARAM>(newLanguage.isImeLanguage ? newLanguage.lcid : activeImeLanguage.get().lcid));
-        ActivateLanguage(newHkl, hwnd);
+        ActivateLanguage(newHkl);
         // Turn off capslock if the language changes
         SetCapsLockState(false);
     }
