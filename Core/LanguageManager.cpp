@@ -137,7 +137,8 @@ private:
     }
 
     void ActivateLanguage(Language& language, HWND hwnd, bool updateWindowToLanguageMap = true) {
-        language.Activate(hwnd, activeLanguage == language);
+        const HKL activeHkl = GetWindowKeyboardLayout(hwnd);
+        language.Activate(hwnd, activeHkl == language.hkl);
 
         activeLanguage = language;
         if (activeLanguage.get().isImeLanguage) {
