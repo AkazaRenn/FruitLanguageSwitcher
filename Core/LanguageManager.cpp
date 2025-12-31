@@ -10,9 +10,7 @@ import "Timer.cpp";
 import "Utilities.cpp";
 
 namespace Core {
-class LanguageManager: public Singleton<LanguageManager> {
-    friend class Singleton<LanguageManager>;
-
+class LanguageManager {
 private:
     static const HKL GetWindowKeyboardLayout(HWND hwnd) {
         DWORD threadId = GetWindowThreadProcessId(hwnd, nullptr);
@@ -69,11 +67,6 @@ private:
         { Message::CapsLockOn, [this](const MSG& msg) {OnCapsLockOn(msg); } },
         { Message::CapsLockOff,[this](const MSG& msg) {OnCapsLockOff(msg); } },
     });
-
-    LanguageManager()
-        : updateLanguageTask([this]() {
-        UpdateLanguage();
-    }) {}
 
     void OnForegroundChanged(const MSG& msg) {
         SetCapsLockState(false);
@@ -170,7 +163,7 @@ private:
     void ShowFlyout(LCID activeLcid) const {
         MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
             static_cast<WPARAM>(activeLcid),
-            static_cast<LPARAM>(Instance().activeImeLanguage.get().lcid));
+            static_cast<LPARAM>(activeImeLanguage.get().lcid));
     }
 
     void UpdateLanguage() {
@@ -205,5 +198,11 @@ private:
     constexpr Language& GetActiveLanguage(bool imeLanguage) const {
         return imeLanguage ? activeImeLanguage.get() : activeLatinLanguage.get();
     }
+
+public:
+    LanguageManager()
+        : updateLanguageTask([this]() {
+        UpdateLanguage();
+    }) {}
 };
 }

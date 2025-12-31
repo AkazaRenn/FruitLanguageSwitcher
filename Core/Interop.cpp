@@ -12,6 +12,7 @@ using ShowFlyoutFunction = void(__stdcall*)(LCID, LCID);
 class Interop {
 private:
     GetMessageThread getMessageThread;
+    LanguageManager languageManager;
 
 public:
     Interop(ShowFlyoutFunction showFlyoutFunction)
@@ -21,7 +22,6 @@ public:
         }) {
         EventHookObjectDestroy::Instance();
         EventHookSystemForegound::Instance();
-        LanguageManager::Instance();
         WindowsHookKeyboardLL::Instance();
     }
 };
