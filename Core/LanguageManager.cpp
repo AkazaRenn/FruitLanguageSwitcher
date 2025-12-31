@@ -65,6 +65,7 @@ private:
         { Message::WindowDestroyed, [this](const MSG& msg) {OnWindowDestroyed(msg); } },
         { Message::SwapCategoryTriggered, [this](const MSG& msg) {OnSwapCategoryTriggered(msg); } },
         { Message::WinKeyUp, [this](const MSG& msg) {OnWinKeyUp(msg); } },
+        { Message::RMenuKeyUp, [this](const MSG& msg) {OnRMenuKeyUp(msg); } },
         { Message::CapsLockOn, [this](const MSG& msg) {OnCapsLockOn(msg); } },
         { Message::CapsLockOff,[this](const MSG& msg) {OnCapsLockOff(msg); } },
     });
@@ -107,6 +108,16 @@ private:
     void OnWinKeyUp(const MSG& msg) {
         pollingLanguageUpdate = true;
         updateLanguageTask.Start();
+    }
+
+    void OnRMenuKeyUp(const MSG& msg) {
+        if (activeLanguage.get().isImeLanguage) {
+            static constexpr DWORD VK_DUMMY = 0xff;
+            SendKeyCombination({VK_RMENU,VK_DUMMY});
+            activeLanguage.get().OnRMenuUp();
+        } else {
+            SendKeyCombination({VK_RMENU});
+        }
     }
 
     void OnCapsLockOn(const MSG& msg) {
@@ -193,15 +204,6 @@ private:
 
     constexpr Language& GetActiveLanguage(bool imeLanguage) const {
         return imeLanguage ? activeImeLanguage.get() : activeLatinLanguage.get();
-    }
-
-public:
-    void OnRMenuUp() const {
-        activeLanguage.get().OnRMenuUp();
-    }
-
-    constexpr bool InImeLanguage() const {
-        return activeLanguage.get().isImeLanguage;
     }
 };
 }

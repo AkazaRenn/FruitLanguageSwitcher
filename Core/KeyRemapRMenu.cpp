@@ -1,18 +1,13 @@
 import <Windows.h>;
 import "LanguageManager.cpp";
+import "MessageDispatcher.cpp";
 import "Utilities.cpp";
 
 namespace Core {
 class KeyRemapRMenu {
 private:
-    static constexpr DWORD VK_DUMMY = 0xff;
-
     bool rMenuKeyDown = false;
     bool otherKeyDown = false;
-
-    static void SendIgnoreRMenuKeyCombination() {
-        SendKeyCombination({VK_RMENU,VK_DUMMY});
-    }
 
 public:
     constexpr void OnRMenuDown() {
@@ -32,12 +27,8 @@ public:
             return false;
         }
 
-        if (LanguageManager::Instance().InImeLanguage()) {
-            SendIgnoreRMenuKeyCombination();
-            LanguageManager::Instance().OnRMenuUp();
-            return true;
-        }
-        return false;
+        MessageDispatcher::Instance().PostMessage(Message::RMenuKeyUp);
+        return true;
     }
 
     constexpr void OnOtherKeyDown() {

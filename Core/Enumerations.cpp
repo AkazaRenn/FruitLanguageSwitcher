@@ -6,6 +6,7 @@ enum class Message: DWORD {
     ForegroundChanged, // lParam: HWND hwnd
     WindowDestroyed,
     WinKeyUp,
+    RMenuKeyUp,
     SwapCategoryTriggered,
     CapsLockOn,
     CapsLockOff,
