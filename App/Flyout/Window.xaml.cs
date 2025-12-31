@@ -11,7 +11,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
     readonly DispatcherQueueTimer hideFlyoutTimer;
     readonly FlyoutContentAtCaret flyoutContentAtCaret = new();
     readonly FlyoutContentFallback flyoutContentFallback = new();
-    readonly RawInput rawInput;
+    readonly InputDetector inputDetector;
 
     public Window(Core _core) {
         InitializeComponent();
@@ -30,8 +30,8 @@ internal sealed partial class Window: WindowEx, IDisposable {
 
         DispatcherQueue.TryEnqueue(() => this.Hide());
 
-        rawInput = new RawInput(this.GetWindowHandle());
-        rawInput.UserInputEvent += () => FlyoutControl.Hide();
+        inputDetector = new InputDetector(this.GetWindowHandle());
+        inputDetector.UserInputEvent += () => FlyoutControl.Hide();
 
         hideFlyoutTimer = DispatcherQueue.CreateTimer();
         hideFlyoutTimer.IsRepeating = false;
@@ -40,9 +40,9 @@ internal sealed partial class Window: WindowEx, IDisposable {
 
         FlyoutControl.Opening += (_, _) => this.Show();
         FlyoutControl.Opened += (_, _) => hideFlyoutTimer.Start();
-        FlyoutControl.Opened += (_, _) => rawInput.Start();
+        FlyoutControl.Opened += (_, _) => inputDetector.Start();
         FlyoutControl.Closing += (_, _) => hideFlyoutTimer.Stop();
-        FlyoutControl.Closing += (_, _) => rawInput.Stop();
+        FlyoutControl.Closing += (_, _) => inputDetector.Stop();
         FlyoutControl.Closed += (_, _) => this.Hide();
 
         core = _core;
@@ -55,7 +55,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
     public void Dispose() {
         core?.ShowFlyoutLanguageEvent -= ShowFlyoutLanguage;
         core?.ShowFlyoutCapsLockEvent -= ShowFlyoutCapsLock;
-        rawInput?.Dispose();
+        inputDetector?.Dispose();
         Close();
         GC.SuppressFinalize(this);
     }

@@ -1,11 +1,12 @@
 ﻿using Linearstar.Windows.RawInput;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 
 namespace App.Flyout;
 
-internal sealed class RawInput: IDisposable {
+internal sealed class InputDetector: IDisposable {
     const Linearstar.Windows.RawInput.Native.RawMouseButtonFlags ANY_BUTTON_DOWN =
         Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.LeftButtonDown |
         Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.RightButtonDown |
@@ -20,48 +21,34 @@ internal sealed class RawInput: IDisposable {
     readonly nuint uIdSubclass = (nuint)Random.Shared.Next();
     readonly HWND hwnd;
     readonly ComCtl32.SUBCLASSPROC subclassProc;
+    readonly Hid.USAGE[] hidUsages = [Hid.USAGE.HID_USAGE_GENERIC_MOUSE, Hid.USAGE.HID_USAGE_GENERIC_KEYBOARD];
     readonly User32.RAWINPUTDEVICE[] rawInputDevicesRegister;
     readonly User32.RAWINPUTDEVICE[] rawInputDevicesUnregister;
 
     public event Action? UserInputEvent;
 
-    public RawInput(HWND _hwnd) {
+    public InputDetector(HWND _hwnd) {
         hwnd = _hwnd;
         subclassProc = OnRawInput;
         ComCtl32.SetWindowSubclass(hwnd, subclassProc, uIdSubclass, 0);
 
-        rawInputDevicesRegister = [
-            new User32.RAWINPUTDEVICE {
+        rawInputDevicesRegister = [.. hidUsages
+            .Select(usage => new User32.RAWINPUTDEVICE {
                 usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,
+                usUsage = (ushort)usage,
                 dwFlags = User32.RIDEV.RIDEV_INPUTSINK,
-                hwndTarget = hwnd,
-            },
-            new User32.RAWINPUTDEVICE {
+                hwndTarget = hwnd
+            })];
+        rawInputDevicesUnregister = [.. hidUsages
+            .Select(usage => new User32.RAWINPUTDEVICE {
                 usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_KEYBOARD,
-                dwFlags = User32.RIDEV.RIDEV_INPUTSINK,
-                hwndTarget = hwnd,
-            },
-        ];
-
-        rawInputDevicesUnregister = [
-            new User32.RAWINPUTDEVICE {
-                usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_MOUSE,
+                usUsage = (ushort)usage,
                 dwFlags = User32.RIDEV.RIDEV_REMOVE,
-                hwndTarget = HWND.NULL,
-            },
-            new User32.RAWINPUTDEVICE {
-                usUsagePage = (ushort)Hid.USAGE.HID_USAGE_PAGE_GENERIC,
-                usUsage = (ushort)Hid.USAGE.HID_USAGE_GENERIC_KEYBOARD,
-                dwFlags = User32.RIDEV.RIDEV_REMOVE,
-                hwndTarget = HWND.NULL,
-            },
-        ];
+                hwndTarget = HWND.NULL
+            })];
     }
 
-    ~RawInput() => Dispose();
+    ~InputDetector() => Dispose();
 
     public void Dispose() {
         Stop();
@@ -75,19 +62,14 @@ internal sealed class RawInput: IDisposable {
                 break;
             }
 
-            var data = RawInputData.FromHandle(lParam);
-            if (Linearstar.Windows.RawInput.Native.RawInputDeviceHandle.GetRawValue(data.Header.DeviceHandle) == 0) {
-                break;
-            }
-
-            switch (data) {
+            switch (RawInputData.FromHandle(lParam)) {
             case RawInputMouseData mouse:
                 if ((mouse.Mouse.Buttons & ANY_BUTTON_DOWN) != 0) {
                     UserInputEvent?.Invoke();
                 }
                 break;
             case RawInputKeyboardData keyboard:
-                if ((keyboard.Keyboard.Flags & Linearstar.Windows.RawInput.Native.RawKeyboardFlags.Up) == 0) {
+                if (Linearstar.Windows.RawInput.Native.RawInputDeviceHandle.GetRawValue(keyboard.Header.DeviceHandle) != 0) {
                     UserInputEvent?.Invoke();
                 }
                 break;
