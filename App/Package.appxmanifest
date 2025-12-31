@@ -13,7 +13,9 @@
 		Publisher="CN=92F75277-E533-4C36-9417-4BC1004ABAD7"
 		Version="3.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="57e66d9e-ca4e-4015-94ee-793ecc1145df" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity
+    PhoneProductId="57E66D9E-CA4E-4015-94EE-793ECC1145DF"
+    PhonePublisherId="92F75277-E533-4C36-9417-4BC1004ABAD7" />
 
   <Properties>
 		<DisplayName>Fruit Language Switcher</DisplayName>

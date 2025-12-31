@@ -17,24 +17,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Logo.png" />
-    <Content Include="Assets\SplashScreen.png" />
+    <Content Include="Assets\*.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(OutDir)\..\..\*.dll">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>%(Filename)%(Extension)</PackagePath>
-    </Content>
-    <None Remove="bin\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="**\*.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(OutDir)\..\..\*.dll">
+      <Link>Interop\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <None Remove="bin\**" />
   </ItemGroup>
 
   <!--

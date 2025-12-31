@@ -56,7 +56,7 @@ private:
     HWND activeWindow = GetForegroundWindow();
 
     bool pollingLanguageUpdate = false;
-    Task updateLanguageTask;
+    Task updateLanguageTask = Task([this]() {UpdateLanguage(); });
 
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, [this](const MSG& msg) {OnForegroundChanged(msg); } },
@@ -200,9 +200,6 @@ private:
     }
 
 public:
-    LanguageManager()
-        : updateLanguageTask([this]() {
-        UpdateLanguage();
-    }) {}
+    LanguageManager() {}
 };
 }

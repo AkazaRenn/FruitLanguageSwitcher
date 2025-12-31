@@ -1,3 +1,4 @@
+import <exception>;
 import <Windows.h>;
 import "EventHookObjectDestroy.cpp";
 import "EventHookSystemForegound.cpp";
@@ -29,10 +30,16 @@ public:
 
 extern "C" {
     __declspec(dllexport) Core::Interop* __stdcall Start(Core::ShowFlyoutFunction showFlyoutFunction) {
-        return new Core::Interop(showFlyoutFunction);
+        try {
+            return new Core::Interop(showFlyoutFunction);
+        } catch (std::exception e) {
+            return nullptr;
+        }
     }
 
     __declspec(dllexport) void __stdcall Stop(Core::Interop* instance) {
-        delete instance;
+        if (instance) {
+            delete instance;
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Windows.AppNotifications;
+using Microsoft.Windows.AppNotifications.Builder;
+using System;
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 
@@ -18,6 +20,12 @@ internal sealed partial class Core: IDisposable {
     public Core() {
         showFlyoutDelegate = ShowFlyout;
         pUnmanaged = CoreStart(Marshal.GetFunctionPointerForDelegate(showFlyoutDelegate));
+        if (pUnmanaged == IntPtr.Zero) {
+            AppNotificationManager.Default.Show(new AppNotificationBuilder()
+                .AddText("Initialization failed!")
+                .AddText("Please make sure you have both Latin & IME languages enabled.")
+                .BuildNotification());
+        }
     }
 
     ~Core() => Dispose();
