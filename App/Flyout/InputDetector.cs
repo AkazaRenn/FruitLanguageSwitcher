@@ -58,6 +58,10 @@ internal sealed class InputDetector: IDisposable {
 
     private IntPtr OnRawInput(HWND hwnd, uint uMsg, nint wParam, nint lParam, nuint uldSubclass, nint dwRefData) {
         do {
+            if (!started) {
+                break;
+            }
+
             if (uMsg != (uint)User32.WindowMessage.WM_INPUT) {
                 break;
             }
