@@ -1,11 +1,8 @@
 ﻿using App.Interop;
-using FlaUI.Core.Definitions;
-using FlaUI.UIA3;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.Windows.AppLifecycle;
 using System;
-using System.Drawing;
 using System.Threading.Tasks;
 using Vanara.PInvoke;
 using Windows.ApplicationModel;

@@ -76,6 +76,7 @@ private:
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
+        Sleep(100); // Do not send it immediately to avoid it crash the app (Notepad)
         auto it = windowToLanguageMap.find(activeWindow);
         if (it != windowToLanguageMap.end()) {
             ActivateLanguage(it->second);
