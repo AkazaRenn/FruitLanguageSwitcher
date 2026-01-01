@@ -72,7 +72,6 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
         return false;
     }
 
-    bool succeeded = false;
     HRESULT hr = 0;
     int compValue;
     try {
@@ -112,7 +111,7 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
                 hr = textRange->CompareEndpoints(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, &compValue);
                 if (compValue == 0) {
                     // Not a selection anyways, just use this value
-                    if (succeeded = SafeArray::GetCaretInfo(textRange, *caretInfo)) {
+                    if (SafeArray::GetCaretInfo(textRange, *caretInfo)) {
                         break;
                     }
                 }
@@ -128,12 +127,12 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
                 } else {
                     hr = textRange->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
                 }
-                if (succeeded = SafeArray::GetCaretInfo(textRange, *caretInfo)) {
+                if (SafeArray::GetCaretInfo(textRange, *caretInfo)) {
                     break;
                 }
             } while (false);
 
-            if (succeeded) {
+            if (caretInfo->Height > 0) {
                 return true;
             }
 
@@ -164,11 +163,11 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
                     break;
                 }
                 hr = textRangeStart->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRangeStart.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
-                if (succeeded = SafeArray::GetCaretInfo(textRangeStart, *caretInfo)) {
+                if (SafeArray::GetCaretInfo(textRangeStart, *caretInfo)) {
                     break;
                 }
                 hr = textRangeEnd->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRangeEnd.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End);
-                if (succeeded = SafeArray::GetCaretInfo(textRangeEnd, *caretInfo)) {
+                if (SafeArray::GetCaretInfo(textRangeEnd, *caretInfo)) {
                     break;
                 }
             } while (false);
