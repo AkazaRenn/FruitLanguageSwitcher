@@ -45,13 +45,13 @@ private:
     }
 
 private:
-    std::unordered_map<HWND, std::reference_wrapper<Language>> windowToLanguageMap;
+    std::unordered_map<HWND, std::reference_wrapper<const Language>> windowToLanguageMap;
     std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
-    std::reference_wrapper<Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
-    std::reference_wrapper<Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
-    std::reference_wrapper<Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
-    std::reference_wrapper<Language> activeLanguageBeforeCapsLock = activeLanguage;
-    std::reference_wrapper<Language> defaultLanguage = activeLanguage;
+    std::reference_wrapper<const Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
+    std::reference_wrapper<const Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
+    std::reference_wrapper<const Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
+    std::reference_wrapper<const Language> activeLanguageBeforeCapsLock = activeLanguage;
+    std::reference_wrapper<const Language> defaultLanguage = activeLanguage;
 
     HWND activeWindow = GetForegroundWindow();
 
@@ -90,12 +90,7 @@ private:
 
     void OnSwapCategoryTriggered(const MSG& msg) {
         ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
-
-        if (activeLanguage.get().isImeLanguage) {
-            ActivateLanguage(activeLatinLanguage);
-        } else {
-            ActivateLanguage(activeImeLanguage);
-        }
+        ActivateLanguage(GetActiveLanguage(!activeLanguage.get().isImeLanguage));
     }
 
     void OnWinKeyUp(const MSG& msg) {
@@ -141,7 +136,7 @@ private:
         ActivateLanguage(GetLanguageForHkl(hkl));
     }
 
-    void ActivateLanguage(Language& language, bool updateWindowToLanguageMap = true) {
+    void ActivateLanguage(const Language& language, bool updateWindowToLanguageMap = true) {
         const HKL activeHkl = GetWindowKeyboardLayout(activeWindow);
         language.Activate(activeWindow, activeHkl == language.hkl);
 
@@ -195,7 +190,7 @@ private:
         SetCapsLockState(false);
     }
 
-    constexpr Language& GetActiveLanguage(bool imeLanguage) const {
+    constexpr const Language& GetActiveLanguage(bool imeLanguage) const {
         return imeLanguage ? activeImeLanguage.get() : activeLatinLanguage.get();
     }
 
