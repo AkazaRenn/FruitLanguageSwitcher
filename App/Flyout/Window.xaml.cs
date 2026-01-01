@@ -60,7 +60,7 @@ internal sealed partial class Window: WindowEx, IDisposable {
         GC.SuppressFinalize(this);
     }
 
-    void MoveAndResize(Utilities.CaretInfo caretInfo) {
+    void MoveAndResize(UIAutomation.CaretInfo caretInfo) {
         this.MoveAndResize(caretInfo.X, caretInfo.Y, 0, caretInfo.Height / Content.XamlRoot.RasterizationScale);
     }
 
@@ -73,10 +73,10 @@ internal sealed partial class Window: WindowEx, IDisposable {
     }
 
     bool MoveFlyout() {
-        if (!Utilities.GetCaretPosition(out Utilities.CaretInfo? caretInfoOrNull)) {
+        if (!UIAutomation.GetCaretPosition(out UIAutomation.CaretInfo caretInfo)) {
             return false;
         }
-        if (caretInfoOrNull is Utilities.CaretInfo caretInfo) {
+        if (caretInfo.Height > 0) {
             FlyoutControl.Content = flyoutContentAtCaret;
             MoveAndResize(caretInfo);
         } else {
