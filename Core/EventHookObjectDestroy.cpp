@@ -7,10 +7,14 @@ class EventHookObjectDestroy: public WinEventHook<EventHookObjectDestroy> {
 
 private:
 	const static DWORD Event = EVENT_OBJECT_DESTROY;
+	const static DWORD flags = WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS | WINEVENT_SKIPOWNTHREAD;
 
 private:
 	void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
-		if (dwEvent == EVENT_OBJECT_DESTROY && idObject == OBJID_WINDOW) {
+		if ((dwEvent == EVENT_OBJECT_DESTROY) && 
+			(idObject == OBJID_WINDOW) && 
+			(hwnd != nullptr) && 
+			(GetAncestor(hwnd, GA_ROOT) == hwnd)) {
 			MessageDispatcher::Instance().PostMessage(Message::WindowDestroyed, 0, reinterpret_cast<LPARAM>(hwnd));
 		}
 	}
