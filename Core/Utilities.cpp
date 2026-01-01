@@ -106,4 +106,22 @@ const inline bool IsPackageInstalled(const std::wstring& packageFamilyName) {
 const inline LCID HklToLcid(HKL hkl) {
     return MAKELCID(LOWORD(reinterpret_cast<UINT_PTR>(hkl)), SORT_DEFAULT);
 }
+
+// UWP are wrapped inside a universal class where setting/getting language will always fail
+const inline HWND GetCoreWindow(HWND hostHwnd) {
+    constexpr unsigned int WINDOW_CLASS_NAME_ARRAY_SIZE = 256;
+
+    wchar_t windowClassName[WINDOW_CLASS_NAME_ARRAY_SIZE];
+    GetClassNameW(hostHwnd, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
+    if (wcscmp(windowClassName, L"ApplicationFrameWindow") == 0) {
+        HWND candidateHwnd = nullptr;
+        while ((candidateHwnd = FindWindowExW(hostHwnd, candidateHwnd, nullptr, nullptr)) != nullptr) {
+            GetClassNameW(candidateHwnd, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
+            if (wcscmp(windowClassName, L"Windows.UI.Core.CoreWindow") == 0)
+                return candidateHwnd;
+        }
+    }
+
+    return hostHwnd;
+}
 }
