@@ -4,17 +4,24 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Vanara.PInvoke;
 
 namespace App;
 
 public partial class App: Application {
     readonly HashSet<IDisposable> disposables = [];
+    readonly Mutex singleInstanceMutex;
     Core? core;
     Flyout.Window? window;
     TaskbarIcon? taskbarIcon;
 
     public App() {
+        singleInstanceMutex = new Mutex(true, Windows.ApplicationModel.Package.Current.Id.FamilyName, out bool createdNew);
+        if (!createdNew) {
+            Current.Exit();
+        }
+
         InitializeComponent();
     }
 

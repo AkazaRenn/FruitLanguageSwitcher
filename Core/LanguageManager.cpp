@@ -71,6 +71,7 @@ private:
     void OnForegroundChanged(const MSG& msg) {
         SetCapsLockState(false);
         activeWindow = reinterpret_cast<HWND>(msg.lParam);
+        pollingLanguageUpdate = false;
 
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
@@ -138,7 +139,7 @@ private:
 
     void ActivateLanguage(const Language& language, bool updateWindowToLanguageMap = true) {
         const HKL activeHkl = GetWindowKeyboardLayout(activeWindow);
-        language.Activate(activeWindow, activeHkl == language.hkl);
+        language.Activate(activeWindow);
 
         activeLanguage = language;
         if (activeLanguage.get().isImeLanguage) {
@@ -162,15 +163,17 @@ private:
     }
 
     void UpdateLanguage() {
-        const HWND hwnd = GetForegroundWindow();
-        if (hwnd != activeWindow) {
+        const HWND foregroundWindow = GetForegroundWindow();
+        if (foregroundWindow != activeWindow) {
             return;
         }
+        
+        const HWND coreWindow = GetCoreWindow(foregroundWindow);
         // Poll the HKL update as it would have a delay
         const HKL oldHkl = activeLanguage.get().hkl;
         HKL newHkl;
         int retry = 10;
-        while (((newHkl = GetWindowKeyboardLayout(hwnd)) == oldHkl) && (retry-- > 0)) {
+        while (((newHkl = GetWindowKeyboardLayout(coreWindow)) == oldHkl) && (retry-- > 0)) {
             Sleep(50);
             if (!pollingLanguageUpdate) {
                 return;

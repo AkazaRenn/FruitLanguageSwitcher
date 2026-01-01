@@ -1,5 +1,4 @@
 import <Windows.h>;
-import "LanguageManager.cpp";
 import "MessageDispatcher.cpp";
 import "Utilities.cpp";
 

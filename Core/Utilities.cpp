@@ -108,20 +108,21 @@ const inline LCID HklToLcid(HKL hkl) {
 }
 
 // UWP are wrapped inside a universal class where setting/getting language will always fail
-const inline HWND GetCoreWindow(HWND hostHwnd) {
-    constexpr unsigned int WINDOW_CLASS_NAME_ARRAY_SIZE = 256;
+const inline HWND GetCoreWindow(HWND hostWindow) {
+    constexpr static unsigned int WINDOW_CLASS_NAME_ARRAY_SIZE = 256;
+    static wchar_t windowClassName[WINDOW_CLASS_NAME_ARRAY_SIZE];
 
-    wchar_t windowClassName[WINDOW_CLASS_NAME_ARRAY_SIZE];
-    GetClassNameW(hostHwnd, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
+    GetClassNameW(hostWindow, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
     if (wcscmp(windowClassName, L"ApplicationFrameWindow") == 0) {
-        HWND candidateHwnd = nullptr;
-        while ((candidateHwnd = FindWindowExW(hostHwnd, candidateHwnd, nullptr, nullptr)) != nullptr) {
-            GetClassNameW(candidateHwnd, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
-            if (wcscmp(windowClassName, L"Windows.UI.Core.CoreWindow") == 0)
-                return candidateHwnd;
+        HWND candidateWindow = nullptr;
+        while ((candidateWindow = FindWindowExW(hostWindow, candidateWindow, nullptr, nullptr)) != nullptr) {
+            GetClassNameW(candidateWindow, windowClassName, WINDOW_CLASS_NAME_ARRAY_SIZE);
+            if (wcscmp(windowClassName, L"Windows.UI.Core.CoreWindow") == 0) {
+                return candidateWindow;
+            }
         }
     }
 
-    return hostHwnd;
+    return hostWindow;
 }
 }

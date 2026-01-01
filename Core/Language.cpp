@@ -32,6 +32,7 @@ private:
     const static void SetConversionMode(HWND hwnd, DWORD expectedMode) {
         int retry = 2;
         const int retryPeriodMs = 100;
+        hwnd = GetCoreWindow(hwnd);
 
         do {
             SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, expectedMode);
@@ -40,7 +41,7 @@ private:
     }
 
     const static void ToggleConversionMode(DWORD expectedMode) {
-        const HWND hwnd = GetForegroundWindow();
+        const HWND hwnd = GetCoreWindow(GetForegroundWindow());
         const DWORD newMode = (SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_GETCONVERSIONMODE, 0) != expectedMode) ? expectedMode : 0;
         SendMessage(ImmGetDefaultIMEWnd(hwnd), WM_IME_CONTROL, IMC_SETCONVERSIONMODE, newMode);
     }
@@ -88,10 +89,8 @@ public:
         return hkl == other.hkl;
     }
 
-    void Activate(HWND hwnd, bool isActive) const {
-        if (!isActive) {
-            PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, reinterpret_cast<LPARAM>(hkl));
-        }
+    void Activate(HWND hwnd) const {
+        PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, static_cast<LPARAM>(lcid));
         SetConversionMode(hwnd);
     }
 

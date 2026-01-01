@@ -7,15 +7,6 @@ using Vanara.PInvoke;
 namespace App.Flyout;
 
 internal sealed class InputDetector: IDisposable {
-    const Linearstar.Windows.RawInput.Native.RawMouseButtonFlags ANY_BUTTON_DOWN =
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.LeftButtonDown |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.RightButtonDown |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.MiddleButtonDown |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.Button4Down |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.Button5Down |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.MouseWheel |
-        Linearstar.Windows.RawInput.Native.RawMouseButtonFlags.MouseHorizontalWheel;
-
     bool started = false;
 
     readonly nuint uIdSubclass = (nuint)Random.Shared.Next();
@@ -68,7 +59,7 @@ internal sealed class InputDetector: IDisposable {
 
             switch (RawInputData.FromHandle(lParam)) {
             case RawInputMouseData mouse:
-                if ((mouse.Mouse.Buttons & ANY_BUTTON_DOWN) != 0) {
+                if (mouse.Mouse.Buttons != 0) {
                     UserInputEvent?.Invoke();
                 }
                 break;
