@@ -20,10 +20,16 @@ struct CaretInfo {
 class SafeArray {
 private:
     SAFEARRAY* pSafeArray = nullptr;
+    LONG size = 0;
 
 public:
     SafeArray(SAFEARRAY* _pSafeArray)
-        : pSafeArray(_pSafeArray) {}
+        : pSafeArray(_pSafeArray) {
+        LONG lBound = 0, uBound = -1;
+        SafeArrayGetLBound(pSafeArray, 1, &lBound);
+        SafeArrayGetUBound(pSafeArray, 1, &uBound);
+        size = uBound - lBound + 1;
+    }
     ~SafeArray() {
         if (!pSafeArray) {
             return;
@@ -31,12 +37,7 @@ public:
         SafeArrayDestroy(pSafeArray);
     }
     bool GetCaretInfo(CaretInfo& outCaretInfo) {
-        LONG lBound = 0, uBound = -1;
-        SafeArrayGetLBound(pSafeArray, 1, &lBound);
-        SafeArrayGetUBound(pSafeArray, 1, &uBound);
-        LONG count = uBound - lBound + 1;
-
-        if (count >= 4) {
+        if (size >= 4) {
             double* pData;
             SafeArrayAccessData(pSafeArray, (void**)&pData);
             double left = pData[0];
@@ -74,104 +75,100 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
     HRESULT hr = 0;
     int compValue;
     try {
+        ComPtr<IUIAutomation> uiAutomation;
+        hr = CoCreateInstance(CLSID_CUIAutomation8, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uiAutomation.GetAddressOf()));
+        if (FAILED(hr)) {
+            return false;
+        }
+        ComPtr<IUIAutomationElement> focusedElement;
+        hr = uiAutomation->GetFocusedElement(focusedElement.GetAddressOf());
+        if (FAILED(hr) || (!focusedElement)) {
+            return false;
+        }
+
         do {
-            ComPtr<IUIAutomation> uiAutomation;
-            hr = CoCreateInstance(CLSID_CUIAutomation8, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(uiAutomation.GetAddressOf()));
-            if (FAILED(hr)) {
-                return false;
+            ComPtr<IUIAutomationTextPattern2> textPattern2;
+            hr = focusedElement->GetCurrentPatternAs(UIA_TextPattern2Id, IID_PPV_ARGS(textPattern2.GetAddressOf()));
+            if (FAILED(hr) || (!textPattern2)) {
+                break;
             }
-            ComPtr<IUIAutomationElement> focusedElement;
-            hr = uiAutomation->GetFocusedElement(focusedElement.GetAddressOf());
-            if (FAILED(hr) || (!focusedElement)) {
-                return false;
+            ComPtr<IUIAutomationTextRangeArray> selection;
+            hr = textPattern2->GetSelection(selection.GetAddressOf());
+            if (FAILED(hr) || (!selection)) {
+                break;
             }
-
-            do {
-                ComPtr<IUIAutomationTextPattern2> textPattern2;
-                hr = focusedElement->GetCurrentPatternAs(UIA_TextPattern2Id, IID_PPV_ARGS(textPattern2.GetAddressOf()));
-                if (FAILED(hr) || (!textPattern2)) {
-                    break;
-                }
-                ComPtr<IUIAutomationTextRangeArray> selection;
-                hr = textPattern2->GetSelection(selection.GetAddressOf());
-                if (FAILED(hr) || (!selection)) {
-                    break;
-                }
-                int selectionLength;
-                hr = selection->get_Length(&selectionLength);
-                if (FAILED(hr) || (!selectionLength)) {
-                    break;
-                }
-                ComPtr<IUIAutomationTextRange> textRange;
-                hr = selection->GetElement(0, textRange.GetAddressOf());
-                if (FAILED(hr) || (!textRange)) {
-                    break;
-                }
-                hr = textRange->CompareEndpoints(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, &compValue);
-                if (compValue == 0) {
-                    // Not a selection anyways, just use this value
-                    if (SafeArray::GetCaretInfo(textRange, *caretInfo)) {
-                        break;
-                    }
-                }
-                ComPtr<IUIAutomationTextRange> caretRange;
-                BOOL isActive;
-                hr = textPattern2->GetCaretRange(&isActive, caretRange.GetAddressOf());
-                if (FAILED(hr) || (!caretRange)) {
-                    break;
-                }
-                hr = caretRange->CompareEndpoints(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, &compValue);
-                if (compValue == 0) {
-                    hr = textRange->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End);
-                } else {
-                    hr = textRange->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
-                }
+            int selectionLength;
+            hr = selection->get_Length(&selectionLength);
+            if (FAILED(hr) || (!selectionLength)) {
+                break;
+            }
+            ComPtr<IUIAutomationTextRange> textRange;
+            hr = selection->GetElement(0, textRange.GetAddressOf());
+            if (FAILED(hr) || (!textRange)) {
+                break;
+            }
+            hr = textRange->CompareEndpoints(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, &compValue);
+            if (compValue == 0) {
+                // Not a selection anyways, just use this value
                 if (SafeArray::GetCaretInfo(textRange, *caretInfo)) {
-                    break;
+                    return true;
                 }
-            } while (false);
-
-            if (caretInfo->Height > 0) {
+            }
+            ComPtr<IUIAutomationTextRange> caretRange;
+            BOOL isActive;
+            hr = textPattern2->GetCaretRange(&isActive, caretRange.GetAddressOf());
+            if (FAILED(hr) || (!caretRange)) {
+                break;
+            }
+            // To find anchor, if selection.start == caret, use selection.end, otherwise use selection.start
+            hr = caretRange->CompareEndpoints(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, &compValue);
+            if (compValue == 0) {
+                hr = textRange->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End);
+            } else {
+                hr = textRange->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRange.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
+            }
+            if (SafeArray::GetCaretInfo(textRange, *caretInfo)) {
                 return true;
             }
+        } while (false);
 
-            do {
-                ComPtr<IUIAutomationTextPattern> textPattern;
-                hr = focusedElement->GetCurrentPatternAs(UIA_TextPatternId, IID_PPV_ARGS(textPattern.GetAddressOf()));
-                if (FAILED(hr) || (!textPattern)) {
-                    break;
-                }
-                ComPtr<IUIAutomationTextRangeArray> selection;
-                hr = textPattern->GetSelection(selection.GetAddressOf());
-                if (FAILED(hr) || (!selection)) {
-                    break;
-                }
-                int selectionLength;
-                hr = selection->get_Length(&selectionLength);
-                if (FAILED(hr) || (!selectionLength)) {
-                    break;
-                }
-                ComPtr<IUIAutomationTextRange> textRangeStart;
-                hr = selection->GetElement(0, textRangeStart.GetAddressOf());
-                if (FAILED(hr) || (!textRangeStart)) {
-                    break;
-                }
-                ComPtr<IUIAutomationTextRange> textRangeEnd;
-                hr = textRangeStart->Clone(textRangeEnd.GetAddressOf());
-                if (FAILED(hr) || (!textRangeEnd)) {
-                    break;
-                }
-                hr = textRangeStart->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRangeStart.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
-                if (SafeArray::GetCaretInfo(textRangeStart, *caretInfo)) {
-                    break;
-                }
-                hr = textRangeEnd->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRangeEnd.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End);
-                if (SafeArray::GetCaretInfo(textRangeEnd, *caretInfo)) {
-                    break;
-                }
-            } while (false);
+        do {
+            ComPtr<IUIAutomationTextPattern> textPattern;
+            hr = focusedElement->GetCurrentPatternAs(UIA_TextPatternId, IID_PPV_ARGS(textPattern.GetAddressOf()));
+            if (FAILED(hr) || (!textPattern)) {
+                break;
+            }
+            ComPtr<IUIAutomationTextRangeArray> selection;
+            hr = textPattern->GetSelection(selection.GetAddressOf());
+            if (FAILED(hr) || (!selection)) {
+                break;
+            }
+            int selectionLength;
+            hr = selection->get_Length(&selectionLength);
+            if (FAILED(hr) || (!selectionLength)) {
+                break;
+            }
+            ComPtr<IUIAutomationTextRange> textRangeStart;
+            hr = selection->GetElement(0, textRangeStart.GetAddressOf());
+            if (FAILED(hr) || (!textRangeStart)) {
+                break;
+            }
+            ComPtr<IUIAutomationTextRange> textRangeEnd;
+            hr = textRangeStart->Clone(textRangeEnd.GetAddressOf());
+            if (FAILED(hr) || (!textRangeEnd)) {
+                break;
+            }
+            hr = textRangeStart->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_End, textRangeStart.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start);
+            if (SafeArray::GetCaretInfo(textRangeStart, *caretInfo)) {
+                return true;
+            }
+            hr = textRangeEnd->MoveEndpointByRange(TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start, textRangeEnd.Get(), TextPatternRangeEndpoint::TextPatternRangeEndpoint_End);
+            if (SafeArray::GetCaretInfo(textRangeEnd, *caretInfo)) {
+                return true;
+            }
         } while (false);
     } catch (std::exception e) {
+        return false;
     }
 
     return true;
