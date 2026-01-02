@@ -59,8 +59,7 @@ public:
         SAFEARRAY* pSafeArray;
         textRange->GetBoundingRectangles(&pSafeArray);
         if (pSafeArray) {
-            SafeArray safeArray(pSafeArray);
-            return safeArray.GetCaretInfo(outCaretInfo);
+            return SafeArray(pSafeArray).GetCaretInfo(outCaretInfo);
         }
         return false;
     }

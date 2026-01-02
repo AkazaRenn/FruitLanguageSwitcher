@@ -139,7 +139,7 @@ private:
     }
 
     void ActivateLanguage(const Language& language, bool updateWindowToLanguageMap = true) {
-        const HKL activeHkl = GetWindowKeyboardLayout(activeWindow);
+        pollingLanguageUpdate = false;
         language.Activate(activeWindow);
 
         activeLanguage = language;
@@ -148,8 +148,6 @@ private:
         } else {
             activeLatinLanguage = activeLanguage;
         }
-        SetScrollLockState(activeLanguage.get().isImeLanguage);
-        pollingLanguageUpdate = false;
 
         if (updateWindowToLanguageMap) {
             windowToLanguageMap.insert_or_assign(activeWindow, activeLanguage);
@@ -168,7 +166,7 @@ private:
         if (foregroundWindow != activeWindow) {
             return;
         }
-        
+
         const HWND coreWindow = GetCoreWindow(foregroundWindow);
         // Poll the HKL update as it would have a delay
         const HKL oldHkl = activeLanguage.get().hkl;

@@ -91,6 +91,7 @@ public:
 
     void Activate(HWND hwnd) const {
         PostMessage(hwnd, WM_INPUTLANGCHANGEREQUEST, 0, static_cast<LPARAM>(lcid));
+        SetScrollLockState(isImeLanguage);
         SetConversionMode(hwnd);
     }
 
