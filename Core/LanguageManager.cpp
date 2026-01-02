@@ -76,7 +76,7 @@ private:
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
-        Sleep(100); // Do not send it immediately to avoid it crash the app (Notepad)
+        Sleep(50); // Notepad workaround, or it will crash on launch
         auto it = windowToLanguageMap.find(activeWindow);
         if (it != windowToLanguageMap.end()) {
             ActivateLanguage(it->second);
@@ -91,6 +91,7 @@ private:
     }
 
     void OnSwapCategoryTriggered(const MSG& msg) {
+        activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
         ActivateLanguage(GetActiveLanguage(!activeLanguage.get().isImeLanguage));
     }

@@ -107,6 +107,7 @@ const inline LCID HklToLcid(HKL hkl) {
     return MAKELCID(LOWORD(reinterpret_cast<UINT_PTR>(hkl)), SORT_DEFAULT);
 }
 
+// UWP workaround
 // UWP are wrapped inside a universal class where setting/getting language will always fail
 const inline HWND GetCoreWindow(HWND hostWindow) {
     constexpr static unsigned int WINDOW_CLASS_NAME_ARRAY_SIZE = 256;
