@@ -2,7 +2,7 @@
 A language switcher to mimic the famous you-know-who fruit on Windows.
 
 <a href="https://apps.microsoft.com/detail/9njd8g4v1g1k?referrer=appbadge&mode=direct">
-	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+  <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 </a>
 
 (Not available in EU, sorry...)

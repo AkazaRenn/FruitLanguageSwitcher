@@ -8,28 +8,30 @@
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   IgnorableNamespaces="uap rescap">
 
-	<Identity
-		Name="AkazaRenn.82975CBC0BB1"
-		Publisher="CN=92F75277-E533-4C36-9417-4BC1004ABAD7"
-		Version="3.0.0.0" />
+  <Identity
+    Name="AkazaRenn.82975CBC0BB1"
+    Publisher="CN=92F75277-E533-4C36-9417-4BC1004ABAD7"
+    Version="3.0.0.0" />
 
   <mp:PhoneIdentity
     PhoneProductId="57E66D9E-CA4E-4015-94EE-793ECC1145DF"
     PhonePublisherId="92F75277-E533-4C36-9417-4BC1004ABAD7" />
 
   <Properties>
-		<DisplayName>Fruit Language Switcher</DisplayName>
-		<PublisherDisplayName>Akaza Renn</PublisherDisplayName>
-		<Logo>Assets\StoreLogo.png</Logo>
+    <DisplayName>Fruit Language Switcher</DisplayName>
+    <PublisherDisplayName>Akaza Renn</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26100.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26100.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.22000.0"
+      MaxVersionTested="10.0.26100.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0"
+      MaxVersionTested="10.0.26100.0" />
   </Dependencies>
 
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
 
   <Applications>
@@ -37,7 +39,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-			  DisplayName="Fruit Langauge Switcher"
+        DisplayName="Fruit Langauge Switcher"
         Description="Fruit Langauge Switcher"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
@@ -51,9 +53,9 @@
           Executable="FruitLanguageSwitcher.exe"
           EntryPoint="Windows.FullTrustApplication">
           <desktop:StartupTask
-              TaskId="MyStartupId"
-              Enabled="true"
-              DisplayName="Fruit Language Switcher" />
+            TaskId="MyStartupId"
+            Enabled="true"
+            DisplayName="Fruit Language Switcher" />
         </desktop:Extension>
       </Extensions>
     </Application>

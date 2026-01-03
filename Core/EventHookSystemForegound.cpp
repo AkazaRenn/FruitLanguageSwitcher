@@ -6,15 +6,15 @@ class EventHookSystemForegound: public WinEventHook<EventHookSystemForegound> {
     friend class WinEventHook<EventHookSystemForegound>;
 
 private:
-	const static DWORD Event = EVENT_SYSTEM_FOREGROUND;
+    const static DWORD Event = EVENT_SYSTEM_FOREGROUND;
 
 private:
-	void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
-		if ((hwnd == GetForegroundWindow()) && // Workaround for language dialog
-			(IsWindowVisible(hwnd) == true) && // Workaround for alt-tab
-			((GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) == 0)) { // Workaround for alt-tab, taskbar, tray
-			MessageDispatcher::Instance().PostMessage(Message::ForegroundChanged, 0, reinterpret_cast<LPARAM>(hwnd));
-		}
-	}
+    void CALLBACK OnEvent(HWINEVENTHOOK hWinEventHook, DWORD dwEvent, HWND hwnd, LONG idObject, LONG idChild, DWORD dwEventThread, DWORD dwmsEventTime) override {
+        if ((hwnd == GetForegroundWindow()) && // Workaround for language dialog
+            (IsWindowVisible(hwnd) == true) && // Workaround for alt-tab
+            ((GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) == 0)) { // Workaround for alt-tab, taskbar, tray
+            MessageDispatcher::Instance().PostMessage(Message::ForegroundChanged, 0, reinterpret_cast<LPARAM>(hwnd));
+        }
+    }
 };
 }
