@@ -45,7 +45,7 @@ from a latin language. It will fix the conversion mode when an IME language is a
 The `RAlt` button is replaced by useful functions.
 
 #### Japanese
-`RAlt` now swaps between Katakana, Hirakana and half-width Kana modes (done by sending `VK_IME_ON`);
+`RAlt` now swaps between Katakana, Hiragana and half-width Kana modes (done by sending `VK_IME_ON`);
 
 #### Chinese and Korean
 `RAlt` now toggles between Alphanumeric mode and convert mode. It still defaults to the convert mode
