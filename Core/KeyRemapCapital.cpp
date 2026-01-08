@@ -12,9 +12,7 @@ private:
 
 private:
     bool CapitalKeyDown = false;
-    Timer timer = Timer(500, []() {
-        SetCapsLockStateAndPostMessage(true);
-    });
+    Timer timer = Timer([]() {SetCapsLockStateAndPostMessage(true); });
 
 public:
     ~KeyRemapCapital() {
@@ -31,7 +29,7 @@ public:
         if (GetCapsLockState()) {
             SetCapsLockStateAndPostMessage(false);
         } else {
-            timer.Reset();
+            timer.Reset(500);
         }
     }
 

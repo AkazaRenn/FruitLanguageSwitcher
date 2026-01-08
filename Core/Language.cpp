@@ -57,13 +57,13 @@ private:
             [[fallthrough]];
         case zh_SG:
             [[fallthrough]];
-        case zh_MO: 
+        case zh_MO:
             SetConversionMode(hwnd, IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE);
             return;
-        case ko_KR: 
+        case ko_KR:
             SetConversionMode(hwnd, IME_CMODE_NATIVE);
             return;
-        case ja_JP: 
+        case ja_JP:
             SendKeySequence({VK_IME_ON});
             Sleep(100);
             SendKeySequence({VK_IME_ON});
@@ -99,15 +99,16 @@ public:
         switch (lcid) {
         case zh_TW:
             [[fallthrough]];
-        case zh_CN:
-            [[fallthrough]];
         case zh_HK:
-            [[fallthrough]];
-        case zh_SG:
             [[fallthrough]];
         case zh_MO:
             ToggleConversionMode(IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE);
             return;
+        case zh_CN:
+            [[fallthrough]];
+        case zh_SG:
+            SendKeyCombination({VK_CONTROL, VK_SHIFT, 'F'});
+            break;
         case ko_KR:
             ToggleConversionMode(IME_CMODE_NATIVE);
             return;

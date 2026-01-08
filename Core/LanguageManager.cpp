@@ -91,8 +91,8 @@ private:
     }
 
     void OnSwapCategoryTriggered(const MSG& msg) {
-        activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
+        activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         ActivateLanguage(GetActiveLanguage(!activeLanguage.get().isImeLanguage));
     }
 

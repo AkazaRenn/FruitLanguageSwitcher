@@ -16,15 +16,13 @@ private:
     }
 
 private:
-    LONGLONG timerExpiryMs;
     PTP_TIMER threadpoolTimer = nullptr;
     std::function<void()> onTimerExpiry;
     std::atomic<bool> handled = false;
 
 public:
-    Timer(LONGLONG _timerExpiryMs, std::function<void()> _onTimerExpiry)
-        : timerExpiryMs(_timerExpiryMs)
-        , onTimerExpiry(_onTimerExpiry) {
+    Timer(std::function<void()> _onTimerExpiry)
+        : onTimerExpiry(_onTimerExpiry) {
         threadpoolTimer = CreateThreadpoolTimer(StaticOnTimerExpiry, this, nullptr);
         if (!threadpoolTimer) {
             throw std::runtime_error("CreateThreadpoolTimer failed");
@@ -37,7 +35,7 @@ public:
         CloseThreadpoolTimer(threadpoolTimer);
     }
 
-    void Reset() {
+    void Reset(LONGLONG timerExpiryMs) {
         handled = false;
 
         // Negative value = relative time, in 100ns units
