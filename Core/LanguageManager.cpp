@@ -55,12 +55,12 @@ private:
     std::reference_wrapper<const Language> defaultLanguage = activeLanguage;
     std::reference_wrapper<const Language> priorImeLanguage = activeImeLanguage;
 
-    std::chrono::time_point<std::chrono::steady_clock> activatLatinLanguageTimePoint = std::chrono::steady_clock::now();
-
     HWND activeWindow = GetForegroundWindow();
 
     bool pollingLanguageUpdate = false;
     Task updateLanguageTask = Task([this]() {UpdateLanguage(); });
+
+    std::chrono::time_point<std::chrono::steady_clock> swapCategoryLatinTimePoint = std::chrono::steady_clock::now();
 
     GetMessageThread getMessageThread = GetMessageThread({
         { Message::ForegroundChanged, [this](const MSG& msg) {OnForegroundChanged(msg); } },
@@ -98,14 +98,14 @@ private:
         activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         const Language& languageToBeActivated = GetActiveLanguage(!activeLanguage.get().isImeLanguage);
         if (languageToBeActivated.isImeLanguage) {
-            if (std::chrono::steady_clock::now() - activatLatinLanguageTimePoint < std::chrono::milliseconds(200)) {
+            if (std::chrono::steady_clock::now() - swapCategoryLatinTimePoint < std::chrono::milliseconds(200)) {
                 ActivateLanguage(priorImeLanguage);
             } else {
                 ActivateLanguage(languageToBeActivated);
             }
         } else {
             ActivateLanguage(languageToBeActivated);
-            activatLatinLanguageTimePoint = std::chrono::steady_clock::now();
+            swapCategoryLatinTimePoint = std::chrono::steady_clock::now();
         }
     }
 
