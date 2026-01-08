@@ -83,9 +83,9 @@ private:
         Sleep(50); // Notepad workaround, or it will crash on launch
         auto it = windowToLanguageMap.find(activeWindow);
         if (it != windowToLanguageMap.end()) {
-            ActivateLanguage(it->second);
+            ActivateLanguage(it->second, false);
         } else {
-            ActivateLanguage(defaultLanguage);
+            ActivateLanguage(defaultLanguage, false);
         }
     }
 
@@ -95,7 +95,6 @@ private:
     }
 
     void OnSwapCategoryTriggered(const MSG& msg) {
-        ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
         activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         const Language& languageToBeActivated = GetActiveLanguage(!activeLanguage.get().isImeLanguage);
         if (languageToBeActivated.isImeLanguage) {
@@ -130,15 +129,15 @@ private:
 
         activeLanguageBeforeCapsLock = activeLanguage;
         if (activeLanguage.get().isImeLanguage) {
-            ActivateLanguage(activeLatinLanguage, false);
+            ActivateLanguage(activeLatinLanguage, false, false);
         }
     }
 
     void OnCapsLockOff(const MSG& msg) {
-        ShowFlyout(GetActiveLanguage(activeLanguageBeforeCapsLock.get().isImeLanguage).lcid);
-
         if (activeLanguageBeforeCapsLock.get().isImeLanguage) {
             ActivateLanguage(activeLanguageBeforeCapsLock);
+        } else {
+            ShowFlyout(activeLanguageBeforeCapsLock);
         }
     }
 
@@ -153,8 +152,11 @@ private:
         ActivateLanguage(GetLanguageForHkl(hkl));
     }
 
-    void ActivateLanguage(const Language& language, bool updateWindowToLanguageMap = true) {
+    void ActivateLanguage(const Language& language, bool showFlyout = true, bool updateWindowToLanguageMap = true) {
         pollingLanguageUpdate = false;
+        if (showFlyout) {
+            ShowFlyout(language);
+        }
         language.Activate(activeWindow);
 
         activeLanguage = language;
@@ -173,14 +175,16 @@ private:
 
     }
 
-    void ShowFlyout(LCID activeLcid) const {
-        ShowFlyout(activeLcid, activeImeLanguage.get().lcid);
+    void ShowFlyout(const Language& language) const {
+        MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
+            static_cast<WPARAM>(language.lcid),
+            static_cast<LPARAM>(language.isImeLanguage ? language.lcid : activeImeLanguage.get().lcid));
     }
 
-    void ShowFlyout(LCID activeLcid, LCID activeImeLcid) const {
+    void ShowFlyout(LCID activeLcid) const {
         MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
             static_cast<WPARAM>(activeLcid),
-            static_cast<LPARAM>(activeImeLcid));
+            static_cast<LPARAM>(activeImeLanguage.get().lcid));
     }
 
     void UpdateLanguage() {
@@ -205,10 +209,7 @@ private:
             return;
         }
 
-        Language& newLanguage = GetLanguageForHkl(newHkl);
-        MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
-            static_cast<WPARAM>(newLanguage.lcid),
-            static_cast<LPARAM>(newLanguage.isImeLanguage ? newLanguage.lcid : activeImeLanguage.get().lcid));
+        ShowFlyout(GetLanguageForHkl(newHkl));
         ActivateLanguage(newHkl);
         // Turn off capslock if the language changes
         SetCapsLockState(false);
