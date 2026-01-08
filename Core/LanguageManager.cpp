@@ -1,3 +1,4 @@
+import <chrono>;
 import <memory>;
 import <unordered_map>;
 import <Windows.h>;
@@ -52,6 +53,9 @@ private:
     std::reference_wrapper<const Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
     std::reference_wrapper<const Language> activeLanguageBeforeCapsLock = activeLanguage;
     std::reference_wrapper<const Language> defaultLanguage = activeLanguage;
+    std::reference_wrapper<const Language> priorImeLanguage = activeImeLanguage;
+
+    std::chrono::time_point<std::chrono::steady_clock> activatLatinLanguageTimePoint = std::chrono::steady_clock::now();
 
     HWND activeWindow = GetForegroundWindow();
 
@@ -93,7 +97,17 @@ private:
     void OnSwapCategoryTriggered(const MSG& msg) {
         ShowFlyout(GetActiveLanguage(!activeLanguage.get().isImeLanguage).lcid);
         activeWindow = GetForegroundWindow(); // UWP workaround on ARM
-        ActivateLanguage(GetActiveLanguage(!activeLanguage.get().isImeLanguage));
+        const Language& languageToBeActivated = GetActiveLanguage(!activeLanguage.get().isImeLanguage);
+        if (languageToBeActivated.isImeLanguage) {
+            if (std::chrono::steady_clock::now() - activatLatinLanguageTimePoint < std::chrono::milliseconds(200)) {
+                ActivateLanguage(priorImeLanguage);
+            } else {
+                ActivateLanguage(languageToBeActivated);
+            }
+        } else {
+            ActivateLanguage(languageToBeActivated);
+            activatLatinLanguageTimePoint = std::chrono::steady_clock::now();
+        }
     }
 
     void OnWinKeyUp(const MSG& msg) {
@@ -145,7 +159,10 @@ private:
 
         activeLanguage = language;
         if (activeLanguage.get().isImeLanguage) {
-            activeImeLanguage = activeLanguage;
+            if (activeImeLanguage.get() != activeLanguage.get()) {
+                priorImeLanguage = activeImeLanguage;
+                activeImeLanguage = activeLanguage;
+            }
         } else {
             activeLatinLanguage = activeLanguage;
         }
@@ -157,9 +174,13 @@ private:
     }
 
     void ShowFlyout(LCID activeLcid) const {
+        ShowFlyout(activeLcid, activeImeLanguage.get().lcid);
+    }
+
+    void ShowFlyout(LCID activeLcid, LCID activeImeLcid) const {
         MessageDispatcher::Instance().PostMessage(Message::ShowFlyout,
             static_cast<WPARAM>(activeLcid),
-            static_cast<LPARAM>(activeImeLanguage.get().lcid));
+            static_cast<LPARAM>(activeImeLcid));
     }
 
     void UpdateLanguage() {
