@@ -98,7 +98,7 @@ private:
         activeWindow = GetForegroundWindow(); // UWP workaround on ARM
         const Language& languageToBeActivated = GetActiveLanguage(!activeLanguage.get().isImeLanguage);
         if (languageToBeActivated.isImeLanguage) {
-            if (std::chrono::steady_clock::now() - swapCategoryLatinTimePoint < std::chrono::milliseconds(200)) {
+            if (std::chrono::steady_clock::now() - swapCategoryLatinTimePoint < std::chrono::milliseconds(GetDoubleClickTime())) {
                 ActivateLanguage(priorImeLanguage);
             } else {
                 ActivateLanguage(languageToBeActivated);
