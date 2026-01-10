@@ -1,6 +1,4 @@
 ﻿using Linearstar.Windows.RawInput;
-using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 

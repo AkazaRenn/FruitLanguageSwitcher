@@ -1,6 +1,5 @@
 ﻿using App.Interop;
 using Microsoft.UI.Dispatching;
-using System;
 using Vanara.PInvoke;
 using WinUIEx;
 

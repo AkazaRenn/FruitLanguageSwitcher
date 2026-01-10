@@ -2,9 +2,6 @@
 using App.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Vanara.PInvoke;
 
 namespace App;

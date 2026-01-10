@@ -1,6 +1,5 @@
 ﻿using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
-using System;
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 
