@@ -167,7 +167,7 @@ bool GetCaretPosition(CaretInfo* caretInfo) {
                 return true;
             }
         } while (false);
-    } catch (const std::exception& e) {
+    } catch (const std::exception&) {
         return false;
     }
 

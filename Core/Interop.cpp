@@ -32,7 +32,7 @@ extern "C" {
     __declspec(dllexport) Core::Interop* __stdcall Start(Core::ShowFlyoutFunction showFlyoutFunction) {
         try {
             return new Core::Interop(showFlyoutFunction);
-        } catch (const std::exception& e) {
+        } catch (const std::exception&) {
             return nullptr;
         }
     }
