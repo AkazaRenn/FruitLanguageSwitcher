@@ -3,7 +3,7 @@
     <Platform Name="ARM64" />
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="App/App.csproj" Id="8eb0466b-9007-4c63-8f36-12b7f508abd9">
+  <Project Path="App/App.csproj">
     <BuildDependency Project="Core/Core.vcxproj" />
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />

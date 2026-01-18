@@ -8,21 +8,21 @@ namespace App;
 
 public partial class App: Application {
     readonly HashSet<IDisposable> disposables = [];
-    readonly Mutex singleInstanceMutex;
     Core? core;
     Flyout.Window? window;
     TaskbarIcon? taskbarIcon;
 
     public App() {
-        singleInstanceMutex = new Mutex(true, Windows.ApplicationModel.Package.Current.Id.FamilyName, out bool createdNew);
-        if (!createdNew) {
-            Current.Exit();
-        }
-
         InitializeComponent();
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
+        var instance = AppInstance.FindOrRegisterForKey(Windows.ApplicationModel.Package.Current.Id.FamilyName);
+        if (!instance.IsCurrent) {
+            Current.Exit();
+            return;
+        }
+
         Kernel32.RegisterApplicationRestart(Utilities.StartupArguments, Kernel32.ApplicationRestartFlags.RESTART_NO_HANG | Kernel32.ApplicationRestartFlags.RESTART_NO_CRASH);
         _ = Utilities.RequestStartup();
 
