@@ -39,6 +39,9 @@
     <ClCompile Include="WindowsHookKeyboardLL.cpp">
       <Filter>Hooks</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsHookMouseLL.cpp">
+      <Filter>Hooks</Filter>
+    </ClCompile>
     <ClCompile Include="KeyRemapLWin.cpp">
       <Filter>Key Remapping</Filter>
     </ClCompile>

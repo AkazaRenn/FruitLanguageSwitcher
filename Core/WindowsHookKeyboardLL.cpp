@@ -12,7 +12,7 @@ private:
     const static int IdHook = WH_KEYBOARD_LL;
 
 private:
-    KeyRemapLWin keyRemapLWin;
+    KeyRemapLWin& keyRemapLWin = KeyRemapLWin::Instance();
     KeyRemapRMenu keyRemapRMenu;
     KeyRemapCapital keyRemapCapital;
 

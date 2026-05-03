@@ -6,6 +6,7 @@ import "GetMessageThread.cpp";
 import "LanguageManager.cpp";
 import "Enumerations.cpp";
 import "WindowsHookKeyboardLL.cpp";
+import "WindowsHookMouseLL.cpp";
 
 namespace Core {
 using ShowFlyoutFunction = void(__stdcall*)(LCID, LCID);
@@ -24,6 +25,7 @@ public:
         EventHookObjectDestroy::Instance();
         EventHookSystemForegound::Instance();
         WindowsHookKeyboardLL::Instance();
+        WindowsHookMouseLL::Instance();
     }
 };
 }

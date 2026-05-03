@@ -1,8 +1,11 @@
 import <Windows.h>;
+import "Singleton.cpp";
 import "Utilities.cpp";
 
 namespace Core {
-class KeyRemapLWin {
+class KeyRemapLWin: public Singleton<KeyRemapLWin> {
+    friend class Singleton<KeyRemapLWin>;
+
 private:
     static void SendCommandPaletteShortcut() {
         SendKeyCombination({VK_LWIN,VK_MENU,VK_SPACE});

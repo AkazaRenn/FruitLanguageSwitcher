@@ -40,6 +40,7 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsHook.cpp" />
     <ClCompile Include="WindowsHookKeyboardLL.cpp" />
+    <ClCompile Include="WindowsHookMouseLL.cpp" />
     <ClCompile Include="WinEventHook.cpp" />
     <ClCompile Include="KeyRemapLWin.cpp" />
     <ClCompile Include="Interop.cpp" />
