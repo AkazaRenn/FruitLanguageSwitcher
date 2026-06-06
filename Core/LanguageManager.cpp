@@ -80,7 +80,7 @@ private:
         // If HWND in windowToLanguageMap, use saved language,
         // else update windowToLanguageMap.
         // Always activate the language.
-        Sleep(500); // Notepad workaround, or it will crash on launch
+        Sleep(250); // Notepad workaround, or it will crash on launch
         auto it = windowToLanguageMap.find(activeWindow);
         if (it != windowToLanguageMap.end()) {
             ActivateLanguage(it->second, false);
