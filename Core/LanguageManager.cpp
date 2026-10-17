@@ -25,35 +25,44 @@ private:
         return layouts;
     }
 
-    static const std::unordered_map<HKL, Language> GetHklToLanguageMap() {
+    static const std::unordered_map<HKL, const Language> GetHklToLanguageMap() {
         auto layouts = GetHklList();
 
-        std::unordered_map<HKL, Language> map;
+        std::unordered_map<HKL, const Language> map;
         for (const HKL& hkl : layouts) {
             map.emplace(hkl, Language(hkl));
         }
         return map;
     }
 
-    static Language& GetFirstLanguage(std::unordered_map<HKL, Language>& hklToLanguageMap, bool imeLanguage) {
+    static const Language& GetFirstLanguage(const std::unordered_map<HKL, const Language>& hklToLanguageMap, bool imeLanguage, HKL exclude = 0) {
         for (const HKL layout : GetHklList()) {
+            if (layout == exclude) {
+                continue;
+            }
+
             auto it = hklToLanguageMap.find(layout);
             if ((it != hklToLanguageMap.end()) && (it->second.isImeLanguage == imeLanguage)) {
                 return it->second;
             }
         }
-        throw std::runtime_error("No language found");
+
+        if (exclude == 0) {
+            throw std::runtime_error("No language found");
+        } else {
+            return hklToLanguageMap.at(exclude);
+        }
     }
 
 private:
     std::unordered_map<HWND, std::reference_wrapper<const Language>> windowToLanguageMap;
-    std::unordered_map<HKL, Language> hklToLanguageMap = GetHklToLanguageMap();
+    std::unordered_map<HKL, const Language> hklToLanguageMap = GetHklToLanguageMap();
     std::reference_wrapper<const Language> activeLanguage = hklToLanguageMap.at(GetHklList()[0]);
     std::reference_wrapper<const Language> activeLatinLanguage = GetFirstLanguage(hklToLanguageMap, false);
     std::reference_wrapper<const Language> activeImeLanguage = GetFirstLanguage(hklToLanguageMap, true);
+    std::reference_wrapper<const Language> priorImeLanguage = GetFirstLanguage(hklToLanguageMap, true, activeImeLanguage.get().hkl);
     std::reference_wrapper<const Language> activeLanguageBeforeCapsLock = activeLanguage;
     std::reference_wrapper<const Language> defaultLanguage = activeLanguage;
-    std::reference_wrapper<const Language> priorImeLanguage = activeImeLanguage;
 
     HWND activeWindow = GetForegroundWindow();
 
@@ -141,7 +150,7 @@ private:
         }
     }
 
-    Language& GetLanguageForHkl(HKL hkl) {
+    const Language& GetLanguageForHkl(HKL hkl) {
         if (!hklToLanguageMap.contains(hkl)) {
             hklToLanguageMap.emplace(hkl, Language(hkl));
         }
